@@ -9,30 +9,45 @@
 body{
 margin:0;
 font-family:sans-serif;
-background:#0d0d0d;
+background:#0b0b0b;
 color:white;
-text-align:center;
 }
 
+/* タイトル */
 header{
 background:#1b5e20;
 padding:20px;
-font-size:28px;
+text-align:center;
+font-size:30px;
 }
 
+/* 上の説明 */
+.top{
+text-align:center;
+padding:40px;
+background:linear-gradient(#003366,#000);
+}
+
+/* カードエリア */
 .rails{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
 padding:40px;
 }
 
+/* レールカード */
 .card{
 background:#1c1c1c;
-margin:20px;
 padding:20px;
-width:250px;
-border-radius:10px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,0.7);
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
 }
 
 .card img{
@@ -40,14 +55,29 @@ width:100%;
 border-radius:10px;
 }
 
+.card h3{
+margin-top:10px;
+}
+
 button{
 margin-top:10px;
-padding:10px 20px;
+padding:12px 25px;
+font-size:16px;
 background:#4caf50;
 border:none;
-border-radius:6px;
+border-radius:8px;
 color:white;
-font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#66bb6a;
+}
+
+footer{
+text-align:center;
+padding:20px;
+background:#111;
 }
 
 </style>
@@ -59,35 +89,60 @@ font-size:16px;
 🚆 RTMレールダウンロード
 </header>
 
-<h2>レールを選んでください</h2>
+<div class="top">
+<h1>レールを選んでダウンロード</h1>
+<p>リアルな鉄道レールを追加できます</p>
+</div>
 
 <section class="rails">
 
 <div class="card">
-<img src="https://via.placeholder.com/250">
+<img src="https://via.placeholder.com/300">
 <h3>直線レール</h3>
+<p>基本的なRTMレール</p>
 <button>ダウンロード</button>
 </div>
 
 <div class="card">
-<img src="https://via.placeholder.com/250">
+<img src="https://via.placeholder.com/300">
 <h3>高速レール</h3>
+<p>新幹線用レール</p>
 <button>ダウンロード</button>
 </div>
 
 <div class="card">
-<img src="https://via.placeholder.com/250">
+<img src="https://via.placeholder.com/300">
 <h3>分岐レール</h3>
+<p>ポイント付きレール</p>
 <button>ダウンロード</button>
 </div>
 
 <div class="card">
-<img src="https://via.placeholder.com/250">
+<img src="https://via.placeholder.com/300">
 <h3>地下鉄レール</h3>
+<p>地下鉄向けレール</p>
+<button>ダウンロード</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>高架レール</h3>
+<p>高架線用レール</p>
+<button>ダウンロード</button>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>カーブレール</h3>
+<p>カーブ用レール</p>
 <button>ダウンロード</button>
 </div>
 
 </section>
+
+<footer>
+© マイクラ改造研究所
+</footer>
 
 </body>
 </html>

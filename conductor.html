@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>車掌業務 - TIMS</title>
+    <style>
+        body { background-color: #f7f9fc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 60px; transition: background 0.5s; }
+        .mode-badge { position: absolute; top: 20px; left: 20px; background-color: #f6e05e; padding: 10px 20px; border-radius: 10px; font-weight: bold; color: #744210; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 380px; }
+        .section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #edf2f7; }
+        .btn { display: block; width: 100%; padding: 15px; margin-top: 10px; background-color: #4a90e2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .key-btn { width: 60px; height: 50px; border: none; border-radius: 5px; background: #cbd5e0; font-weight: bold; cursor: pointer; }
+        #opeNum { width: 100%; padding: 15px; font-size: 1.5em; text-align: center; background: #edf2f7; border: none; border-radius: 8px; box-sizing: border-box; }
+        .emergency-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="mode-badge">車掌モード</div>
+
+    <div class="container">
+        <div class="section">
+            <h2>運行番号入力</h2>
+            <input type="text" id="opeNum" readonly>
+            <div class="emergency-grid">
+                <button class="key-btn" onclick="addChar('1')">1</button><button class="key-btn" onclick="addChar('2')">2</button><button class="key-btn" onclick="addChar('3')">3</button><button class="key-btn" onclick="addChar('4')">4</button><button class="key-btn" onclick="addChar('5')">5</button>
+                <button class="key-btn" onclick="addChar('6')">6</button><button class="key-btn" onclick="addChar('7')">7</button><button class="key-btn" onclick="addChar('8')">8</button><button class="key-btn" onclick="addChar('9')">9</button><button class="key-btn" onclick="addChar('0')">0</button>
+                <button class="key-btn" onclick="addChar('F')" style="background:#ecc94b;">F</button><button class="key-btn" onclick="addChar('E')" style="background:#ecc94b;">E</button><button class="key-btn" onclick="addChar('G')" style="background:#ecc94b;">G</button><button class="key-btn" onclick="addChar('M')" style="background:#ecc94b;">M</button><button class="key-btn" onclick="addChar('A')" style="background:#ecc94b;">A</button>
+            </div>
+            <button class="btn" style="background:#48bb78;" onclick="confirmOperation()">運用確定</button>
+        </div>
+
+        <div class="section" id="info-section">
+            <h2>車掌情報</h2>
+            <div id="crew-info-display"><p>運用を入力してください</p></div>
+        </div>
+
+        <div class="section">
+            <h2 style="color: #e53e3e;">非常操作</h2>
+            <button class="btn" style="background-color: #e53e3e;" onclick="triggerEmergency()">非常事態宣言</button>
+        </div>
+    </div>
+
+    <script>
+        const masterData = { "2134E": { crew: "80023", section: "君津 - 千葉", route: "内房線 各停" } };
+
+        function addChar(char) { document.getElementById('opeNum').value += char; }
+
+        function confirmOperation() {
+            const num = document.getElementById('opeNum').value;
+            if(masterData[num]) {
+                document.getElementById('crew-info-display').innerHTML = `
+                    <div style="background:#e6fffa; padding:10px;">運用:${num} 確定済<br>区間:${masterData[num].section}</div>`;
+            } else { alert("番号が不正です"); }
+        }
+
+        function triggerEmergency() {
+            document.body.style.backgroundColor = "#ffcccc";
+            const div = document.createElement('div');
+            div.id = "emergency-protocol";
+            div.innerHTML = `<div style="position:fixed; top:20%; left:30%; background:white; padding:40px; border:5px solid red;">
+                <h1>非常選択</h1>
+                <button class="btn" onclick="alert('対応完了')">人身事故</button>
+                <button class="btn" onclick="alert('対応完了')">火災</button>
+                <button class="btn" onclick="alert('対応完了')">不審者</button>
+                <button class="btn" onclick="location.reload()" style="background:green;">通常業務へ復帰</button>
+            </div>`;
+            document.body.appendChild(div);
+        }
+    </script>
+</body>
+</html>

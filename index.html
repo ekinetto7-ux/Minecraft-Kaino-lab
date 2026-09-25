@@ -29,7 +29,7 @@
 
         .section-title { font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         
-        /* レジ状態（通常・休止中・点検）ボタン */
+        /* レジ状態ボタン */
         .status-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 5px; }
         .btn-status { padding: 8px; font-size: 0.8rem; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: white; color: #64748b; text-align: center; }
         .btn-status.active-normal { background: var(--success); color: white; border-color: var(--success); }
@@ -101,7 +101,7 @@
         <div>
             <div class="section-title">レジ状態の切り替え</div>
             <div class="status-actions">
-                <button id="st-normal" class="btn-status active-normal" onclick="setRegisterStatus('normal')">通常営業</button>
+                <button id="st-normal" class="btn-status active-normal" onclick="requestUnlock('normal')">通常営業</button>
                 <button id="st-pause" class="btn-status" onclick="setRegisterStatus('pause')">休止中</button>
                 <button id="st-inspect" class="btn-status" onclick="setRegisterStatus('inspect')">点検</button>
             </div>
@@ -173,6 +173,19 @@
     </div>
 </div>
 
+<!-- 店員番号認証モーダル -->
+<div id="auth-modal" class="modal">
+    <div class="modal-content">
+        <h3>店員認証 (解除)</h3>
+        <p style="color:#64748b; font-size:0.9rem;">店員番号を入力してください</p>
+        <input type="password" id="auth-pass" placeholder="店員番号 (3桁)" maxlength="3">
+        <div class="modal-btns">
+            <button style="background:#e2e8f0; color:#475569;" onclick="closeAuthModal()">キャンセル</button>
+            <button style="background:var(--primary); color:white;" onclick="verifyAuth()">解除する</button>
+        </div>
+    </div>
+</div>
+
 <!-- 現金お預かりモーダル -->
 <div id="cash-modal" class="modal">
     <div class="modal-content">
@@ -202,6 +215,41 @@
     let registerStatus = 'normal'; // 'normal', 'pause', 'inspect'
 
     function setRegisterStatus(status) {
+        if (status === registerStatus) return;
+        
+        if (status === 'normal') {
+            // 通常営業に戻すときは認証が必要
+            requestUnlock('normal');
+        } else {
+            // 休止中や点検にするのはそのまま切替可能
+            applyStatus(status);
+        }
+    }
+
+    function requestUnlock(status) {
+        if (registerStatus === 'normal') return; // すでに通常なら何もしない
+        document.getElementById('auth-pass').value = '';
+        document.getElementById('auth-modal').style.display = 'flex';
+        document.getElementById('auth-pass').focus();
+    }
+
+    function closeAuthModal() {
+        document.getElementById('auth-modal').style.display = 'none';
+    }
+
+    function verifyAuth() {
+        const inputVal = document.getElementById('auth-pass').value;
+        if (inputVal === '911') {
+            closeAuthModal();
+            applyStatus('normal');
+        } else {
+            alert('店員番号が違います！ (正しい番号を入力してください)');
+            document.getElementById('auth-pass').value = '';
+            document.getElementById('auth-pass').focus();
+        }
+    }
+
+    function applyStatus(status) {
         registerStatus = status;
         const badge = document.getElementById('status-badge');
         
@@ -307,7 +355,6 @@
         dailySales += total;
         document.getElementById('daily-sales').innerText = dailySales;
 
-        // レシート生成
         const now = new Date();
         const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
         let receiptHTML = `

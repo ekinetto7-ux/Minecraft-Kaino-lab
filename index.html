@@ -17,7 +17,7 @@
         * { box-sizing: border-box; }
         body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #f8fafc; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
-        .pos-layout { width: 100%; max-width: 1000px; height: 760px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 380px; overflow: hidden; border: 1px solid var(--border); }
+        .pos-layout { width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 380px; overflow: hidden; border: 1px solid var(--border); }
         @media (max-width: 768px) { .pos-layout { grid-template-columns: 1fr; height: auto; max-width: 480px; } }
 
         /* 左側：商品・割引・システム管理 */
@@ -59,25 +59,29 @@
         /* 右側：カート・お会計パネル */
         .panel-right { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: white; }
         
-        .cart-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 15px; }
-        .cart-header { background: #f1f5f9; padding: 10px 12px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; color: #475569; border-bottom: 1px solid var(--border); }
-        .cart-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; max-height: 150px; }
-        .cart-row { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.9rem; align-items: center; background: white; }
+        .cart-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 12px; }
+        .cart-header { background: #f1f5f9; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; color: #475569; border-bottom: 1px solid var(--border); }
+        .cart-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; max-height: 130px; }
+        .cart-row { padding: 8px 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.9rem; align-items: center; background: white; }
         .cart-row button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; padding: 2px 6px; }
 
-        .summary-box { background: var(--bg-dark); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; }
-        .summary-total { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px; color: #fff; }
+        .summary-box { background: var(--bg-dark); color: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 8px; color: #fff; }
 
-        .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
-        .btn-pay { padding: 14px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.95rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .btn-pay { padding: 10px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.85rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-manamei { background: #7c3aed; }
         .btn-manamei:hover:not(:disabled) { background: #6d28d9; }
         .btn-cash { background: var(--success); }
         .btn-cash:hover:not(:disabled) { background: #15803d; }
+        .btn-cokers { background: #2563eb; }
+        .btn-cokers:hover:not(:disabled) { background: #1d4ed8; }
+        .btn-neo { background: #d97706; }
+        .btn-neo:hover:not(:disabled) { background: #b45309; }
         .btn-pay:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
         
-        .btn-clear { width: 100%; padding: 10px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
+        .btn-clear { width: 100%; padding: 8px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
         .btn-clear:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
         /* モーダル共通 */
@@ -166,7 +170,7 @@
                     <span>小計</span>
                 </div>
                 <ul id="cart-list" class="cart-list">
-                    <li style="color:#94a3b8; text-align:center; padding:40px 0; font-size:0.85rem;">カートは空です</li>
+                    <li style="color:#94a3b8; text-align:center; padding:30px 0; font-size:0.85rem;">カートは空です</li>
                 </ul>
             </div>
         </div>
@@ -186,6 +190,8 @@
             <div class="pay-actions">
                 <button id="btn-manamei" class="btn-pay btn-manamei" onclick="checkoutManamei()">Mana-meiカード</button>
                 <button id="btn-cash" class="btn-pay btn-cash" onclick="openCashModal()">現金決済</button>
+                <button id="btn-cokers" class="btn-pay btn-cokers" onclick="checkoutCokersPay()">Coker's Pay</button>
+                <button id="btn-neo" class="btn-pay btn-neo" onclick="checkoutNeoPoint()">ネオ・ポイント</button>
             </div>
             <button class="btn-clear" onclick="resetCart()">取引キャンセル</button>
         </div>
@@ -310,6 +316,8 @@
         document.getElementById('disc-100').disabled = isDisabled;
         document.getElementById('btn-manamei').disabled = isDisabled;
         document.getElementById('btn-cash').disabled = isDisabled;
+        document.getElementById('btn-cokers').disabled = isDisabled;
+        document.getElementById('btn-neo').disabled = isDisabled;
     }
 
     function addItem(name, price) {
@@ -370,7 +378,7 @@
         total = 0;
 
         if (cart.length === 0) {
-            listEl.innerHTML = '<li style="color:#94a3b8; text-align:center; padding:40px 0; font-size:0.85rem;">カートは空です</li>';
+            listEl.innerHTML = '<li style="color:#94a3b8; text-align:center; padding:30px 0; font-size:0.85rem;">カートは空です</li>';
         } else {
             cart.forEach((item, index) => {
                 total += item.price;
@@ -389,6 +397,16 @@
     function checkoutManamei() {
         if (registerStatus !== 'normal' || cart.length === 0) return;
         completeCheckout('Mana-meiカード', total, 0);
+    }
+
+    function checkoutCokersPay() {
+        if (registerStatus !== 'normal' || cart.length === 0) return;
+        completeCheckout("Coker's Pay", total, 0);
+    }
+
+    function checkoutNeoPoint() {
+        if (registerStatus !== 'normal' || cart.length === 0) return;
+        completeCheckout('ネオ・ポイント', total, 0);
     }
 
     function openCashModal() {
@@ -430,7 +448,6 @@
             receiptHTML += `${item.name} ... ¥${item.price}<br>`;
         });
         receiptHTML += `--------------------------------<br>`;
-        receiptHTML: 決済方法 = method;
         receiptHTML += `決済方法: ${method}<br>`;
         if (method === '現金') {
             receiptHTML += `お預かり: ¥${received}<br>`;

@@ -3,52 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おうちレジアプリ (Coker’s)</title>
+    <title>Coker’s POS Register</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; background: #f4f4f9; color: #333; }
-        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #4CAF50; }
-        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        button { flex: 1; padding: 12px; font-size: 16px; cursor: pointer; border: none; border-radius: 4px; background: #e0e0e0; }
-        button.active { background: #4CAF50; color: white; font-weight: bold; }
-        .pay-btn { background: #2196F3; color: white; }
-        .total-box { font-size: 20px; font-weight: bold; margin: 15px 0; background: #f9f9f9; padding: 10px; text-align: right; border-radius: 4px; }
-        ul { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; margin-bottom: 15px; }
-        li { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
-        .reset-btn { background: #f44336; color: white; width: 100%; margin-top: 10px; }
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --bg-color: #f8f9fa;
+        }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: var(--bg-color); color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .pos-container { width: 100%; max-width: 650px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+        
+        header { background: var(--primary-color); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
+        .store-tag { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+
+        .main-content { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .main-content { grid-template-columns: 1fr; } }
+
+        .section-title { font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 8px; text-transform: uppercase; border-bottom: 2px solid #ecf0f1; padding-bottom: 4px; }
+        
+        .btn-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 15px; }
+        .pos-btn { padding: 12px; font-size: 1rem; cursor: pointer; border: none; border-radius: 6px; background: #fff; border: 1px solid #cbd5e1; transition: all 0.1s; text-align: left; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .pos-btn:hover { background: #f1f5f9; border-color: var(--accent-color); }
+        .pos-btn span.price { color: #64748b; font-weight: normal; }
+
+        .item-btn { border-left: 4px solid var(--accent-color); }
+        .discount-btn { border-left: 4px solid #f39c12; }
+
+        /* カート・会計エリア */
+        .cart-panel { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; }
+        .cart-list { list-style: none; padding: 0; margin: 0 0 15px 0; max-height: 140px; overflow-y: auto; }
+        .cart-item { padding: 6px 0; border-bottom: 1px dashed #cbd5e1; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        
+        .total-display { background: var(--primary-color); color: white; padding: 12px; border-radius: 6px; text-align: right; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; }
+        .total-display span { font-size: 0.9rem; display: block; font-weight: normal; color: #cbd5e1; }
+
+        .pay-section { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .pay-btn { padding: 10px; font-size: 0.95rem; font-weight: bold; color: white; border: none; border-radius: 6px; cursor: pointer; text-align: center; }
+        .pay-mana { background: #8e44ad; }
+        .pay-cash { background: var(--success-color); }
+
+        .reset-btn { width: 100%; padding: 8px; background: #95a5a6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+        .reset-btn:hover { background: var(--danger-color); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Coker’s レジ</h2>
-    
-    <p>商品を選んでね：</p>
-    <div class="btn-group">
-        <button onclick="addItem('食品A', 220)">食品A (220円)</button>
-        <button onclick="addItem('食品B', 110)">食品B (110円)</button>
+<div class="pos-container">
+    <header>
+        <h1>Coker’s POS</h1>
+        <div class="store-tag">SYSTEM v1.0</div>
+    </header>
+
+    <div class="main-content">
+        <!-- 左側：商品・割引選択 -->
+        <div>
+            <div class="section-title">商品登録</div>
+            <div class="btn-grid">
+                <button class="pos-btn item-btn" onclick="addItem('食品 (大)', 220)">
+                    食品(大) <span class="price">¥220</span>
+                </button>
+                <button class="pos-btn item-btn" onclick="addItem('食品 (小)', 110)">
+                    食品(小) <span class="price">¥110</span>
+                </button>
+            </div>
+
+            <div class="section-title">割引・調整</div>
+            <div class="btn-grid">
+                <button class="pos-btn discount-btn" onclick="addDiscount('無料よ', -1000)">
+                    無料よ <span class="price">全額OFF</span>
+                </button>
+                <button class="pos-btn discount-btn" onclick="addDiscount('100円引き', 100)">
+                    100円引き <span class="price">-¥100</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 右側：お会計・カート -->
+        <div class="cart-panel">
+            <div>
+                <div class="section-title" style="margin-top:0;">お会計カート</div>
+                <ul id="cart-list" class="cart-list">
+                    <li style="color:#94a3b8; text-align:center; border:none; padding:20px 0;">カートは空です</li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="total-display">
+                    <span>お支払い合計</span>
+                    ¥<span id="total-price">0</span>
+                </div>
+
+                <div class="section-title">お支払い方法</div>
+                <div class="pay-section">
+                    <button class="pay-btn pay-mana" onclick="checkout('Manaカード')">Manaカード</button>
+                    <button class="pay-btn pay-cash" onclick="checkout('現金')">現金</button>
+                </div>
+                <button class="reset-btn" onclick="resetCart()">リセット</button>
+            </div>
+        </div>
     </div>
-
-    <p>割引・サービス：</p>
-    <div class="btn-group">
-        <button onclick="addDiscount('無料よ', -1000)">無料よ (全額OFF)</button>
-        <button onclick="addDiscount('100円引き', 100)">100円引き</button>
-    </div>
-
-    <h3>お会計カート</h3>
-    <ul id="cart-list"></ul>
-
-    <div class="total-box">
-        合計: <span id="total-price">0</span> 円
-    </div>
-
-    <p>お支払い方法：</p>
-    <div class="btn-group">
-        <button class="pay-btn" onclick="checkout('Manaカード')">Manaカード</button>
-        <button class="pay-btn" onclick="checkout('現金')">現金</button>
-    </div>
-
-    <button class="reset-btn" onclick="resetCart()">はじめからやり直す</button>
 </div>
 
 <script>
@@ -62,7 +118,6 @@
 
     function addDiscount(name, discountValue) {
         if (name === '無料よ') {
-            // 全額をマイナスにして無料にする
             cart.push({ name: '【割引】無料よ', price: -total });
         } else {
             cart.push({ name: '【割引】' + name, price: -discountValue });
@@ -75,25 +130,28 @@
         listEl.innerHTML = '';
         total = 0;
 
-        cart.forEach(item => {
-            total += item.price;
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${item.name}</span><span>${item.price}円</span>`;
-            listEl.appendChild(li);
-        });
+        if (cart.length === 0) {
+            listEl.innerHTML = '<li style="color:#94a3b8; text-align:center; border:none; padding:20px 0;">カートは空です</li>';
+        } else {
+            cart.forEach(item => {
+                total += item.price;
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `<span>${item.name}</span><span>¥${item.price}</span>`;
+                listEl.appendChild(li);
+            });
+        }
 
-        // マイナスになりすぎた場合の調整（必要に応じて）
         if (total < 0) total = 0;
-
         document.getElementById('total-price').innerText = total;
     }
 
     function checkout(method) {
         if (cart.length === 0) {
-            alert('商品が選ばれていません！');
+            alert('商品が選択されていません。');
             return;
         }
-        alert(`お支払い方法「${method}」で ${total}円 を受け付けました。ありがとうございました！`);
+        alert(`【${method}】\n合計 ¥${total} のお支払いを完了しました。\nご利用ありがとうございました！`);
         resetCart();
     }
 

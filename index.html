@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おうちレジアプリ (Coker’s)</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f4f4f9; color: #333; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #4CAF50; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        button { flex: 1; padding: 12px; font-size: 16px; cursor: pointer; border: none; border-radius: 4px; background: #e0e0e0; }
+        button.active { background: #4CAF50; color: white; font-weight: bold; }
+        .pay-btn { background: #2196F3; color: white; }
+        .total-box { font-size: 20px; font-weight: bold; margin: 15px 0; background: #f9f9f9; padding: 10px; text-align: right; border-radius: 4px; }
+        ul { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; margin-bottom: 15px; }
+        li { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .reset-btn { background: #f44336; color: white; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Coker’s レジ</h2>
+    
+    <p>商品を選んでね：</p>
+    <div class="btn-group">
+        <button onclick="addItem('食品A', 220)">食品A (220円)</button>
+        <button onclick="addItem('食品B', 110)">食品B (110円)</button>
+    </div>
+
+    <p>割引・サービス：</p>
+    <div class="btn-group">
+        <button onclick="addDiscount('無料よ', -1000)">無料よ (全額OFF)</button>
+        <button onclick="addDiscount('100円引き', 100)">100円引き</button>
+    </div>
+
+    <h3>お会計カート</h3>
+    <ul id="cart-list"></ul>
+
+    <div class="total-box">
+        合計: <span id="total-price">0</span> 円
+    </div>
+
+    <p>お支払い方法：</p>
+    <div class="btn-group">
+        <button class="pay-btn" onclick="checkout('Manaカード')">Manaカード</button>
+        <button class="pay-btn" onclick="checkout('現金')">現金</button>
+    </div>
+
+    <button class="reset-btn" onclick="resetCart()">はじめからやり直す</button>
+</div>
+
+<script>
+    let cart = [];
+    let total = 0;
+
+    function addItem(name, price) {
+        cart.push({ name: name, price: price });
+        updateCart();
+    }
+
+    function addDiscount(name, discountValue) {
+        if (name === '無料よ') {
+            // 全額をマイナスにして無料にする
+            cart.push({ name: '【割引】無料よ', price: -total });
+        } else {
+            cart.push({ name: '【割引】' + name, price: -discountValue });
+        }
+        updateCart();
+    }
+
+    function updateCart() {
+        const listEl = document.getElementById('cart-list');
+        listEl.innerHTML = '';
+        total = 0;
+
+        cart.forEach(item => {
+            total += item.price;
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${item.name}</span><span>${item.price}円</span>`;
+            listEl.appendChild(li);
+        });
+
+        // マイナスになりすぎた場合の調整（必要に応じて）
+        if (total < 0) total = 0;
+
+        document.getElementById('total-price').innerText = total;
+    }
+
+    function checkout(method) {
+        if (cart.length === 0) {
+            alert('商品が選ばれていません！');
+            return;
+        }
+        alert(`お支払い方法「${method}」で ${total}円 を受け付けました。ありがとうございました！`);
+        resetCart();
+    }
+
+    function resetCart() {
+        cart = [];
+        updateCart();
+    }
+</script>
+
+</body>
+</html>

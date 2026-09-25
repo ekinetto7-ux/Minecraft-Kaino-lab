@@ -122,7 +122,7 @@
         <div>
             <div class="section-title">レジ状態の切り替え</div>
             <div class="status-actions">
-                <button id="st-normal" class="btn-status active-normal" onclick="requestUnlock('normal')">通常営業</button>
+                <button id="st-normal" class="btn-status active-normal" onclick="setRegisterStatus('normal')">通常営業</button>
                 <button id="st-pause" class="btn-status" onclick="setRegisterStatus('pause')">休止中</button>
                 <button id="st-inspect" class="btn-status" onclick="setRegisterStatus('inspect')">点検</button>
                 <button id="st-self" class="btn-status" onclick="setRegisterStatus('self')">セルフレジ</button>
@@ -282,7 +282,8 @@
     function setRegisterStatus(status) {
         if (status === registerStatus) return;
         
-        if (status === 'normal' || status === 'self') {
+        // 通常営業に戻すときだけパスワード認証（911）を必須にする
+        if (status === 'normal' && registerStatus !== 'normal') {
             requestUnlock(status);
         } else {
             applyStatus(status);
@@ -290,7 +291,6 @@
     }
 
     function requestUnlock(status) {
-        if (registerStatus === 'normal') return;
         document.getElementById('auth-pass').value = '';
         document.getElementById('auth-modal').style.display = 'flex';
         document.getElementById('auth-pass').focus();
@@ -357,7 +357,7 @@
         const isDisabled = status !== 'normal' && status !== 'self';
         document.getElementById('prod-large').disabled = isDisabled;
         document.getElementById('prod-small').disabled = isDisabled;
-        document.getElementById('prod-pack').disabled = isDisabled;
+        document.getElementById('prod-pack').disabled, isDisabled;
         document.getElementById('prod-other').disabled = isDisabled;
         document.getElementById('disc-free').disabled = isDisabled;
         document.getElementById('disc-500').disabled = isDisabled;

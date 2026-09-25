@@ -13,15 +13,16 @@
             --danger: #dc2626;
             --surface: #ffffff;
             --border: #e2e8f0;
+            --self-theme: #0284c7;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #f8fafc; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #f8fafc; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; transition: background 0.3s; }
         
-        .pos-layout { width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 380px; overflow: hidden; border: 1px solid var(--border); }
+        .pos-layout { width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 380px; overflow: hidden; border: 1px solid var(--border); transition: all 0.3s; }
         @media (max-width: 768px) { .pos-layout { grid-template-columns: 1fr; height: auto; max-width: 480px; } }
 
         /* 左側：商品・割引・システム管理 */
-        .panel-left { padding: 20px; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; }
+        .panel-left { padding: 20px; display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; transition: background 0.3s; }
         .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
         .header-bar h1 { margin: 0; font-size: 1.2rem; color: var(--bg-dark); }
         .terminal-info { display: flex; gap: 6px; }
@@ -29,12 +30,13 @@
 
         .section-title { font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         
-        /* レジ状態ボタン */
-        .status-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 2px; }
-        .btn-status { padding: 8px; font-size: 0.8rem; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: white; color: #64748b; text-align: center; }
+        /* レジ状態ボタン (4分割に変更) */
+        .status-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 2px; }
+        .btn-status { padding: 8px 2px; font-size: 0.75rem; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: white; color: #64748b; text-align: center; }
         .btn-status.active-normal { background: var(--success); color: white; border-color: var(--success); }
         .btn-status.active-pause { background: var(--warning); color: white; border-color: var(--warning); }
         .btn-status.active-inspect { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-status.active-self { background: var(--self-theme); color: white; border-color: var(--self-theme); }
 
         .grid-products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .btn-item { padding: 12px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; text-align: left; transition: 0.15s; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -56,8 +58,8 @@
         .btn-sales-reset { padding: 10px 12px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; font-size: 0.75rem; font-weight: bold; color: #64748b; cursor: pointer; }
         .btn-sales-reset:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* 右側：カート・お会計パネル */
-        .panel-right { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: white; }
+        /* 右側：カート・会計パネル */
+        .panel-right { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: white; transition: background 0.3s; }
         
         .cart-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 12px; }
         .cart-header { background: #f1f5f9; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; color: #475569; border-bottom: 1px solid var(--border); }
@@ -65,7 +67,7 @@
         .cart-row { padding: 8px 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.9rem; align-items: center; background: white; }
         .cart-row button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; padding: 2px 6px; }
 
-        .summary-box { background: var(--bg-dark); color: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; }
+        .summary-box { background: var(--bg-dark); color: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 12px; transition: background 0.3s; }
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
         .summary-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 8px; color: #fff; }
 
@@ -76,6 +78,9 @@
         
         .btn-clear { width: 100%; padding: 8px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
         .btn-clear:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* セルフレジ時の上部ウェルカムバナー */
+        .self-banner { display: none; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; text-align: center; margin-bottom: 8px; }
 
         /* モーダル共通 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
@@ -103,13 +108,13 @@
 </head>
 <body>
 
-<div class="pos-layout">
+<div class="pos-layout" id="pos-layout">
     <!-- 左側：商品・割引・システム管理 -->
-    <div class="panel-left">
+    <div class="panel-left" id="panel-left">
         <div class="header-bar">
-            <h1>Coker’s POS</h1>
+            <h1 id="sys-title">Coker’s POS</h1>
             <div class="terminal-info">
-                <span class="badge">店員: 8269@gmail</span>
+                <span class="badge" id="staff-badge">店員: 8269@gmail</span>
                 <span class="badge" id="status-badge" style="background:#22c55e; color:white;">通常営業</span>
             </div>
         </div>
@@ -120,6 +125,7 @@
                 <button id="st-normal" class="btn-status active-normal" onclick="requestUnlock('normal')">通常営業</button>
                 <button id="st-pause" class="btn-status" onclick="setRegisterStatus('pause')">休止中</button>
                 <button id="st-inspect" class="btn-status" onclick="setRegisterStatus('inspect')">点検</button>
+                <button id="st-self" class="btn-status" onclick="setRegisterStatus('self')">セルフレジ</button>
             </div>
         </div>
 
@@ -145,7 +151,7 @@
             </div>
         </div>
 
-        <div>
+        <div id="discount-section">
             <div class="section-title">割引・調整</div>
             <div class="grid-discounts">
                 <button id="disc-free" class="btn-disc" onclick="addDiscount('無料', -1000)">無料<br>(全額OFF)</button>
@@ -166,8 +172,9 @@
     </div>
 
     <!-- 右側：カート・会計 -->
-    <div class="panel-right">
+    <div class="panel-right" id="panel-right">
         <div>
+            <div id="self-banner" class="self-banner">🛍️ いらっしゃいませ！ご自身で商品をお選びください</div>
             <div class="section-title">お会計明細</div>
             <div class="cart-box">
                 <div class="cart-header">
@@ -181,7 +188,7 @@
         </div>
 
         <div>
-            <div class="summary-box">
+            <div class="summary-box" id="summary-box">
                 <div class="summary-row">
                     <span>商品点数</span>
                     <span id="item-count">0 点</span>
@@ -208,7 +215,7 @@
         <div class="payment-method-grid">
             <button class="btn-method btn-manamei" onclick="selectPayment('Mana-meiカード')">Mana-meiカード</button>
             <button class="btn-method btn-cash" onclick="openCashModalFromPayment()">現金決済</button>
-            <button class="btn-method btn-cokers" onclick="selectPayment("Coker's Pay")">Coker's Pay</button>
+            <button class="btn-method btn-cokers" onclick="selectPayment('Coker\'s Pay')">Coker's Pay</button>
             <button class="btn-method btn-neo" onclick="selectPayment('ネオ・ポイント')">ネオ・ポイント</button>
         </div>
         <button style="width:100%; background:#e2e8f0; color:#475569; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:5px;" onclick="closePaymentModal()">戻る</button>
@@ -269,13 +276,13 @@
     let cart = [];
     let total = 0;
     let dailySales = 0;
-    let registerStatus = 'normal'; // 'normal', 'pause', 'inspect'
+    let registerStatus = 'normal'; // 'normal', 'pause', 'inspect', 'self'
 
     function setRegisterStatus(status) {
         if (status === registerStatus) return;
         
-        if (status === 'normal') {
-            requestUnlock('normal');
+        if (status === 'normal' || status === 'self') {
+            requestUnlock(status);
         } else {
             applyStatus(status);
         }
@@ -286,17 +293,20 @@
         document.getElementById('auth-pass').value = '';
         document.getElementById('auth-modal').style.display = 'flex';
         document.getElementById('auth-pass').focus();
+        window.pendingStatus = status;
     }
 
     function closeAuthModal() {
         document.getElementById('auth-modal').style.display = 'none';
+        window.pendingStatus = null;
     }
 
     function verifyAuth() {
         const inputVal = document.getElementById('auth-pass').value;
         if (inputVal === '911') {
+            const nextStatus = window.pendingStatus || 'normal';
             closeAuthModal();
-            applyStatus('normal');
+            applyStatus(nextStatus);
         } else {
             alert('パスワードが違います！');
             document.getElementById('auth-pass').value = '';
@@ -307,23 +317,38 @@
     function applyStatus(status) {
         registerStatus = status;
         const badge = document.getElementById('status-badge');
+        const selfBanner = document.getElementById('self-banner');
         
         document.getElementById('st-normal').className = 'btn-status' + (status === 'normal' ? ' active-normal' : '');
         document.getElementById('st-pause').className = 'btn-status' + (status === 'pause' ? ' active-pause' : '');
         document.getElementById('st-inspect').className = 'btn-status' + (status === 'inspect' ? ' active-inspect' : '');
+        document.getElementById('st-self').className = 'btn-status' + (status === 'self' ? ' active-self' : '');
 
         if (status === 'normal') {
             badge.innerText = '通常営業';
             badge.style.background = '#22c55e';
+            selfBanner.style.display = 'none';
+            document.getElementById('staff-badge').innerText = '店員: 8269@gmail';
+            document.getElementById('sys-title').innerText = 'Coker’s POS';
+            document.getElementById('discount-section').style.display = 'block';
         } else if (status === 'pause') {
             badge.innerText = '休止中';
             badge.style.background = '#d97706';
+            selfBanner.style.display = 'none';
         } else if (status === 'inspect') {
             badge.innerText = '点検中';
             badge.style.background = '#dc2626';
+            selfBanner.style.display = 'none';
+        } else if (status === 'self') {
+            badge.innerText = 'セルフレジ';
+            badge.style.background = '#0284c7';
+            selfBanner.style.display = 'block';
+            document.getElementById('staff-badge').innerText = 'セルフレジ専用';
+            document.getElementById('sys-title').innerText = 'Coker’s セルフ';
+            document.getElementById('discount-section').style.display = 'none'; // セルフでは割引は隠す
         }
 
-        const isDisabled = status !== 'normal';
+        const isDisabled = status !== 'normal' && status !== 'self';
         document.getElementById('prod-large').disabled = isDisabled;
         document.getElementById('prod-small').disabled = isDisabled;
         document.getElementById('prod-pack').disabled = isDisabled;
@@ -335,13 +360,13 @@
     }
 
     function addItem(name, price) {
-        if (registerStatus !== 'normal') return;
+        if (registerStatus !== 'normal' && registerStatus !== 'self') return;
         cart.push({ name: name, price: price });
         updateCart();
     }
 
     function openOtherModal() {
-        if (registerStatus !== 'normal') return;
+        if (registerStatus !== 'normal' && registerStatus !== 'self') return;
         document.getElementById('other-name').value = '';
         document.getElementById('other-price').value = '';
         document.getElementById('other-modal').style.display = 'flex';
@@ -381,7 +406,7 @@
     }
 
     function removeItem(index) {
-        if (registerStatus !== 'normal') return;
+        if (registerStatus !== 'normal' && registerStatus !== 'self') return;
         cart.splice(index, 1);
         updateCart();
     }
@@ -407,12 +432,13 @@
         document.getElementById('total-price').innerText = total;
         document.getElementById('item-count').innerText = cart.length + ' 点';
         
-        // カートが空の時はお会計ボタンを無効化
-        document.getElementById('btn-checkout').disabled = registerStatus !== 'normal' || cart.length === 0;
+        const isDisabled = registerStatus !== 'normal' && registerStatus !== 'self';
+        document.getElementById('btn-checkout').disabled = isDisabled || cart.length === 0;
     }
 
     function openPaymentModal() {
-        if (registerStatus !== 'normal' || cart.length === 0) return;
+        if (registerStatus !== 'normal' && registerStatus !== 'self') return;
+        if (cart.length === 0) return;
         document.getElementById('payment-modal-total').innerText = total;
         document.getElementById('payment-modal').style.display = 'flex';
     }
@@ -455,10 +481,11 @@
 
         const now = new Date();
         const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        const operatorStr = registerStatus === 'self' ? 'セルフレジお客様' : '店員 8269@gmail';
         let receiptHTML = `
             <strong>Coker’s POS SYSTEM</strong><br>
             ${timeStr}<br>
-            担当: <strong>店員 8269@gmail</strong><br>
+            担当: <strong>${operatorStr}</strong><br>
             --------------------------------<br>
         `;
         cart.forEach(item => {

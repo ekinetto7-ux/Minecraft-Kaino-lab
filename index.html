@@ -54,8 +54,8 @@
 
         .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
         .btn-pay { padding: 14px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.95rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-manami { background: #7c3aed; }
-        .btn-manami:hover { background: #6d28d9; }
+        .btn-manamei { background: #7c3aed; }
+        .btn-manamei:hover { background: #6d28d9; }
         .btn-cash { background: var(--success); }
         .btn-cash:hover { background: #15803d; }
         .btn-clear { width: 100%; padding: 10px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
@@ -140,7 +140,7 @@
             </div>
 
             <div class="pay-actions">
-                <button class="btn-pay btn-manami" onclick="checkoutManami()">Manamiカード</button>
+                <button class="btn-pay btn-manamei" onclick="checkoutManamei()">Mana-meiカード</button>
                 <button class="btn-pay btn-cash" onclick="openCashModal()">現金決済</button>
             </div>
             <button class="btn-clear" onclick="resetCart()">取引キャンセル</button>
@@ -216,12 +216,12 @@
         document.getElementById('item-count').innerText = cart.length + ' 点';
     }
 
-    function checkoutManami() {
+    function checkoutManamei() {
         if (cart.length === 0) {
             alert('商品が選択されていません。');
             return;
         }
-        completeCheckout('Manamiカード', total, 0);
+        completeCheckout('Mana-meiカード', total, 0);
     }
 
     function openCashModal() {

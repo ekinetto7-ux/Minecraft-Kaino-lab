@@ -3,76 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coker’s Professional POS System</title>
+    <title>Coker’s Enterprise POS System</title>
     <style>
         :root {
-            --bg-dark: #1e293b;
-            --primary: #0284c7;
+            --bg-dark: #0f172a;
+            --primary: #2563eb;
             --success: #16a34a;
             --warning: #d97706;
             --danger: #dc2626;
             --surface: #ffffff;
-            --border: #cbd5e1;
+            --border: #e2e8f0;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #f1f5f9; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; background: #f8fafc; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         
-        .pos-layout { width: 100%; max-width: 900px; height: 600px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: grid; grid-template-columns: 1fr 360px; overflow: hidden; }
-        @media (max-width: 768px) { .pos-layout { grid-template-columns: 1fr; height: auto; max-width: 450px; } }
+        .pos-layout { width: 100%; max-width: 1000px; height: 680px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: grid; grid-template-columns: 1fr 380px; overflow: hidden; border: 1px solid var(--border); }
+        @media (max-width: 768px) { .pos-layout { grid-template-columns: 1fr; height: auto; max-width: 480px; } }
 
-        /* 左側：操作パネル */
-        .panel-left { padding: 20px; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid var(--border); overflow-y: auto; }
-        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
-        .header-bar h1 { margin: 0; font-size: 1.1rem; color: var(--bg-dark); }
-        .terminal-id { font-size: 0.75rem; background: #e2e8f0; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        /* 左側：商品・機能パネル */
+        .panel-left { padding: 20px; display: flex; flex-direction: column; gap: 15px; border-right: 1px solid var(--border); overflow-y: auto; background: #fafafa; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+        .header-bar h1 { margin: 0; font-size: 1.2rem; color: var(--bg-dark); }
+        .terminal-id { font-size: 0.75rem; background: #e2e8f0; padding: 4px 10px; border-radius: 4px; font-weight: bold; color: #475569; }
 
-        .section-title { font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .section-title { font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
         
         .grid-products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .btn-item { padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; text-align: left; transition: 0.1s; font-weight: bold; }
-        .btn-item:hover { background: #e0f2fe; border-color: var(--primary); }
-        .btn-item .price { display: block; font-size: 0.85rem; color: #64748b; font-weight: normal; margin-top: 4px; }
+        .btn-item { padding: 16px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; text-align: left; transition: 0.15s; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .btn-item:hover { background: #eff6ff; border-color: var(--primary); transform: translateY(-1px); }
+        .btn-item .price { display: block; font-size: 0.95rem; color: var(--primary); font-weight: bold; margin-top: 6px; }
 
         .grid-discounts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .btn-disc { padding: 10px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--warning); text-align: left; }
+        .btn-disc { padding: 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--warning); text-align: left; transition: 0.15s; }
         .btn-disc:hover { background: #fef3c7; }
 
-        /* 右側：レシート・カートパネル */
-        .panel-right { background: #f8fafc; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .sales-summary-box { background: #e2e8f0; padding: 10px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: bold; color: #334155; }
+
+        /* 右側：カート・お会計パネル */
+        .panel-right { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; background: white; }
         
-        .cart-box { background: white; border: 1px solid var(--border); border-radius: 6px; flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 15px; }
-        .cart-header { background: #e2e8f0; padding: 8px 12px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; }
-        .cart-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; max-height: 180px; }
-        .cart-row { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; font-size: 0.85rem; align-items: center; }
-        .cart-row button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.8rem; }
+        .cart-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; flex: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 15px; }
+        .cart-header { background: #f1f5f9; padding: 10px 12px; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; color: #475569; border-bottom: 1px solid var(--border); }
+        .cart-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; max-height: 160px; }
+        .cart-row { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.9rem; align-items: center; background: white; }
+        .cart-row button { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.85rem; font-weight: bold; padding: 2px 6px; }
 
-        .summary-box { background: var(--bg-dark); color: white; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; color: #94a3b8; }
-        .summary-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; color: #fff; }
+        .summary-box { background: var(--bg-dark); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px; color: #fff; }
 
-        .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-        .btn-pay { padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; cursor: pointer; font-size: 0.9rem; text-align: center; }
+        .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+        .btn-pay { padding: 14px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.95rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-mana { background: #7c3aed; }
+        .btn-mana:hover { background: #6d28d9; }
         .btn-cash { background: var(--success); }
-        .btn-clear { width: 100%; padding: 8px; background: #e2e8f0; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; color: #475569; }
-        .btn-clear:hover { background: var(--danger); color: white; }
+        .btn-cash:hover { background: #15803d; }
+        .btn-clear { width: 100%; padding: 10px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
+        .btn-clear:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* 現金お預かりモーダル */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 10; }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 320px; text-align: center; }
-        .modal-content input { width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; margin: 15px 0; border: 1px solid var(--border); border-radius: 4px; }
+        /* モーダル共通 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 360px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content input { width: 100%; padding: 12px; font-size: 1.3rem; text-align: right; margin: 15px 0; border: 1px solid var(--border); border-radius: 6px; outline: none; }
         .modal-btns { display: flex; gap: 10px; }
-        .modal-btns button { flex: 1; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+
+        /* レシートモーダル専用 */
+        .receipt-box { text-align: left; font-family: 'Courier New', Courier, monospace; background: #fffdf0; padding: 15px; border: 1px dashed #cbd5e1; border-radius: 4px; margin: 15px 0; font-size: 0.85rem; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
 <div class="pos-layout">
-    <!-- 左側：商品・割引 -->
+    <!-- 左側：商品・割引・売上情報 -->
     <div class="panel-left">
         <div class="header-bar">
             <h1>Coker’s POS</h1>
-            <div class="terminal-id">POS #01</div>
+            <div class="terminal-id">REGISTER #01</div>
         </div>
 
         <div>
@@ -96,6 +103,13 @@
                 <button class="btn-disc" onclick="addDiscount('100円引き', 100)">100円引き (-¥100)</button>
             </div>
         </div>
+
+        <div style="margin-top: auto;">
+            <div class="sales-summary-box">
+                <span>本日の総売上</span>
+                <span>¥<span id="daily-sales">0</span></span>
+            </div>
+        </div>
     </div>
 
     <!-- 右側：カート・会計 -->
@@ -104,11 +118,11 @@
             <div class="section-title">お会計明細</div>
             <div class="cart-box">
                 <div class="cart-header">
-                    <span>商品名 / 割引</span>
+                    <span>商品 / 割引名</span>
                     <span>小計</span>
                 </div>
                 <ul id="cart-list" class="cart-list">
-                    <li style="color:#94a3b8; text-align:center; padding:30px 0; font-size:0.85rem;">カートは空です</li>
+                    <li style="color:#94a3b8; text-align:center; padding:40px 0; font-size:0.85rem;">カートは空です</li>
                 </ul>
             </div>
         </div>
@@ -116,7 +130,7 @@
         <div>
             <div class="summary-box">
                 <div class="summary-row">
-                    <span>アイテム点数</span>
+                    <span>商品点数</span>
                     <span id="item-count">0 点</span>
                 </div>
                 <div class="summary-total">
@@ -129,7 +143,7 @@
                 <button class="btn-pay btn-mana" onclick="checkoutMana()">Manaカード</button>
                 <button class="btn-pay btn-cash" onclick="openCashModal()">現金決済</button>
             </div>
-            <button class="btn-clear" onclick="resetCart()">取引キャンセル (リセット)</button>
+            <button class="btn-clear" onclick="resetCart()">取引キャンセル</button>
         </div>
     </div>
 </div>
@@ -137,19 +151,29 @@
 <!-- 現金お預かりモーダル -->
 <div id="cash-modal" class="modal">
     <div class="modal-content">
-        <h3>現金のお預かり</h3>
-        <p>合計金額: ¥<span id="modal-total">0</span></p>
-        <input type="number" id="received-amount" placeholder="お預かり金額を入力">
+        <h3>現金お預かり</h3>
+        <p style="color:#64748b; font-size:0.9rem;">ご請求金額: ¥<span id="modal-total">0</span></p>
+        <input type="number" id="received-amount" placeholder="金額を入力">
         <div class="modal-btns">
-            <button style="background:#e2e8f0;" onclick="closeCashModal()">戻る</button>
-            <button style="background:var(--success); color:white;" onclick="processCashCheckout()">お会計確定</button>
+            <button style="background:#e2e8f0; color:#475569;" onclick="closeCashModal()">戻る</button>
+            <button style="background:var(--success); color:white;" onclick="processCashCheckout()">会計確定</button>
         </div>
+    </div>
+</div>
+
+<!-- レシート発行モーダル -->
+<div id="receipt-modal" class="modal">
+    <div class="modal-content" style="width: 380px;">
+        <h3 style="margin-top:0; color:var(--success);">お会計完了</h3>
+        <div id="receipt-content" class="receipt-box"></div>
+        <button style="width:100%; background:var(--primary); color:white; padding:12px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeReceiptModal()">次の取引へ</button>
     </div>
 </div>
 
 <script>
     let cart = [];
     let total = 0;
+    let dailySales = 0;
 
     function addItem(name, price) {
         cart.push({ name: name, price: price });
@@ -157,8 +181,8 @@
     }
 
     function addDiscount(name, discountValue) {
-        if (name === '無料よ') {
-            cart.push({ name: '【割引】無料よ', price: -total });
+        if (name === '無料') {
+            cart.push({ name: '【割引】無料', price: -total });
         } else {
             cart.push({ name: '【割引】' + name, price: -discountValue });
         }
@@ -176,7 +200,7 @@
         total = 0;
 
         if (cart.length === 0) {
-            listEl.innerHTML = '<li style="color:#94a3b8; text-align:center; padding:30px 0; font-size:0.85rem;">カートは空です</li>';
+            listEl.innerHTML = '<li style="color:#94a3b8; text-align:center; padding:40px 0; font-size:0.85rem;">カートは空です</li>';
         } else {
             cart.forEach((item, index) => {
                 total += item.price;
@@ -197,8 +221,7 @@
             alert('商品が選択されていません。');
             return;
         }
-        alert(`【Manaカード決済】\n合計 ¥${total} の決済が完了しました。\nご利用ありがとうございました！`);
-        resetCart();
+        completeCheckout('Manaカード', total, 0);
     }
 
     function openCashModal() {
@@ -223,8 +246,41 @@
             return;
         }
         const change = received - total;
-        alert(`【現金決済】\nお預かり: ¥${received}\nお釣り: ¥${change}\n\nお会計が完了しました。ありがとうございました！`);
         closeCashModal();
+        completeCheckout('現金', received, change);
+    }
+
+    function completeCheckout(method, received, change) {
+        dailySales += total;
+        document.getElementById('daily-sales').innerText = dailySales;
+
+        // レシート生成
+        const now = new Date();
+        const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        let receiptHTML = `
+            <strong>Coker’s POS SYSTEM</strong><br>
+            ${timeStr}<br>
+            --------------------------------<br>
+        `;
+        cart.forEach(item => {
+            receiptHTML += `${item.name} ... ¥${item.price}<br>`;
+        });
+        receiptHTML += `--------------------------------<br>`;
+        receiptHTML += `<strong>合計: ¥${total}</strong><br>`;
+        receiptHTML += `決済方法: ${method}<br>`;
+        if (method === '現金') {
+            receiptHTML += `お預かり: ¥${received}<br>`;
+            receiptHTML += `お釣り: ¥${change}<br>`;
+        }
+        receiptHTML += `--------------------------------<br>`;
+        receiptHTML += `ご利用ありがとうございました！`;
+
+        document.getElementById('receipt-content').innerHTML = receiptHTML;
+        document.getElementById('receipt-modal').style.display = 'flex';
+    }
+
+    function closeReceiptModal() {
+        document.getElementById('receipt-modal').style.display = 'none';
         resetCart();
     }
 

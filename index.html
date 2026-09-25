@@ -69,17 +69,10 @@
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
         .summary-total { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 8px; color: #fff; }
 
-        .pay-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-        .btn-pay { padding: 10px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.85rem; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-manamei { background: #7c3aed; }
-        .btn-manamei:hover:not(:disabled) { background: #6d28d9; }
-        .btn-cash { background: var(--success); }
-        .btn-cash:hover:not(:disabled) { background: #15803d; }
-        .btn-cokers { background: #2563eb; }
-        .btn-cokers:hover:not(:disabled) { background: #1d4ed8; }
-        .btn-neo { background: #d97706; }
-        .btn-neo:hover:not(:disabled) { background: #b45309; }
-        .btn-pay:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+        .pay-actions { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+        .btn-checkout { padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 1rem; text-align: center; background: var(--success); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-checkout:hover:not(:disabled) { background: #15803d; }
+        .btn-checkout:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
         
         .btn-clear { width: 100%; padding: 8px; background: #f1f5f9; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: bold; }
         .btn-clear:hover { background: var(--danger); color: white; border-color: var(--danger); }
@@ -91,6 +84,18 @@
         .modal-content input[type="password"] { text-align: center; letter-spacing: 4px; font-size: 1.2rem; }
         .modal-btns { display: flex; gap: 10px; }
         .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+
+        /* 支払い方法選択モーダル用 */
+        .payment-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .btn-method { padding: 14px 10px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.9rem; text-align: center; }
+        .btn-manamei { background: #7c3aed; }
+        .btn-manamei:hover { background: #6d28d9; }
+        .btn-cash { background: var(--success); }
+        .btn-cash:hover { background: #15803d; }
+        .btn-cokers { background: #2563eb; }
+        .btn-cokers:hover { background: #1d4ed8; }
+        .btn-neo { background: #d97706; }
+        .btn-neo:hover { background: #b45309; }
 
         /* レシートモーダル専用 */
         .receipt-box { text-align: left; font-family: 'Courier New', Courier, monospace; background: #fffdf0; padding: 15px; border: 1px dashed #cbd5e1; border-radius: 4px; margin: 15px 0; font-size: 0.85rem; max-height: 200px; overflow-y: auto; }
@@ -188,13 +193,25 @@
             </div>
 
             <div class="pay-actions">
-                <button id="btn-manamei" class="btn-pay btn-manamei" onclick="checkoutManamei()">Mana-meiカード</button>
-                <button id="btn-cash" class="btn-pay btn-cash" onclick="openCashModal()">現金決済</button>
-                <button id="btn-cokers" class="btn-pay btn-cokers" onclick="checkoutCokersPay()">Coker's Pay</button>
-                <button id="btn-neo" class="btn-pay btn-neo" onclick="checkoutNeoPoint()">ネオ・ポイント</button>
+                <button id="btn-checkout" class="btn-checkout" onclick="openPaymentModal()" disabled>お会計</button>
             </div>
             <button class="btn-clear" onclick="resetCart()">取引キャンセル</button>
         </div>
+    </div>
+</div>
+
+<!-- 支払い方法選択モーダル -->
+<div id="payment-modal" class="modal">
+    <div class="modal-content" style="width: 400px;">
+        <h3 style="margin-top:0;">支払い方法の選択</h3>
+        <p style="color:#64748b; font-size:0.9rem; margin-bottom:15px;">ご請求金額: ¥<span id="payment-modal-total">0</span></p>
+        <div class="payment-method-grid">
+            <button class="btn-method btn-manamei" onclick="selectPayment('Mana-meiカード')">Mana-meiカード</button>
+            <button class="btn-method btn-cash" onclick="openCashModalFromPayment()">現金決済</button>
+            <button class="btn-method btn-cokers" onclick="selectPayment("Coker's Pay")">Coker's Pay</button>
+            <button class="btn-method btn-neo" onclick="selectPayment('ネオ・ポイント')">ネオ・ポイント</button>
+        </div>
+        <button style="width:100%; background:#e2e8f0; color:#475569; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:5px;" onclick="closePaymentModal()">戻る</button>
     </div>
 </div>
 
@@ -314,10 +331,7 @@
         document.getElementById('disc-free').disabled = isDisabled;
         document.getElementById('disc-500').disabled = isDisabled;
         document.getElementById('disc-100').disabled = isDisabled;
-        document.getElementById('btn-manamei').disabled = isDisabled;
-        document.getElementById('btn-cash').disabled = isDisabled;
-        document.getElementById('btn-cokers').disabled = isDisabled;
-        document.getElementById('btn-neo').disabled = isDisabled;
+        document.getElementById('btn-checkout').disabled = isDisabled || cart.length === 0;
     }
 
     function addItem(name, price) {
@@ -392,25 +406,28 @@
         if (total < 0) total = 0;
         document.getElementById('total-price').innerText = total;
         document.getElementById('item-count').innerText = cart.length + ' 点';
+        
+        // カートが空の時はお会計ボタンを無効化
+        document.getElementById('btn-checkout').disabled = registerStatus !== 'normal' || cart.length === 0;
     }
 
-    function checkoutManamei() {
+    function openPaymentModal() {
         if (registerStatus !== 'normal' || cart.length === 0) return;
-        completeCheckout('Mana-meiカード', total, 0);
+        document.getElementById('payment-modal-total').innerText = total;
+        document.getElementById('payment-modal').style.display = 'flex';
     }
 
-    function checkoutCokersPay() {
-        if (registerStatus !== 'normal' || cart.length === 0) return;
-        completeCheckout("Coker's Pay", total, 0);
+    function closePaymentModal() {
+        document.getElementById('payment-modal').style.display = 'none';
     }
 
-    function checkoutNeoPoint() {
-        if (registerStatus !== 'normal' || cart.length === 0) return;
-        completeCheckout('ネオ・ポイント', total, 0);
+    function selectPayment(methodName) {
+        closePaymentModal();
+        completeCheckout(methodName, total, 0);
     }
 
-    function openCashModal() {
-        if (registerStatus !== 'normal' || cart.length === 0) return;
+    function openCashModalFromPayment() {
+        closePaymentModal();
         document.getElementById('modal-total').innerText = total;
         document.getElementById('received-amount').value = '';
         document.getElementById('cash-modal').style.display = 'flex';

@@ -1,267 +1,318 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>レジ1</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-        }
-        .container {
-            width: 100%;
-            max-width: 420px;
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        }
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 22px;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-        /* レジの画面風ディスプレイ */
-        .screen {
-            background: #1e1e2f;
-            color: #00ffcc;
-            font-size: 36px;
-            text-align: right;
-            padding: 18px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            box-shadow: inset 0 3px 6px rgba(0,0,0,0.4);
-            letter-spacing: 2px;
-        }
-        .section-title {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .item-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-        /* 共通ボタンデザイン */
-        button {
-            padding: 14px;
-            font-size: 15px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.1s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        button:active {
-            transform: scale(0.96);
-            box-shadow: 0 2px 3px rgba(0,0,0,0.05);
-        }
-        /* 商品ボタン（食品 220円メイン） */
-        .item-btn {
-            background: #eef2ff;
-            color: #4f46e5;
-            border: 2px solid #e0e7ff;
-            grid-column: span 2; /* 食品ボタンを大きく配置 */
-            font-size: 18px;
-        }
-        .item-btn:hover { background: #e0e7ff; }
-
-        .sub-item-btn {
-            background: #f0fdf4;
-            color: #15803d;
-            border: 2px solid #dcfce7;
-        }
-        .sub-item-btn:hover { background: #dcfce7; }
-
-        /* 割引ボタン */
-        .discount-btn {
-            background: #fffbeb;
-            color: #d97706;
-            border: 2px solid #fef3c7;
-        }
-        .discount-btn:hover { background: #fef3c7; }
-
-        /* アクションボタン (リセット・会計) */
-        .action-area {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .clear-btn {
-            background: #fef2f2;
-            color: #ef4444;
-            flex: 1;
-            border: 2px solid #fee2e2;
-        }
-        .clear-btn:hover { background: #fee2e2; }
-
-        .checkout-btn {
-            background: #ecfdf5;
-            color: #10b981;
-            flex: 2;
-            border: 2px solid #d1fae5;
-            font-size: 16px;
-        }
-        .checkout-btn:hover { background: #d1fae5; }
-
-        /* 支払い方法選択エリア（隠し） */
-        .payment-area {
-            display: none;
-            border-top: 2px dashed #e2e8f0;
-            padding-top: 18px;
-            animation: fadeIn 0.2s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .pay-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .pay-mana {
-            background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
-            color: #713f12;
-        }
-        .pay-cash {
-            background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
-            color: #334155;
-        }
-        .pay-curios {
-            background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
-            color: #581c87;
-        }
-        .cancel-btn {
-            background: #f8fafc;
-            color: #64748b;
-            margin-top: 5px;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* 完了・通知メッセージ */
-        .message {
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #059669;
-            margin-top: 15px;
-            min-height: 24px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ワンダーPOSレジ</title>
+<style>
+:root {
+--primary: #6366f1;
+--primary-hover: #4f46e5;
+--bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+--card-bg: #ffffff;
+--text-main: #1e293b;
+--text-muted: #64748b;
+--screen-bg: #0f172a;
+--screen-text: #38bdf8;
+--accent-mana: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+--accent-cash: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+--accent-curios: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+}
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+body {
+background: var(--bg-gradient);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+color: var(--text-main);
+}
+.pos-container {
+width: 100%;
+max-width: 440px;
+background: var(--card-bg);
+padding: 24px;
+border-radius: 24px;
+box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+}
+h1 {
+font-size: 20px;
+font-weight: 800;
+color: var(--text-main);
+letter-spacing: -0.5px;
+}
+.badge {
+font-size: 11px;
+background: #e0e7ff;
+color: #4338ca;
+padding: 4px 8px;
+border-radius: 20px;
+font-weight: 700;
+}
+/* Register Display Screen */
+.screen {
+background: var(--screen-bg);
+color: var(--screen-text);
+padding: 20px;
+border-radius: 16px;
+margin-bottom: 24px;
+box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+border: 2px solid #334155;
+}
+.screen-label {
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 1px;
+color: #94a3b8;
+margin-bottom: 4px;
+}
+.screen-amount {
+font-size: 38px;
+font-family: monospace;
+font-weight: bold;
+text-align: right;
+letter-spacing: 1px;
+}
+.section-title {
+font-size: 12px;
+font-weight: 700;
+color: var(--text-muted);
+margin-bottom: 8px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+/* Controls & Buttons Grid */
+.grid-products {
+display: grid;
+grid-template-columns: 1fr;
+gap: 10px;
+margin-bottom: 20px;
+}
+.grid-discounts {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-bottom: 20px;
+}
+button {
+border: none;
+border-radius: 12px;
+font-weight: 700;
+cursor: pointer;
+transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+button:active {
+transform: scale(0.97);
+}
+.btn-product {
+background: #eef2ff;
+color: #4f46e5;
+padding: 18px;
+font-size: 18px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border: 2px solid #e0e7ff;
+box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+}
+.btn-product:hover {
+background: #e0e7ff;
+}
+.btn-discount {
+background: #fffbeb;
+color: #d97706;
+padding: 14px;
+font-size: 14px;
+border: 2px solid #fef3c7;
+}
+.btn-discount:hover {
+background: #fef3c7;
+}
+.action-row {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+}
+.btn-reset {
+background: #fef2f2;
+color: #dc2626;
+flex: 1;
+padding: 14px;
+font-size: 14px;
+border: 2px solid #fee2e2;
+}
+.btn-reset:hover {
+background: #fee2e2;
+}
+.btn-checkout {
+background: #ecfdf5;
+color: #059669;
+flex: 2;
+padding: 14px;
+font-size: 16px;
+border: 2px solid #d1fae5;
+box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.1);
+}
+.btn-checkout:hover {
+background: #d1fae5;
+}
+/* Payment Selection Overlay / Modal Panel */
+.payment-panel {
+display: none;
+background: #f8fafc;
+border: 2px dashed #cbd5e1;
+padding: 16px;
+border-radius: 16px;
+margin-top: 15px;
+animation: fadeIn 0.2s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(5px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.payment-grid {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.pay-mana {
+background: var(--accent-mana);
+color: #713f12;
+padding: 14px;
+font-size: 15px;
+}
+.pay-cash {
+background: var(--accent-cash);
+color: #334155;
+padding: 14px;
+font-size: 15px;
+}
+.pay-curios {
+background: var(--accent-curios);
+color: #581c87;
+padding: 14px;
+font-size: 15px;
+}
+.btn-cancel {
+background: #ffffff;
+color: #64748b;
+padding: 10px;
+font-size: 13px;
+border: 1px solid #e2e8f0;
+margin-top: 4px;
+}
+/* Transaction status message */
+.status-message {
+text-align: center;
+font-weight: 700;
+font-size: 15px;
+color: #059669;
+margin-top: 15px;
+min-height: 22px;
+}
+</style>
 </head>
 <body>
-
-<div class="container">
-    <h2>🏪 ワンダーレジ</h2>
-    
-    <!-- 合計金額表示画面 -->
-    <div class="screen" id="display">¥0</div>
-
-    <!-- 商品ボタン -->
-    <div class="section-title">商品を選択</div>
-    <div class="item-grid">
-        <button class="item-btn" onclick="addItem(220)">🍱 食品 (¥220)</button>
-        <button class="sub-item-btn" onclick="addItem(100)">商品 (+¥100)</button>
-        <button class="sub-item-btn" onclick="addItem(500)">商品 (+¥500)</button>
-    </div>
-
-    <!-- 割引ボタン -->
-    <div class="section-title">割引・調整</div>
-    <div class="item-grid">
-        <button class="discount-btn" onclick="applyDiscount(100)">-100円引き</button>
-        <button class="discount-btn" onclick="applyFullDiscount()">全額（無料）</button>
-    </div>
-
-    <!-- 操作ボタン -->
-    <div class="action-area">
-        <button class="clear-btn" onclick="resetTotal()">リセット</button>
-        <button class="checkout-btn" onclick="showPayment()">お会計に進む</button>
-    </div>
-
-    <!-- 支払い方法選択エリア（隠し） -->
-    <div class="payment-area" id="paymentArea">
-        <div class="section-title">お支払い方法を選択</div>
-        <div class="pay-grid">
-            <button class="pay-mana" onclick="pay('Manaカード')">💎 Manaカード で支払う</button>
-            <button class="pay-cash" onclick="pay('現金')">💵 現金 で支払う</button>
-            <button class="pay-curios" onclick="pay('curios')">🔮 curios で支払う</button>
-            <button class="cancel-btn" onclick="hidePayment()">もどる</button>
-        </div>
-    </div>
-
-    <!-- 完了メッセージ -->
-    <div class="message" id="message"></div>
+<div class="pos-container">
+<header>
+<h1>ワンダーPOSレジ</h1>
+<div class="badge">Recreational Mode</div>
+</header>
+<!-- Display Screen -->
+<div class="screen">
+<div class="screen-label">Total Amount</div>
+<div class="screen-amount" id="display">¥0</div>
 </div>
-
+<!-- Product Selection Area -->
+<div class="section-title">商品選択</div>
+<div class="grid-products">
+<button class="btn-product" onclick="addItem(220)">
+<span>🍱 食品</span>
+<span>¥220</span>
+</button>
+</div>
+<!-- Discount Adjustments Area -->
+<div class="section-title">割引・調整</div>
+<div class="grid-discounts">
+<button class="btn-discount" onclick="applyDiscount(100)">-100円引き</button>
+<button class="btn-discount" onclick="applyFullDiscount()">全額 (無料)</button>
+</div>
+<!-- Core Actions -->
+<div class="action-row">
+<button class="btn-reset" onclick="resetRegister()">リセット</button>
+<button class="btn-checkout" onclick="openPaymentPanel()">会計に進む</button>
+</div>
+<!-- Payment Methods Modal/Panel -->
+<div class="payment-panel" id="paymentPanel">
+<div class="section-title" style="margin-bottom: 10px;">支払い方法を選択</div>
+<div class="payment-grid">
+<button class="pay-mana" onclick="processPayment('Manaカード')">💎 Manaカード</button>
+<button class="pay-cash" onclick="processPayment('現金')">💵 現金</button>
+<button class="pay-curios" onclick="processPayment('curios')">🔮 curios</button>
+<button class="btn-cancel" onclick="closePaymentPanel()">もどる</button>
+</div>
+</div>
+<!-- Status Feedback Message -->
+<div class="status-message" id="statusMessage"></div>
+</div>
 <script>
-    let total = 0;
-
-    function addItem(price) {
-        total += price;
-        updateDisplay();
-        document.getElementById('message').innerText = "";
-    }
-
-    function applyDiscount(amount) {
-        total -= amount;
-        if (total < 0) total = 0;
-        updateDisplay();
-        document.getElementById('message').innerText = "100円引きが適用されました";
-    }
-
-    function applyFullDiscount() {
-        total = 0;
-        updateDisplay();
-        document.getElementById('message').innerText = "全額無料になりました！";
-    }
-
-    function updateDisplay() {
-        document.getElementById('display').innerText = "¥" + total.toLocaleString();
-    }
-
-    function resetTotal() {
-        total = 0;
-        updateDisplay();
-        document.getElementById('message').innerText = "";
-        hidePayment();
-    }
-
-    function showPayment() {
-        document.getElementById('paymentArea').style.display = "block";
-        document.getElementById('message').innerText = "";
-    }
-
-    function hidePayment() {
-        document.getElementById('paymentArea').style.display = "none";
-    }
-
-    function pay(method) {
-        document.getElementById('message').innerText = `✨ 【${method}】で ¥${total.toLocaleString()} のお会計完了！`;
-        hidePayment();
-        total = 0;
-        updateDisplay();
-    }
+let currentTotal = 0;
+function addItem(price) {
+currentTotal += price;
+updateScreen();
+clearMessage();
+}
+function applyDiscount(amount) {
+currentTotal -= amount;
+if (currentTotal < 0) currentTotal = 0;
+updateScreen();
+setStatus("100円引きを適用しました");
+}
+function applyFullDiscount() {
+currentTotal = 0;
+updateScreen();
+setStatus("全額割引（無料）を適用しました");
+}
+function updateScreen() {
+document.getElementById('display').innerText = "¥" + currentTotal.toLocaleString();
+}
+function resetRegister() {
+currentTotal = 0;
+updateScreen();
+clearMessage();
+closePaymentPanel();
+}
+function openPaymentPanel() {
+document.getElementById('paymentPanel').style.display = "block";
+clearMessage();
+}
+function closePaymentPanel() {
+document.getElementById('paymentPanel').style.display = "none";
+}
+function processPayment(method) {
+setStatus(⁠✨ [${method}] で ¥${currentTotal.toLocaleString()} のお会計が完了しました！⁠);
+closePaymentPanel();
+currentTotal = 0;
+updateScreen();
+}
+function setStatus(text) {
+document.getElementById('statusMessage').innerText = text;
+}
+function clearMessage() {
+document.getElementById('statusMessage').innerText = "";
+}
 </script>
-
 </body>
 </html>

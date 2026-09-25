@@ -30,7 +30,7 @@
 
         .section-title { font-size: 0.75rem; font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         
-        /* レジ状態ボタン (4分割に変更) */
+        /* レジ状態ボタン */
         .status-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 2px; }
         .btn-status { padding: 8px 2px; font-size: 0.75rem; font-weight: bold; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: white; color: #64748b; text-align: center; }
         .btn-status.active-normal { background: var(--success); color: white; border-color: var(--success); }
@@ -160,7 +160,8 @@
             </div>
         </div>
 
-        <div style="margin-top: auto;">
+        <!-- 売上エリア（セルフレジ時は隠す） -->
+        <div id="sales-section" style="margin-top: auto;">
             <div class="sales-box-container">
                 <div class="sales-summary-box">
                     <span>本日の総売上</span>
@@ -318,6 +319,7 @@
         registerStatus = status;
         const badge = document.getElementById('status-badge');
         const selfBanner = document.getElementById('self-banner');
+        const salesSection = document.getElementById('sales-section');
         
         document.getElementById('st-normal').className = 'btn-status' + (status === 'normal' ? ' active-normal' : '');
         document.getElementById('st-pause').className = 'btn-status' + (status === 'pause' ? ' active-pause' : '');
@@ -328,6 +330,7 @@
             badge.innerText = '通常営業';
             badge.style.background = '#22c55e';
             selfBanner.style.display = 'none';
+            salesSection.style.display = 'block';
             document.getElementById('staff-badge').innerText = '店員: 8269@gmail';
             document.getElementById('sys-title').innerText = 'Coker’s POS';
             document.getElementById('discount-section').style.display = 'block';
@@ -335,17 +338,20 @@
             badge.innerText = '休止中';
             badge.style.background = '#d97706';
             selfBanner.style.display = 'none';
+            salesSection.style.display = 'block';
         } else if (status === 'inspect') {
             badge.innerText = '点検中';
             badge.style.background = '#dc2626';
             selfBanner.style.display = 'none';
+            salesSection.style.display = 'block';
         } else if (status === 'self') {
             badge.innerText = 'セルフレジ';
             badge.style.background = '#0284c7';
             selfBanner.style.display = 'block';
+            salesSection.style.display = 'none'; // セルフレジ時は売上を隠す
             document.getElementById('staff-badge').innerText = 'セルフレジ専用';
             document.getElementById('sys-title').innerText = 'Coker’s セルフ';
-            document.getElementById('discount-section').style.display = 'none'; // セルフでは割引は隠す
+            document.getElementById('discount-section').style.display = 'none'; // 割引も隠す
         }
 
         const isDisabled = status !== 'normal' && status !== 'self';

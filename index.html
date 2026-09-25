@@ -241,12 +241,12 @@
 <!-- 店員番号認証モーダル -->
 <div id="auth-modal" class="modal">
     <div class="modal-content">
-        <h3>店員認証 (解除)</h3>
+        <h3>店員認証 (モード変更)</h3>
         <p style="color:#64748b; font-size:0.9rem;">パスワードを入力してください</p>
         <input type="password" id="auth-pass" placeholder="3桁の暗証番号" maxlength="3">
         <div class="modal-btns">
             <button style="background:#e2e8f0; color:#475569;" onclick="closeAuthModal()">キャンセル</button>
-            <button style="background:var(--primary); color:white;" onclick="verifyAuth()">解除する</button>
+            <button style="background:var(--primary); color:white;" onclick="verifyAuth()">変更する</button>
         </div>
     </div>
 </div>
@@ -282,12 +282,8 @@
     function setRegisterStatus(status) {
         if (status === registerStatus) return;
         
-        // 通常営業に戻すときだけパスワード認証（911）を必須にする
-        if (status === 'normal' && registerStatus !== 'normal') {
-            requestUnlock(status);
-        } else {
-            applyStatus(status);
-        }
+        // どのモードに切り替える場合でもパスワード認証（911）を必須にする
+        requestUnlock(status);
     }
 
     function requestUnlock(status) {
@@ -357,7 +353,7 @@
         const isDisabled = status !== 'normal' && status !== 'self';
         document.getElementById('prod-large').disabled = isDisabled;
         document.getElementById('prod-small').disabled = isDisabled;
-        document.getElementById('prod-pack').disabled, isDisabled;
+        document.getElementById('prod-pack').disabled = isDisabled;
         document.getElementById('prod-other').disabled = isDisabled;
         document.getElementById('disc-free').disabled = isDisabled;
         document.getElementById('disc-500').disabled = isDisabled;

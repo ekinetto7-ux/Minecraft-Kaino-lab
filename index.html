@@ -242,7 +242,7 @@
         <div style="background:white; padding:20px; border-radius:8px; border:1px solid var(--border); max-width:600px; font-size:0.9rem; color:#475569;">
             <h4 style="margin-top:0; color:var(--bg-dark);">端末ステータス</h4>
             • 端末ID: Coker-POS-01<br>
-            • システムバージョン: 2.9.1 (Unified Single-File)<br>
+            • システムバージョン: 2.9.2 (Unified Single-File)<br>
             • ネットワーク接続: 正常
         </div>
     </div>
@@ -488,10 +488,9 @@
             return;
         }
 
-        const itemName = `【受取り】${name}様 (${code})`;
-        cart.push({ name: itemName, price: 0 });
+        // カートに入れず、登録完了の通知・控えを出して完了とする
+        alert(`【受取り登録完了】\nお受取り人: ${name}様\n管理番号: ${code}\n\nシステムに登録されました。`);
         closePickupModal();
-        updateCart();
     }
 
     function openOtherModal() {

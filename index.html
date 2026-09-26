@@ -92,7 +92,7 @@
         .btn-setting-item { padding: 16px 20px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); font-size: 1rem; }
         .btn-setting-item:hover { background: #f1f5f9; border-color: var(--primary); color: var(--primary); }
 
-        /* サブ管理ビュー（各ネット機能個別画面） */
+        /* サブ管理ビュー（各機能個別画面） */
         .sub-view { display: none; width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
         .sub-body { padding: 30px; flex: 1; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
         .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); font-size: 0.9rem; }
@@ -233,7 +233,7 @@
         <button style="background:var(--danger); color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSettingView()">レジ画面に戻る</button>
     </div>
     <div class="setting-body">
-        <p style="color:#64748b; margin-top:0;">各種ネットサービス設定や端末情報を管理します。</p>
+        <p style="color:#64748b; margin-top:0;">各種ネットサービス設定や予約機能、端末情報を管理します。</p>
         
         <div class="setting-menu-grid">
             <button class="btn-setting-item" onclick="openSubView('pay')">
@@ -248,12 +248,15 @@
             <button class="btn-setting-item" onclick="openSubView('register')">
                 <span>📝 ネット受け取り登録</span> <span>›</span>
             </button>
+            <button class="btn-setting-item" onclick="openSubView('reserve')">
+                <span>🛍️ 商品予約管理</span> <span>›</span>
+            </button>
         </div>
 
         <div style="background:white; padding:20px; border-radius:8px; border:1px solid var(--border); max-width:600px; font-size:0.9rem; color:#475569;">
             <h4 style="margin-top:0; color:var(--bg-dark);">端末ステータス</h4>
             • 端末ID: Coker-POS-01<br>
-            • システムバージョン: 2.9.4 (Unified Single-File)<br>
+            • システムバージョン: 2.9.6 (Unified Single-File)<br>
             • ネットワーク接続: 正常
         </div>
     </div>
@@ -304,6 +307,7 @@
             <div>
                 <label style="font-size:0.85rem; font-weight:bold; color:#64748b; display:block; margin-bottom:5px;">決済種別</label>
                 <select id="net-pay-method" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-size:1rem; background:white;">
+                    <option value="現金">現金</option>
                     <option value="Mana-meiカード">Mana-meiカード</option>
                     <option value="Coker's Pay">Coker's Pay</option>
                     <option value="ネオ・ポイント">ネオ・ポイント</option>
@@ -357,6 +361,45 @@
             </div>
             <button style="background:#0d9488; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:1rem;" onclick="executeRegisterPickup()">受け取り荷物を登録する</button>
         </div>
+    </div>
+</div>
+
+<!-- 🛍️ 商品予約管理 画面 -->
+<div class="sub-view" id="sub-view-reserve">
+    <div class="setting-header">
+        <h2>🛍️ 商品予約管理</h2>
+        <button style="background:#475569; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSubView('reserve')">設定メニューに戻る</button>
+    </div>
+    <div class="sub-body">
+        <p style="color:#64748b; margin-top:0;">お客様からの商品予約情報の確認および新しい予約の登録を行います。</p>
+        
+        <div style="background:white; padding:20px; border-radius:8px; border:1px solid var(--border); margin-bottom:15px;">
+            <h4 style="margin-top:0; color:var(--bg-dark);">新規予約の追加</h4>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:10px; align-items:flex-end;">
+                <div>
+                    <label style="font-size:0.8rem; font-weight:bold; color:#64748b; display:block; margin-bottom:3px;">予約商品名</label>
+                    <input type="text" id="reserve-item-name" placeholder="例: お菓子Uzbek" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:0.95rem;">
+                </div>
+                <div>
+                    <label style="font-size:0.8rem; font-weight:bold; color:#64748b; display:block; margin-bottom:3px;">金額 (円)</label>
+                    <input type="number" id="reserve-item-price" placeholder="例: 660" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:0.95rem;">
+                </div>
+                <div>
+                    <label style="font-size:0.8rem; font-weight:bold; color:#64748b; display:block; margin-bottom:3px;">ご予約者様</label>
+                    <input type="text" id="reserve-customer" placeholder="例: 顧客名" style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:0.95rem;">
+                </div>
+                <button style="background:var(--primary); color:white; border:none; padding:9px 16px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.95rem;" onclick="executeRegisterReserve()">予約追加</button>
+            </div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr><th>予約商品名</th><th>金額</th><th>ご予約者様</th><th>登録日時</th><th>操作</th></tr>
+            </thead>
+            <tbody id="reserve-table-body">
+                <tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:30px;">現在登録されている予約商品はありません</td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -433,6 +476,9 @@
     let authMode = ''; // 'status' または 'setting'
     let pickupStorage = []; // 受け取り荷物データ保存用
     let netPayStorage = []; // ネット支払いデータ保存用
+    let reserveStorage = [
+        { name: 'お菓子Uzbek', price: 660, customer: '一般予約', time: '2026/9/26 18:00:00' }
+    ]; // 初期データとして「お菓子Uzbek」をセット
 
     function setRegisterStatus(status) {
         if (status === registerStatus) return;
@@ -514,6 +560,9 @@
             document.getElementById('reg-name').value = '';
             document.getElementById('reg-code').value = '';
             document.getElementById('sub-view-register').style.display = 'flex';
+        } else if (type === 'reserve') {
+            updateReserveTable();
+            document.getElementById('sub-view-reserve').style.display = 'flex';
         }
     }
 
@@ -526,6 +575,8 @@
             document.getElementById('sub-view-manage').style.display = 'none';
         } else if (type === 'register') {
             document.getElementById('sub-view-register').style.display = 'none';
+        } else if (type === 'reserve') {
+            document.getElementById('sub-view-reserve').style.display = 'none';
         }
         document.getElementById('setting-view').style.display = 'flex';
     }
@@ -626,6 +677,61 @@
         if (confirm(`「${pickupStorage[index].name}様」の荷物のお渡しを完了し、リストから削除しますか？`)) {
             pickupStorage.splice(index, 1);
             updatePickupTable();
+        }
+    }
+
+    function executeRegisterReserve() {
+        const name = document.getElementById('reserve-item-name').value.trim();
+        const price = parseInt(document.getElementById('reserve-item-price').value);
+        const customer = document.getElementById('reserve-customer').value.trim() || '一般ご予約';
+
+        if (!name) {
+            alert('予約商品名を入力してください。');
+            return;
+        }
+        if (isNaN(price) || price <= 0) {
+            alert('有効な金額を入力してください。');
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+        reserveStorage.push({ name: name, price: price, customer: customer, time: timeStr });
+        alert(`【商品予約登録完了】\n商品名: ${name}\n金額: ¥${price}\nご予約者: ${customer}\n\nシステムに登録されました。`);
+
+        document.getElementById('reserve-item-name').value = '';
+        document.getElementById('reserve-item-price').value = '';
+        document.getElementById('reserve-customer').value = '';
+        updateReserveTable();
+    }
+
+    function updateReserveTable() {
+        const tbody = document.getElementById('reserve-table-body');
+        tbody.innerHTML = '';
+
+        if (reserveStorage.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8; padding:30px;">現在登録されている予約商品はありません</td></tr>';
+            return;
+        }
+
+        reserveStorage.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.name}</strong></td>
+                <td>¥${item.price.toLocaleString()}</td>
+                <td>${item.customer}</td>
+                <td><span style="font-size:0.8rem; color:#64748b;">${item.time}</span></td>
+                <td><button style="background:var(--danger); color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="cancelReserveItem(${index})">予約取消</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function cancelReserveItem(index) {
+        if (confirm(`「${reserveStorage[index].name}」の予約情報を削除しますか？`)) {
+            reserveStorage.splice(index, 1);
+            updateReserveTable();
         }
     }
 

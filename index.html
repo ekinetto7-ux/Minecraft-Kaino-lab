@@ -88,6 +88,15 @@
 
         .self-banner { display: none; background: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; text-align: center; margin-bottom: 8px; }
 
+        /* 設定画面（別画面フルビュー用） */
+        .setting-view { display: none; width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
+        .setting-header { background: var(--bg-dark); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .setting-header h2 { margin: 0; font-size: 1.2rem; }
+        .setting-body { padding: 30px; flex: 1; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 20px; }
+        .setting-menu-grid { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 600px; }
+        .btn-setting-item { padding: 16px 20px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); font-size: 1rem; }
+        .btn-setting-item:hover { background: #f1f5f9; border-color: var(--primary); color: var(--primary); }
+
         /* モーダル共通 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 360px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
@@ -95,11 +104,6 @@
         .modal-content input[type="password"] { text-align: center; letter-spacing: 4px; font-size: 1.2rem; }
         .modal-btns { display: flex; gap: 10px; }
         .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
-
-        /* 設定モーダル内の項目ボタングリッド */
-        .setting-menu-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; text-align: left; }
-        .btn-setting-item { padding: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .btn-setting-item:hover { background: #f1f5f9; border-color: var(--primary); color: var(--primary); }
 
         .payment-method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .btn-method { padding: 14px 10px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; font-size: 0.9rem; text-align: center; }
@@ -117,6 +121,7 @@
 </head>
 <body>
 
+<!-- メインのPOSレジ画面 -->
 <div class="pos-layout" id="pos-layout">
     <!-- 左側：商品・割引・システム管理 -->
     <div class="panel-left" id="panel-left">
@@ -222,6 +227,36 @@
     </div>
 </div>
 
+<!-- 設定の別画面（フルビュー） -->
+<div class="setting-view" id="setting-view">
+    <div class="setting-header">
+        <h2>⚙️ システム設定管理</h2>
+        <button style="background:var(--danger); color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSettingView()">レジ画面に戻る</button>
+    </div>
+    <div class="setting-body">
+        <p style="color:#64748b; margin-top:0;">各種ネットサービス設定や端末情報を管理します。</p>
+        
+        <div class="setting-menu-grid">
+            <button class="btn-setting-item" onclick="openNetAction('ネット支払い')">
+                <span>🌐 ネット支払い管理</span> <span>›</span>
+            </button>
+            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り')">
+                <span>📦 ネット受け取り管理</span> <span>›</span>
+            </button>
+            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り登録')">
+                <span>📝 ネット受け取り登録</span> <span>›</span>
+            </button>
+        </div>
+
+        <div style="background:white; padding:20px; border-radius:8px; border:1px solid var(--border); max-width:600px; font-size:0.9rem; color:#475569;">
+            <h4 style="margin-top:0; color:var(--bg-dark);">端末ステータス</h4>
+            • 端末ID: Coker-POS-01<br>
+            • システムバージョン: 2.9.0 (Unified Single-File)<br>
+            • ネットワーク接続: 正常
+        </div>
+    </div>
+</div>
+
 <!-- コンビニ受取り登録モーダル -->
 <div id="pickup-modal" class="modal">
     <div class="modal-content" style="text-align: left;">
@@ -280,32 +315,6 @@
     </div>
 </div>
 
-<!-- 設定モーダル -->
-<div id="setting-modal" class="modal">
-    <div class="modal-content" style="width: 400px;">
-        <h3 style="margin-top:0;">システム設定</h3>
-        <p style="color:#64748b; font-size:0.9rem; margin-bottom:10px;">各種ネットサービス設定・端末情報</p>
-        
-        <div class="setting-menu-grid">
-            <button class="btn-setting-item" onclick="openNetAction('ネット支払い')">
-                <span>🌐 ネット支払い管理</span> <span>›</span>
-            </button>
-            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り')">
-                <span>📦 ネット受け取り管理</span> <span>›</span>
-            </button>
-            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り登録')">
-                <span>📝 ネット受け取り登録</span> <span>›</span>
-            </button>
-        </div>
-
-        <div style="background:#f8fafc; padding:10px; border-radius:6px; font-size:0.8rem; text-align:left; color:#475569; margin-bottom:15px; border:1px solid var(--border);">
-            • 端末ID: Coker-POS-01<br>
-            • バージョン: 2.8.1
-        </div>
-        <button style="width:100%; background:#e2e8f0; color:#475569; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSettingModal()">閉じる</button>
-    </div>
-</div>
-
 <!-- 現金お預かりモーダル -->
 <div id="cash-modal" class="modal">
     <div class="modal-content">
@@ -353,7 +362,7 @@
         
         if (mode === 'setting') {
             titleEl.innerText = '店員認証 (設定)';
-            descEl.innerText = 'システム設定を開くにはパスワードを入力してください';
+            descEl.innerText = 'システム設定画面を開くにはパスワードを入力してください';
         } else {
             titleEl.innerText = '店員認証 (モード変更)';
             descEl.innerText = 'モードを変更するにはパスワードを入力してください';
@@ -378,7 +387,7 @@
             closeAuthModal();
 
             if (mode === 'setting') {
-                openSettingModal();
+                openSettingView();
             } else if (nextStatus) {
                 applyStatus(nextStatus);
             }
@@ -389,20 +398,22 @@
         }
     }
 
-    function openSettingModal() {
-        document.getElementById('setting-modal').style.display = 'flex';
+    function openSettingView() {
+        document.getElementById('pos-layout').style.display = 'none';
+        document.getElementById('setting-view').style.display = 'flex';
     }
 
-    function closeSettingModal() {
-        document.getElementById('setting-modal').style.display = 'none';
+    function closeSettingView() {
+        document.getElementById('setting-view').style.display = 'none';
+        document.getElementById('pos-layout').style.display = 'grid';
     }
 
     function openNetAction(actionName) {
-        closeSettingModal();
         if (actionName === 'ネット受け取り登録') {
+            closeSettingView();
             openPickupModal();
         } else {
-            alert(`[${actionName}] の設定画面を開きます。`);
+            alert(`[${actionName}] の設定を実行します。`);
         }
     }
 

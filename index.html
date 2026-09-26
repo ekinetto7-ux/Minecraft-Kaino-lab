@@ -92,6 +92,14 @@
         .btn-setting-item { padding: 16px 20px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; color: #334155; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); font-size: 1rem; }
         .btn-setting-item:hover { background: #f1f5f9; border-color: var(--primary); color: var(--primary); }
 
+        /* サブ管理ビュー（各ネット機能個別画面） */
+        .sub-view { display: none; width: 100%; max-width: 1000px; height: 780px; background: var(--surface); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); flex-direction: column; overflow: hidden; border: 1px solid var(--border); }
+        .sub-body { padding: 30px; flex: 1; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); font-size: 0.9rem; }
+        .data-table th, .data-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        .data-table th { background: #f1f5f9; color: #475569; font-weight: bold; }
+        .data-table tr:hover { background: #f8fafc; }
+
         /* モーダル共通 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 360px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
@@ -228,13 +236,13 @@
         <p style="color:#64748b; margin-top:0;">各種ネットサービス設定や端末情報を管理します。</p>
         
         <div class="setting-menu-grid">
-            <button class="btn-setting-item" onclick="openNetAction('ネット支払い')">
+            <button class="btn-setting-item" onclick="openSubView('pay')">
                 <span>🌐 ネット支払い管理</span> <span>›</span>
             </button>
-            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り')">
+            <button class="btn-setting-item" onclick="openSubView('manage')">
                 <span>📦 ネット受け取り管理</span> <span>›</span>
             </button>
-            <button class="btn-setting-item" onclick="openNetAction('ネット受け取り登録')">
+            <button class="btn-setting-item" onclick="openSubView('register')">
                 <span>📝 ネット受け取り登録</span> <span>›</span>
             </button>
         </div>
@@ -242,23 +250,78 @@
         <div style="background:white; padding:20px; border-radius:8px; border:1px solid var(--border); max-width:600px; font-size:0.9rem; color:#475569;">
             <h4 style="margin-top:0; color:var(--bg-dark);">端末ステータス</h4>
             • 端末ID: Coker-POS-01<br>
-            • システムバージョン: 2.9.2 (Unified Single-File)<br>
+            • システムバージョン: 2.9.3 (Unified Single-File)<br>
             • ネットワーク接続: 正常
         </div>
     </div>
 </div>
 
-<!-- コンビニ受取り登録モーダル -->
-<div id="pickup-modal" class="modal">
-    <div class="modal-content" style="text-align: left;">
-        <h3 style="margin-top:0; text-align: center;">コンビニ受取り登録</h3>
-        <label style="font-size:0.85rem; font-weight:bold; color:#64748b;">お受取り人様 氏名</label>
-        <input type="text" id="pickup-name" placeholder="例: 山田 太郎">
-        <label style="font-size:0.85rem; font-weight:bold; color:#64748b;">管理番号 / 伝票番号</label>
-        <input type="text" id="pickup-code" placeholder="例: AB-123456">
-        <div class="modal-btns" style="margin-top: 10px;">
-            <button style="background:#e2e8f0; color:#475569;" onclick="closePickupModal()">キャンセル</button>
-            <button style="background:#0d9488; color:white;" onclick="addPickupItem()">登録する</button>
+<!-- 🌐 ネット支払い管理 画面 -->
+<div class="sub-view" id="sub-view-pay">
+    <div class="setting-header">
+        <h2>🌐 ネット支払い管理</h2>
+        <button style="background:#475569; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSubView('pay')">設定メニューに戻る</button>
+    </div>
+    <div class="sub-body">
+        <p style="color:#64748b; margin-top:0;">オンライン決済の接続状態および直近の取引履歴を確認できます。</p>
+        <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+            <div style="background:white; padding:15px; border-radius:8px; border:1px solid var(--border); flex:1;">
+                <div style="font-size:0.8rem; color:#64748b; font-weight:bold;">オンライン決済ゲートウェイ</div>
+                <div style="font-size:1.1rem; font-weight:bold; color:var(--success); margin-top:5px;">● 接続中 (稼働中)</div>
+            </div>
+            <div style="background:white; padding:15px; border-radius:8px; border:1px solid var(--border); flex:1;">
+                <div style="font-size:0.8rem; color:#64748b; font-weight:bold;">本日処理件数</div>
+                <div style="font-size:1.1rem; font-weight:bold; color:var(--primary); margin-top:5px;">0 件</div>
+            </div>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr><th>注文ID</th><th>決済種別</th><th>金額</th><th>ステータス</th></tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:30px;">直近のネット支払いデータはありません</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📦 ネット受け取り管理 画面 -->
+<div class="sub-view" id="sub-view-manage">
+    <div class="setting-header">
+        <h2>📦 ネット受け取り管理 (お預かり一覧)</h2>
+        <button style="background:#475569; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSubView('manage')">設定メニューに戻る</button>
+    </div>
+    <div class="sub-body">
+        <p style="color:#64748b; margin-top:0;">現在店舗でお預かりしている荷物・ネット受け取り一覧です。お客様へのお渡し時に「渡済」に変更できます。</p>
+        <table class="data-table">
+            <thead>
+                <tr><th>管理番号</th><th>お受取り人様</th><th>登録日時</th><th>操作</th></tr>
+            </thead>
+            <tbody id="pickup-list-body">
+                <tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:30px;">現在登録されている受け取り荷物はありません</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📝 ネット受け取り登録 画面 -->
+<div class="sub-view" id="sub-view-register">
+    <div class="setting-header">
+        <h2>📝 ネット受け取り登録</h2>
+        <button style="background:#475569; color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="closeSubView('register')">設定メニューに戻る</button>
+    </div>
+    <div class="sub-body" style="max-width: 600px;">
+        <p style="color:#64748b; margin-top:0;">新しい受け取り荷物の情報を入力してシステムに登録します（レジのカートには入りません）。</p>
+        <div style="background:white; padding:25px; border-radius:8px; border:1px solid var(--border); display:flex; flex-direction:column; gap:15px;">
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:#64748b; display:block; margin-bottom:5px;">お受取り人様 氏名</label>
+                <input type="text" id="reg-name" placeholder="例: 山田 太郎" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-size:1rem;">
+            </div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:#64748b; display:block; margin-bottom:5px;">管理番号 / 伝票番号</label>
+                <input type="text" id="reg-code" placeholder="例: AB-123456" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:6px; font-size:1rem;">
+            </div>
+            <button style="background:#0d9488; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:1rem;" onclick="executeRegisterPickup()">受け取り荷物を登録する</button>
         </div>
     </div>
 </div>
@@ -334,6 +397,7 @@
     let dailySales = 0;
     let registerStatus = 'normal'; // 'normal', 'pause', 'inspect', 'self'
     let authMode = ''; // 'status' または 'setting'
+    let pickupStorage = []; // 受け取り荷物データ保存用
 
     function setRegisterStatus(status) {
         if (status === registerStatus) return;
@@ -399,12 +463,80 @@
         document.getElementById('pos-layout').style.display = 'grid';
     }
 
-    function openNetAction(actionName) {
-        if (actionName === 'ネット受け取り登録') {
-            closeSettingView();
-            openPickupModal();
-        } else {
-            alert(`[${actionName}] の設定を実行します。`);
+    function openSubView(type) {
+        document.getElementById('setting-view').style.display = 'none';
+        if (type === 'pay') {
+            document.getElementById('sub-view-pay').style.display = 'flex';
+        } else if (type === 'manage') {
+            updatePickupTable();
+            document.getElementById('sub-view-manage').style.display = 'flex';
+        } else if (type === 'register') {
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-code').value = '';
+            document.getElementById('sub-view-register').style.display = 'flex';
+        }
+    }
+
+    function closeSubView(type) {
+        if (type === 'pay') {
+            document.getElementById('sub-view-pay').style.display = 'none';
+        } else if (type === 'manage') {
+            document.getElementById('sub-view-manage').style.display = 'none';
+        } else if (type === 'register') {
+            document.getElementById('sub-view-register').style.display = 'none';
+        }
+        document.getElementById('setting-view').style.display = 'flex';
+    }
+
+    function executeRegisterPickup() {
+        const name = document.getElementById('reg-name').value.trim();
+        const code = document.getElementById('reg-code').value.trim();
+
+        if (!name) {
+            alert('お受取り人様の氏名を入力してください。');
+            return;
+        }
+        if (!code) {
+            alert('管理番号または伝票番号を入力してください。');
+            return;
+        }
+
+        const now = new Date();
+        const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+        pickupStorage.push({ name: name, code: code, time: timeStr });
+        alert(`【受取り登録完了】\nお受取り人: ${name}様\n管理番号: ${code}\n\nシステムに登録されました。`);
+        
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-code').value = '';
+        closeSubView('register');
+    }
+
+    function updatePickupTable() {
+        const tbody = document.getElementById('pickup-list-body');
+        tbody.innerHTML = '';
+
+        if (pickupStorage.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#94a3b8; padding:30px;">現在登録されている受け取り荷物はありません</td></tr>';
+            return;
+        }
+
+        pickupStorage.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.code}</strong></td>
+                <td>${item.name} 様</td>
+                <td><span style="font-size:0.8rem; color:#64748b;">${item.time}</span></td>
+                <td><button style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="completePickupItem(${index})">お渡し (完了)</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function completePickupItem(index) {
+        if (confirm(`「${pickupStorage[index].name}様」の荷物のお渡しを完了し、リストから削除しますか？`)) {
+            pickupStorage.splice(index, 1);
+            updatePickupTable();
         }
     }
 
@@ -462,35 +594,6 @@
         if (registerStatus !== 'normal' && registerStatus !== 'self') return;
         cart.push({ name: name, price: price });
         updateCart();
-    }
-
-    function openPickupModal() {
-        document.getElementById('pickup-name').value = '';
-        document.getElementById('pickup-code').value = '';
-        document.getElementById('pickup-modal').style.display = 'flex';
-        document.getElementById('pickup-name').focus();
-    }
-
-    function closePickupModal() {
-        document.getElementById('pickup-modal').style.display = 'none';
-    }
-
-    function addPickupItem() {
-        const name = document.getElementById('pickup-name').value.trim();
-        const code = document.getElementById('pickup-code').value.trim();
-
-        if (!name) {
-            alert('お受取り人様の氏名を入力してください。');
-            return;
-        }
-        if (!code) {
-            alert('管理番号または伝票番号を入力してください。');
-            return;
-        }
-
-        // カートに入れず、登録完了の通知・控えを出して完了とする
-        alert(`【受取り登録完了】\nお受取り人: ${name}様\n管理番号: ${code}\n\nシステムに登録されました。`);
-        closePickupModal();
     }
 
     function openOtherModal() {

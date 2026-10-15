@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +28,7 @@ Welcome to iPad Administrator Shell (bash v5.2)
 ============================================================
 </div>
     
-    <div id="input-line" id="tap-zone">
+    <div id="input-line">
         <span class="prompt">root@ipad-terminal:~#</span>
         <input type="text" id="cmd-input" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ここにタップして入力">
     </div>
@@ -49,15 +49,13 @@ Welcome to iPad Administrator Shell (bash v5.2)
         document.addEventListener('touchstart', focusInput);
         window.onload = focusInput;
 
-        // EnterキーおよびiPadの「改行・開く」ボタンを確実に検知する処理
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault(); // 本来の改行動作をキャンセル
+                e.preventDefault(); 
                 
                 const rawValue = input.value;
                 const command = rawValue.trim().toLowerCase();
                 
-                // 画面に入力内容を出力
                 output.innerHTML += '<div><span class="prompt">root@ipad-terminal:~#</span> <span style="color:#fff">' + rawValue + '</span></div>';
                 
                 if (command !== "") {
@@ -151,3 +149,4 @@ Welcome to iPad Administrator Shell (bash v5.2)
                         if(passes > 3) {
                             clearInterval(globalLoop);
                             globalLoop = null;
+                            output.innerHTML += '<div class="info">[SUCCESS] File /root/classified_data.conf zeroed and unlinked.</div>';

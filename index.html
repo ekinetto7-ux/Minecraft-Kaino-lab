@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.7.0</title>
+    <title>Hacker OS v2.7.1</title>
     <style>
         body {
             background-color: #000;
@@ -54,9 +54,9 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
+Welcome to Hydra-Core Terminal v2.7.1 [Stop Command Patched]
 一覧表示は 'jp' と入力してください。
-★進化を遂げた 'ysu' で、より視覚的に進化したハッキングが始動します。
+★ 'ysu'（サーバー乗っ取り）などの演出中に 'stp' で強制停止できます。
 ======================================================================</div>
 
     <div class="input-line">
@@ -84,8 +84,16 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
             }
         });
 
+        // 動いているタイピング処理を安全に止める関数
+        function stopTyping() {
+            if (typeTimer) {
+                clearInterval(typeTimer);
+                typeTimer = null;
+            }
+        }
+
         function printLog(text) {
-            if (typeTimer) clearInterval(typeTimer); 
+            stopTyping(); // 新しい描写の前に古いタイマーを止める
             let index = 0;
             output.textContent += '\n';
             
@@ -98,10 +106,18 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
                     clearInterval(typeTimer);
                     typeTimer = null;
                 }
-            }, 4); // 演出の詰まりを防ぐため超高速化
+            }, 4);
         }
 
         function executeCommand(cmd) {
+            // 【特例】stp が入力されたら即座にタイマーを止めて終了する
+            if (cmd === 'stp') {
+                stopTyping();
+                output.textContent += "\n[WARNING] Process halted by user. Ready.";
+                window.scrollTo(0, document.body.scrollHeight);
+                return;
+            }
+
             switch (cmd) {
                 case 'jp':
                     output.textContent += "\n" + 
@@ -112,11 +128,12 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
                         "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
                         "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング（進化版）\n" +
-                        "alt - 【緊急警告】 偽のシステム崩壊レッドアラートを起動";
+                        "alt - 【緊急警告】 偽のシステム崩壊レッドアラートを起動\n" +
+                        "stp - 【強制停止】 進行中の文字出力をその場でストップする";
                     window.scrollTo(0, document.body.scrollHeight);
                     break;
 
-                case 'ysu': // ⚡ バグらない！進化版サーバー乗っ取り演出
+                case 'ysu': 
                     printLog(
                         "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
                         "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
@@ -154,6 +171,7 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
                     break;
 
                 case 'cls':
+                    stopTyping();
                     document.body.style.backgroundColor = "#000";
                     prompt.textContent = "root@hydra-net:~#";
                     prompt.style.color = "#0fa";
@@ -164,7 +182,7 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
                 // --- 既存のコマンド ---
                 case 'sys': printLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': printLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': printLog("Hydra Terminal Core v2.7.0-release (Build 20261015)"); break;
+                case 'ver': printLog("Hydra Terminal Core v2.7.1-release (Build 20261015)"); break;
                 case 'tim': printLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': printLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
                 case 'upt': printLog("System Uptime: 1,024 hours 43 minutes 12 seconds"); break;
@@ -187,5 +205,3 @@ Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
             }
         }
     </script>
-</body>
-</html>

@@ -3,204 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYDRA-CORE RECON OS v3.4.0</title>
+    <title>Hacker OS Simple</title>
     <style>
         body {
-            background-color: #020202;
-            color: #00ff66;
-            font-family: 'Consolas', 'Courier New', monospace;
-            text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
-            padding: 25px;
+            background-color: #000;
+            color: #0f0;
+            font-family: monospace;
+            padding: 20px;
             margin: 0;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle, rgba(0, 40, 10, 0.3) 0%, #000 80%);
         }
-
-        #terminal-output {
+        #output {
             white-space: pre-wrap;
+            line-height: 1.5;
             margin-bottom: 20px;
-            line-height: 1.6;
         }
-
         .input-line {
             display: flex;
-            align-items: center;
-            border-top: 1px solid rgba(0, 255, 102, 0.1);
-            padding-top: 10px;
         }
-
         .prompt {
-            color: #00ffcc;
-            font-weight: bold;
-            margin-right: 12px;
-            user-select: none;
+            color: #0fa;
+            margin-right: 10px;
         }
-
-        #cmd-input {
+        #cmd {
             background: transparent;
             border: none;
-            color: #00ff66;
+            color: #0f0;
             font-family: inherit;
             font-size: 16px;
             outline: none;
             flex-grow: 1;
-            text-shadow: 0 0 5px rgba(0, 255, 102, 0.8);
-        }
-
-        .critical-alert {
-            background-color: #300 !important;
-            color: #ff3333 !important;
         }
     </style>
 </head>
 <body>
 
-    <div id="terminal-output">╔══════════════════════════════════════════════════════════════════════╗
-║  HYDRA INTERACTIVE NET-STALKER CORE v3.4.0 [ANTI-CRASH LOG MODE]    ║
-║  SECURE ENCRYPTION NODE // ACCESS POINT: AUTHORIZED ONLY            ║
-╚══════════════════════════════════════════════════════════════════════╝
-[SYSTEM] Node connection established online.
-[SYSTEM] Welcome back, Admin. Type 'jp' to load localized operation manual.
-★ 'inf' で無限ログが出力されます。止めるには 'stp' を入力してください。（絶対にフリーズしません）</div>
+    <div id="output">==================================================
+Welcome to Terminal v1.0
+Type 'jp' to see commands.
+==================================================</div>
 
     <div class="input-line">
-        <span class="prompt" id="terminal-prompt">admin@hydra-node:~#</span>
-        <input type="text" id="cmd-input" autofocus autocomplete="off">
+        <span class="prompt">admin@node:~#</span>
+        <input type="text" id="cmd" autofocus autocomplete="off">
     </div>
 
     <script>
-        const input = document.getElementById('cmd-input');
-        const output = document.getElementById('terminal-output');
-        const prompt = document.getElementById('terminal-prompt');
-        let infiniteIntervalId = null; // メモリを消費しないタイマーID
+        const cmdInput = document.getElementById('cmd');
+        const outputDiv = document.getElementById('output');
 
-        document.addEventListener('click', () => input.focus());
+        // 画面クリックで入力欄に自動フォーカス
+        document.addEventListener('click', () => cmdInput.focus());
 
-        input.addEventListener('keydown', function(e) {
+        // エンターキーが押されたら一瞬でテキストを出すだけ
+        cmdInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                const command = input.value.trim();
-                if (command !== '') {
-                    output.innerHTML += `\n<span style="color:#0fa;">${prompt.textContent} ${command}</span>`;
-                    executeCommand(command.toLowerCase());
+                const text = cmdInput.value.trim();
+                if (text !== '') {
+                    // 入力したコマンドを画面に残す
+                    outputDiv.textContent += `\nadmin@node:~# ${text}`;
+                    
+                    // コマンドごとの判定（一瞬で切り替わるだけ）
+                    execute(text.toLowerCase());
                 }
-                input.value = '';
+                cmdInput.value = '';
                 window.scrollTo(0, document.body.scrollHeight);
             }
         });
 
-        function printLog(text) {
-            output.innerHTML += '\n' + text.replace(/\n/g, '<br>');
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        // 💡 クラッシュを完全に防ぐ、安全な無限ログ出力関数
-        function startInfiniteLog() {
-            stopInfiniteLog(); // 二重起動を防ぐ
-
-            // requestAnimationFrameより負荷の低いsetIntervalを使い、古くなったテキストを自動カットする
-            infiniteIntervalId = setInterval(() => {
-                let line = `[DUMP] 0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()} -- ADDR:0x${Math.floor(Math.random()*65535).toString(16).toUpperCase()} -- STATE: INJECT_SUCCESS`;
-                output.innerHTML += "<br>" + line;
-
-                // 🌟 メモリ対策：画面上の行数が100行を超えたら、古い行を自動的に消去する（これで絶対に固まらない）
-                const lines = output.innerHTML.split("<br>");
-                if (lines.length > 100) {
-                    output.innerHTML = lines.slice(lines.length - 100).join("<br>");
-                }
-
-                window.scrollTo(0, document.body.scrollHeight);
-            }, 30); // 30ミリ秒ごとに1行追加（ハイスピード）
-        }
-
-        function stopInfiniteLog() {
-            if (infiniteIntervalId) {
-                clearInterval(infiniteIntervalId);
-                infiniteIntervalId = null;
+        function execute(cmd) {
+            if (cmd === 'jp') {
+                outputDiv.textContent += `\n` +
+                    "--- コマンド一覧 ---\n" +
+                    "jp  - メニュー表示\n" +
+                    "sys - システム情報\n" +
+                    "scn - スキャン実行\n" +
+                    "ysu - サーバー乗っ取り\n" +
+                    "cls - 画面を消去";
+            } 
+            else if (cmd === 'sys') {
+                outputDiv.textContent += "\nOS: Linux Stable\nCPU: Core x64\nRAM: 16GB\nStatus: Online";
+            } 
+            else if (cmd === 'scn') {
+                outputDiv.textContent += "\nScanning network...\nPort 22: OPEN\nPort 80: OPEN\nScan finished.";
+            } 
+            else if (cmd === 'ysu') {
+                outputDiv.textContent += `\n` +
+                    "[CRITICAL] SERVER HIJACK SEQUENCE INITIATED...\n" +
+                    "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
+                    "====================================================\n" +
+                    "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
+                    "====================================================\n" +
+                    "サーバーを完全制圧しました。";
+            } 
+            else if (cmd === 'cls') {
+                outputDiv.textContent = "Screen cleared. Type 'jp' for commands.";
+            } 
+            else {
+                outputDiv.textContent += `\nCommand not found: '${cmd}'. Type 'jp'.`;
             }
         }
-
-        function executeCommand(cmd) {
-            // stpコマンドが来たらその場で即停止
-            if (cmd === 'stp') {
-                stopInfiniteLog();
-                printLog("[WARNING] Infinite stream halted by user. Node standby.");
-                return;
-            }
-
-            // 新しいコマンドが実行されたら一度安全にループを止める
-            stopInfiniteLog();
-
-            switch (cmd) {
-                case 'jp':
-                    printLog(
-                        "=================== HYDRA OPERATION MANUAL ===================\n\n" +
-                        "jp  - ヘルプメニューの出力  sys - コアノード構成の取得   cfg - 環境設定ファイルのパース\n" +
-                        "cls - ターミナルログの完全消去 tim - 世界標準サーバー時刻   mem - メモリ割り当てバンクの走査\n" +
-                        "scn - ポートスキャナーの展開 prx - 多層暗号プロキシの構築 png - 外部アドレス宛のパケット疎通\n" +
-                        "run - 自動クラッキング兵器   bps - 防御隔壁強制オーバーライド log - セキュリティ履歴のダンプ\n" +
-                        "src - 攻撃用C言語バイナリ   cat - 機密情報のインジェクション  rst - ターミナルシステム再起動\n" +
-                        "alt - 疑似逆追跡警報の起動    inf - 高速暗号データの無限垂れ流し  stp - 進行中プロセスの強制中断\n" +
-                        "ysu - 【サーバー完全乗っ取り】（最速安全版）"
-                    );
-                    break;
-
-                case 'inf': // ♾️ 安全な無限スクロール
-                    printLog("[INITIALIZING MEMORY DUMP STREAM] Press 'stp' to stop.");
-                    startInfiniteLog();
-                    break;
-
-                case 'ysu': 
-                    printLog(
-                        "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
-                        "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
-                        "----------------------------------------------------------------\n" +
-                        "[ANALYSIS]  [████████████████████] 100% - Firewall Overridden\n" +
-                        "----------------------------------------------------------------\n" +
-                        " >> Match Found: 'k1m1tsu_2026'\n" +
-                        " >> Hijacking Session Tokens... [SUCCESS]\n\n" +
-                        "============================================================\n" +
-                        "🚨 TARGET SERVER OVERTHROWN // HIJACK DETECTED 🚨\n" +
-                        "============================================================\n" +
-                        "[+] METASPLOIT PAYLOAD: INJECTED SUCCESSFULLY\n" +
-                        "[+] ROOT MASTER KEY FOUND: '0x7F__HYDRA_ROOT_ACCESS_2026'\n" +
-                        "対象サーバーのコアシステムを完全制圧しました。"
-                    );
-                    break;
-
-                case 'alt': 
-                    document.body.classList.add('critical-alert');
-                    prompt.textContent = "CRITICAL_ALERT@HYDRA:~#";
-                    prompt.style.color = "#f33";
-                    input.style.color = "#f33";
-                    printLog(
-                        "============================================================\n" +
-                        "⚠️  CRITICAL EXPLOIT DETECTED // FIREWALL PUNCTURED  ⚠️\n" +
-                        "============================================================\n" +
-                        "FOREIGN INTRUSION COUNTER-ATTACK DETECTED BY REMOTE HOST.\n" +
-                        "EXECUTE 'cls' IMMEDIATELY TO PURGE SHELL TRACKERS!\n" +
-                        "============================================================"
-                    );
-                    break;
-
-                case 'cls': 
-                    document.body.classList.remove('critical-alert');
-                    prompt.textContent = "admin@hydra-node:~#";
-                    prompt.style.color = "#00ffcc";
-                    input.style.color = "#00ff66";
-                    output.innerHTML = "[SYSTEM] Terminal buffers purged. Environment stabilized. Standby.";
-                    break;
-
-                case 'sys': printLog("CORE MODULE: Hydra-Net Linux Stable 11.4-build\nENGINE: Quantum Thread Core x128\nCIPHER LAYER: AES-GCM-256 Enabled"); break;
-                case 'cfg': printLog("Parsing config.json...\n{\n  \"stealth_routing\": true,\n  \"node_hops\": 7\n}"); break;
-                case 'ver': printLog("Hydra Recon Core System Engine v3.4.0-STABLE"); break;
-                case 'tim': printLog(`Network Timestamp: ${new Date().toISOString()}`); break;
-                case 'mem': printLog("Scanning Physical Memory Allocation...\nBank 0 [████████████░░░░░░] 68% Used"); break;
-                case 'scn': printLog("Probing ports via syn-stealth scan...\nPort 21/tcp  (ftp)     -> VULNERABLE\nPort 80/tcp  (http)    -> OPEN"); break;
-                case 'prx': printLog("Establishing Secure Multi-hop Proxy Chains...\n[LOCAL] -> [TOKYO, JP] -> [TARGET]"); break;
-                case 'png': printLog("Sending ICMP Echo packets to target gateway...\n64 bytes from secure.node.net: time=4.12ms"); break;
-                case 'ipc': printLog("interface: wlan0\ninet addr: 10.24.110.89  Mask: 255.255.255.0"); break;
-                case 'run': printLog("Launching automated dictionary compiler...\n[+] Bruteforce attack vector loaded."); break;
-                case 'bps': printLog("Analyzing WAF bypass rule...\n[+] Security group temporarily bypassed."); break;
-                case 'log': printLog("TIMESTAMP     MODULE        EVENT                   STATUS\n14:51:02      AUTH_SESS     Root password match     SUCCESS"); break;
-                case 'src': printLog("#include <stdio.h>\nint main() {\n    setuid(0); system(\"/bin/sh\"); return 0;\n}"); break;
-                case 'cat': printLog("Reading encrypted payload archive...\nZ2Vka29wZW5fYmFja2Rvb3Jfc2VjcmV0X3Bhc3N3b3JkXzIwMjY="); break;
+    </script>
+</body>
+</html>

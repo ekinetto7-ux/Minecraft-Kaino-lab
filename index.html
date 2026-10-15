@@ -23,7 +23,7 @@
             height: 85%;
             overflow-y: auto;
         }
-        #input-area {
+        #command-form {
             display: flex;
             align-items: center;
             font-size: 18px;
@@ -58,40 +58,42 @@
         Type <span class="success">jp</span> for Japanese command list.
     </div>
 
-    <div id="input-area">
+    <!-- formタグで囲むことでエンターや送信ボタンを確実にキャッチする -->
+    <form id="command-form">
         <span class="prompt">root@system:~$</span>
         <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
-    </div>
+    </form>
 
     <script>
         const terminal = document.getElementById('terminal');
         const input = document.getElementById('command-input');
+        const form = document.getElementById('command-form');
         
         let autoStreamInterval = null;
 
-        // ページ内のどこをクリックしても入力欄にフォーカスを戻す
+        // 画面をクリックしたら常に入力欄にフォーカス
         document.addEventListener('click', () => {
             input.focus();
         });
 
-        // ページ読み込み時にも強制フォーカス
         window.onload = () => {
             input.focus();
         };
 
-        // エンターキーの検知を確実にする
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const cmd = input.value.trim().toLowerCase();
-                
-                stopAutoStream();
+        // フォームの送信（Enterキーやスマホの決定ボタン）で実行
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // ページが勝手にリロードされるのを防ぐ
+            
+            const cmd = input.value.trim().toLowerCase();
+            if (cmd === '') return;
+            
+            stopAutoStream();
 
-                appendOutput(`root@system:~$ ${cmd}`);
-                processCommand(cmd);
+            appendOutput(`root@system:~$ ${cmd}`);
+            processCommand(cmd);
 
-                input.value = '';
-                terminal.scrollTop = terminal.scrollHeight;
-            }
+            input.value = '';
+            terminal.scrollTop = terminal.scrollHeight;
         });
 
         function appendOutput(text, className = '') {
@@ -134,7 +136,7 @@
         }
 
         function processCommand(cmd) {
-            if (cmd !== 'jp' && cmd.length !== 3 && cmd !== '') {
+            if (cmd !== 'jp' && cmd.length !== 3) {
                 appendOutput("エラー: コマンドは 'jp' または3文字で入力してください", "warning");
                 return;
             }
@@ -203,7 +205,6 @@
                     break;
 
                 default:
-                    if (cmd === '') break;
                     appendOutput(`不明なコマンド: '${cmd}' ('jp'で一覧)`, "warning");
                     break;
             }

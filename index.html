@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.2</title>
+    <title>CYBER TERMINAL - v7.3</title>
     <style>
         body {
             background-color: #03070c;
@@ -107,13 +107,13 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.2 [STABLE TEXT MODE]</span>
+            <span class="system">  CYBER TERMINAL v7.3 [LOCK SYSTEM ACTIVE]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for Japanese command list, or <span class="success">aut</span> for live stream.
+            Type <span class="success">jp</span> for Japanese command list, or <span class="success">lok</span> to lock system.
         </div>
 
         <form id="command-form">
-            <span class="prompt">root@cyber:~#</span>
+            <span class="prompt" id="prompt-label">root@cyber:~#</span>
             <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
         </form>
     </div>
@@ -122,9 +122,11 @@
         const terminal = document.getElementById('terminal');
         const input = document.getElementById('command-input');
         const form = document.getElementById('command-form');
+        const promptLabel = document.getElementById('prompt-label');
         
         let autoStreamInterval = null;
         let isProcessing = false;
+        let isLocked = false; // ロック状態を管理するフラグ
 
         document.addEventListener('click', () => { 
             if (!isProcessing) input.focus(); 
@@ -138,12 +140,29 @@
             e.preventDefault();
             if (isProcessing) return;
 
-            const cmd = input.value.trim().toLowerCase();
-            if (cmd === '') return;
+            const val = input.value.trim();
+            const cmd = val.toLowerCase();
+            if (val === '') return;
             
+            // ロック中の特殊処理（パスワード判定）
+            if (isLocked) {
+                appendOutput(`ENTER PASSWORD: ***`);
+                input.value = '';
+                
+                if (val === '911') {
+                    isLocked = false;
+                    promptLabel.textContent = "root@cyber:~#";
+                    appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
+                } else {
+                    appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
+                }
+                terminal.scrollTop = terminal.scrollHeight;
+                return;
+            }
+
             if (cmd !== 'aut' && cmd !== 'stp') stopAutoStream();
 
-            appendOutput(`root@cyber:~# ${cmd}`);
+            appendOutput(`root@cyber:~# ${val}`);
             input.value = '';
             processCommand(cmd);
         });
@@ -217,19 +236,25 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (全20種)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
-                    appendOutput("  stp : ログ停止    |  hak : ハック    |  scn : 脆弱性スキャン");
-                    appendOutput("  gen : 鍵生成      |  mtr : マトリックス|  brk : システムクラッシュ");
-                    appendOutput("  sat : 衛星接続    |  bck : バックドア  |  ai  : AIコアハック");
-                    appendOutput("  inf : IP情報確認  |  pwd : 階層表示    |  ls  : ファイル一覧");
-                    appendOutput("  dlc : データDL    |  who : ログイン者  |  cpu : CPU使用率確認");
-                    appendOutput("  cls : 画面消去    |  rst : 再起動");
+                    appendOutput("  stp : ログ停止    |  hak : ハック    |  lok : システムをロック");
+                    appendOutput("  scn : 脆弱性スキャン|  gen : 鍵生成    |  mtr : マトリックス");
+                    appendOutput("  brk : クラッシュ  |  sat : 衛星接続  |  bck : バックドア");
+                    appendOutput("  ai  : AIコアハック|  inf : IP確認    |  pwd : 階層表示");
+                    appendOutput("  ls  : ファイル一覧|  dlc : データDL  |  who : ログイン者");
+                    appendOutput("  cpu : CPU確認     |  cls : 画面消去  |  rst : 再起動");
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, hlp, aut, stp, hak, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, hlp, aut, stp, hak, lok, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    break;
+
+                case 'lok':
+                    isLocked = true;
+                    promptLabel.textContent = "PASSWORD:";
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE TO UNLOCK.", "warning");
                     break;
 
                 case 'aut': startAutoStream(); break;
@@ -331,21 +356,3 @@
 
                 case 'rst':
                     appendOutput("Rebooting kernel...", "warning");
-                    isProcessing = true;
-                    input.disabled = true;
-                    setTimeout(() => {
-                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">jp</span> for command list.';
-                        isProcessing = false;
-                        input.disabled = false;
-                        input.focus();
-                    }, 1200);
-                    break;
-
-                default:
-                    appendOutput(`Command '${cmd}' not recognized. Type 'jp'.`, "warning");
-                    break;
-            }
-        }
-    </script>
-</body>
-</html>

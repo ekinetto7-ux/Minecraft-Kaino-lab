@@ -3,205 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.7.1</title>
+    <title>HYDRA-CORE RECON OS v3.0</title>
     <style>
+        /* 本格的なサイバーパンク/ターミナルUI */
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 20px;
+            background-color: #020202;
+            color: #00ff66;
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
+            padding: 25px;
             margin: 0;
             overflow-x: hidden;
-            transition: background-color 0.3s;
+            background-image: radial-gradient(circle, rgba(0, 40, 10, 0.3) 0%, #000 80%);
+            transition: all 0.2s ease;
         }
+
+        /* スキャンライン（ブラウン管風）エフェクト */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
         #terminal-output {
             white-space: pre-wrap;
-            margin-bottom: 10px;
-            line-height: 1.5;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
+
         .input-line {
             display: flex;
             align-items: center;
+            border-top: 1px solid rgba(0, 255, 102, 0.1);
+            padding-top: 10px;
         }
+
         .prompt {
-            color: #0fa;
-            margin-right: 10px;
+            color: #00ffcc;
+            font-weight: bold;
+            margin-right: 12px;
             user-select: none;
         }
+
         #cmd-input {
             background: transparent;
             border: none;
-            color: #0f0;
+            color: #00ff66;
             font-family: inherit;
             font-size: 16px;
             outline: none;
             flex-grow: 1;
+            text-shadow: 0 0 5px rgba(0, 255, 102, 0.8);
         }
 
-        /* アラート用スタイル */
-        .alert-text {
-            color: #f00 !important;
-            font-weight: bold;
-            animation: blink 0.8s infinite;
+        /* 進行状況バーのリアルアニメーション */
+        .progress-bar-container {
+            display: inline-block;
+            width: 300px;
+            background: #002200;
+            border: 1px solid #00ff66;
+            height: 15px;
+            margin-top: 5px;
+            vertical-align: middle;
         }
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.1; }
+        .progress-bar-fill {
+            height: 100%;
+            background: #00ff66;
+            width: 0%;
+            box-shadow: 0 0 10px #00ff66;
+        }
+
+        /* 危険警告（レッドアラート） */
+        .critical-alert {
+            background-color: #300 !important;
+            color: #ff3333 !important;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.8);
+        }
+        .blink {
+            animation: pulse 0.5s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; }
             100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.7.1 [Stop Command Patched]
-一覧表示は 'jp' と入力してください。
-★ 'ysu'（サーバー乗っ取り）などの演出中に 'stp' で強制停止できます。
-======================================================================</div>
+    <div id="terminal-output">╔══════════════════════════════════════════════════════════════════════╗
+║  HYDRA INTERACTIVE NET-STALKER CORE v3.0.0                          ║
+║  SECURE ENCRYPTION NODE // ACCESS POINT: AUTHORIZED ONLY            ║
+╚══════════════════════════════════════════════════════════════════════╝
+[SYSTEM] Node connection established online.
+[SYSTEM] Welcome back, Admin. Type 'jp' to load localized operation manual.</div>
 
     <div class="input-line">
-        <span class="prompt" id="terminal-prompt">root@hydra-net:~#</span>
+        <span class="prompt" id="terminal-prompt">admin@hydra-node:~#</span>
         <input type="text" id="cmd-input" autofocus autocomplete="off">
     </div>
 
+    <!-- 本格的なビープ音・サイバー音を鳴らすためのWeb Audio APIシンセサイザー -->
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
         const prompt = document.getElementById('terminal-prompt');
         let typeTimer = null; 
+        let isInfinite = false;
+
+        // サイバー効果音をプログラム内部で合成・再生する関数（外部ファイルを読み込まないため軽量・確実）
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'type') { // タイピング音
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150 + Math.random() * 400, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
+                    osc.start(); osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'access') { // 侵入成功音
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.setValueAtTime(1760, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
+                    osc.start(); osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'alert') { // アラート警告音
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(880, ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+                    osc.start(); osc.stop(ctx.currentTime + 0.4);
+                }
+            } catch(e) { /* オーディオ制限回避 */ }
+        }
 
         document.addEventListener('click', () => input.focus());
 
         input.addEventListener('keydown', function(e) {
+            playSound('type');
             if (e.key === 'Enter') {
-                const command = input.value.trim().toLowerCase();
+                const command = input.value.trim();
                 if (command !== '') {
-                    output.textContent += `\n${prompt.textContent} ${command}`;
-                    executeCommand(command);
+                    output.innerHTML += `\n<span style="color:#0fa;">${prompt.textContent} ${command}</span>`;
+                    executeCommand(command.toLowerCase());
                 }
                 input.value = '';
                 setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 10);
             }
         });
 
-        // 動いているタイピング処理を安全に止める関数
-        function stopTyping() {
-            if (typeTimer) {
-                clearInterval(typeTimer);
-                typeTimer = null;
-            }
+        function stopAllEffects() {
+            isInfinite = false;
+            if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
         }
 
-        function printLog(text) {
-            stopTyping(); // 新しい描写の前に古いタイマーを止める
+        // 本格的なパラパラ文字出力
+        function printLog(text, speed = 8) {
+            stopAllEffects();
+            output.innerHTML += '\n';
             let index = 0;
-            output.textContent += '\n';
             
             typeTimer = setInterval(() => {
                 if (index < text.length) {
-                    output.textContent += text.charAt(index);
+                    // 特殊文字の処理
+                    if (text.substr(index, 1) === '\n') {
+                        output.innerHTML += '<br>';
+                    } else {
+                        output.innerHTML += text.charAt(index);
+                    }
+                    if (index % 3 === 0) playSound('type');
                     window.scrollTo(0, document.body.scrollHeight);
                     index++;
                 } else {
                     clearInterval(typeTimer);
                     typeTimer = null;
                 }
-            }, 4);
+            }, speed);
+        }
+
+        // 進化版：ゲージがグングン上がっていくプログレスシミュレーション
+        function runProgressBar(finalMessage, callback) {
+            stopAllEffects();
+            output.innerHTML += `\n[CONNECTING] `;
+            const barId = 'bar_' + Date.now();
+            const fillId = 'fill_' + Date.now();
+            
+            output.innerHTML += `<div class="progress-bar-container" id="${barId}"><div class="progress-bar-fill" id="${fillId}"></div></div> <span id="pct_${barId}">0%</span>`;
+            
+            let pct = 0;
+            const fillEl = document.getElementById(fillId);
+            const pctEl = document.getElementById(`pct_${barId}`);
+            
+            const barTimer = setInterval(() => {
+                pct += Math.floor(Math.random() * 8) + 2;
+                if (pct >= 100) {
+                    pct = 100;
+                    clearInterval(barTimer);
+                    fillEl.style.width = '100%';
+                    pctEl.textContent = '100% [DONE]';
+                    playSound('access');
+                    setTimeout(() => {
+                        printLog(finalMessage);
+                    }, 300);
+                } else {
+                    fillEl.style.width = pct + '%';
+                    pctEl.textContent = pct + '%';
+                }
+            }, 60);
+        }
+
+        function runInfiniteStream() {
+            if (!isInfinite) return;
+            let line = `[DUMP] 0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()} -- ADDR:0x${Math.floor(Math.random()*65535).toString(16).toUpperCase()} -- TRACE: INJECT_VECTOR_${Math.floor(Math.random()*99)} -- STATE: OVERFLOW`;
+            output.innerHTML += "\n" + line;
+            window.scrollTo(0, document.body.scrollHeight);
+            requestAnimationFrame(runInfiniteStream);
         }
 
         function executeCommand(cmd) {
-            // 【特例】stp が入力されたら即座にタイマーを止めて終了する
             if (cmd === 'stp') {
-                stopTyping();
-                output.textContent += "\n[WARNING] Process halted by user. Ready.";
-                window.scrollTo(0, document.body.scrollHeight);
+                stopAllEffects();
+                printLog("[HALTED] Infinite monitoring stream and active sequence aborted.");
                 return;
             }
 
+            stopAllEffects();
+
             switch (cmd) {
                 case 'jp':
-                    output.textContent += "\n" + 
-                        "=================== ハッカーシステム コマンドメニュー ===================\n\n" +
-                        "jp  - メニュー表示      sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
-                        "cls - 画面ログ消去      tim - 現在時刻の表示    mem - メモリ使用率      upt - 起動時間の計測\n" +
-                        "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
-                        "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
-                        "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
-                        "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング（進化版）\n" +
-                        "alt - 【緊急警告】 偽のシステム崩壊レッドアラートを起動\n" +
-                        "stp - 【強制停止】 進行中の文字出力をその場でストップする";
-                    window.scrollTo(0, document.body.scrollHeight);
-                    break;
-
-                case 'ysu': 
-                    printLog(
-                        "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
-                        "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
-                        "Scanning network topology and encryption wrappers...\n" +
-                        "----------------------------------------------------------------\n" +
-                        "[ANALYSIS]  [██████░░░░░░░░░░░░░░] 30% - Injecting Exploit Vector\n" +
-                        "[ANALYSIS]  [████████████░░░░░░░░] 60% - Overwriting Memory Bank\n" +
-                        "[ANALYSIS]  [████████████████████] 100% - Firewall Overridden\n" +
-                        "----------------------------------------------------------------\n" +
-                        "Unlocking Root Hashes (MD5/SHA-256):\n" +
-                        " >> Match Found: 'k1m1tsu_2026'\n" +
-                        " >> Hijacking Session Tokens... [SUCCESS]\n" +
-                        " >> Deploying Ghost Backdoor...\n\n" +
-                        "====================================================\n" +
-                        "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
-                        "====================================================\n" +
-                        "対象サーバーのコアシステムを完全制圧しました。ルートシェル解放。"
-                    );
-                    break;
-
-                case 'alt':
-                    document.body.style.backgroundColor = "#200"; 
-                    prompt.textContent = "ALERT@SYSTEM:~#"; 
-                    prompt.style.color = "#f00";
-                    input.style.color = "#f00";
-                    output.innerHTML += `\n<span class="alert-text">` +
-                        "====================================================\n" +
-                        "🚨 [CRITICAL WARNING] SYSTEM OVERRUN DETECTED 🚨\n" +
-                        "====================================================\n" +
-                        "COUNTER-INTRUSION DETECTED BY FOREIGN HOST.\n" +
-                        "DELETING CORE DATABASE MODULES... [PENDING]\n" +
-                        "EMERGENCY OVERRIDE REQUIRED.\n" +
-                        "====================================================\n" +
-                        "⚠️ 警告: 逆ハッキングを検知しました。画面を戻すには 'cls' を実行してください。</span>";
-                    break;
-
-                case 'cls':
-                    stopTyping();
-                    document.body.style.backgroundColor = "#000";
-                    prompt.textContent = "root@hydra-net:~#";
-                    prompt.style.color = "#0fa";
-                    input.style.color = "#0f0";
-                    output.textContent = "Screen cleared. Alert dismissed. Standby for command.";
-                    break;
-
-                // --- 既存のコマンド ---
-                case 'sys': printLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
-                case 'cfg': printLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': printLog("Hydra Terminal Core v2.7.1-release (Build 20261015)"); break;
-                case 'tim': printLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
-                case 'mem': printLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
-                case 'upt': printLog("System Uptime: 1,024 hours 43 minutes 12 seconds"); break;
-                case 'scn': printLog("Scanning ports...\nPort 22: OPEN (SSH)\nPort 80: OPEN (HTTP)\nPort 443: OPEN (HTTPS)"); break;
-                case 'prx': printLog("Proxy status: ENCRYPTED\nChain: JP -> US -> DE -> IS\nAnonymity Level: 99.8%"); break;
-                case 'png': printLog("PING target.gov (10.4.21.99): 56 data bytes\n64 bytes from 10.4.21.99: icmp_seq=1 time=12.4 ms"); break;
-                case 'ipc': printLog("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\ninet 192.168.23.104  netmask 255.255.255.0"); break;
-                case 'run': printLog("Executing exploit weapon...\nInjecting rootkit... [OK]\nSystem hijacked."); break;
-                case 'bps': printLog("Bypassing firewall layers...\nLayer 1: PASSED\nLayer 2: PASSED\nCloudflare: OVERIDDEN [100%]"); break;
-                case 'brt': printLog("Starting Brute-Force on SSH...\nTrying wordlist...\n[MATCH] password='admin1234'"); break;
-                case 'dos': printLog("Assembling Denial of Service attack...\nTarget flooded with UDP packets. Target status: DOWN"); break;
-                case 'log': printLog("TIMESTAMP        EVENT              OPERATOR\n14:05:32     Root Access Granted  THIS TERMINAL"); break;
-                case 'src': printLog("void main() {\n    char *shield = malloc(1024);\n    while(1) { fork(); }\n}"); break;
-                case 'cat': printLog("Reading secret.txt...\n[CONFIDENTIAL]\nPassphrase: 'omega_alpha'"); break;
-                case 'rst': output.textContent = "Resetting environment..."; location.reload(); break;
-
-                default:
-                    printLog(`エラー: コマンド '${cmd}' は存在しません。 'jp' を入力してください。`);
-                    break;
-            }
-        }
-    </script>
+                    output.innerHTML += "\n" + 
+                        "=================== HYDRA OPERATION MANUAL ===================\n\n" +
+                        "jp  - ヘルプメニューの出力  sys - コアノード構成の取得   cfg - 環境設定ファイルのパース\n" +
+                        "cls - ターミナルログの完全消去 tim - 世界標準サーバー時刻   mem - メモリ割り当てバンクの走査\n" +
+                        "scn - ポートスキャナーの展開 prx - 多層暗号プロキシの構築 png - 外部アドレス宛のパケット疎通\n" +
+                        "run - 自動クラッキング兵器   bps - 防御隔壁強制オーバーライド log - セキュリティ履歴のダンプ\n" +
+                        "src - 攻撃用C言語バイナリ   cat - 機密情報のインジェクション  rst - ターミナルシステム再起動\n" +

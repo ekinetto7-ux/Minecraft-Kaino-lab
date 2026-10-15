@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.5.1</title>
+    <title>Hacker OS v2.5.2</title>
     <style>
         body {
             background-color: #000;
@@ -41,7 +41,7 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
+Welcome to Hydra-Core Terminal v2.5.2 [Anti-Freeze Update]
 一覧表示は 'jp' と入力してください。
 ★新コマンド 'ysu' でサーバー強制乗っ取りシーケンスが始動します。
 ======================================================================</div>
@@ -54,9 +54,13 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
-        let currentTimer = null; 
-        let timeoutTimers = [];  
-        let infiniteTimer = null;
+        
+        // すべてのタイマーを一括管理するオブジェクト
+        let timers = {
+            typeInterval: null,
+            infiniteInterval: null,
+            timeouts: []
+        };
 
         document.addEventListener('click', () => input.focus());
 
@@ -64,43 +68,50 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
             if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
                 if (command !== '') {
+                    // 入力したコマンドを即座に画面に表示
                     output.textContent += `\nroot@hydra-net:~# ${command}`;
                     executeCommand(command);
                 }
                 input.value = '';
+                // 確実なスクロール
                 setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 10);
             }
         });
 
-        // すべてのタイマーを安全にリセットする修正関数
-        function clearAllTimers() {
-            if (currentTimer) { clearInterval(currentTimer); currentTimer = null; }
-            if (infiniteTimer) { clearInterval(infiniteTimer); infiniteTimer = null; }
-            timeoutTimers.forEach(t => clearTimeout(t));
-            timeoutTimers = [];
+        // 動いているすべての処理を完全に安全に停止させる関数
+        function abortAllProcesses() {
+            if (timers.typeInterval) { clearInterval(timers.typeInterval); timers.typeInterval = null; }
+            if (timers.infiniteInterval) { clearInterval(timers.infiniteInterval); timers.infiniteInterval = null; }
+            timers.timeouts.forEach(t => clearTimeout(t));
+            timers.timeouts = [];
         }
 
+        // フリーズを完全に防止した文字出力関数
         function typeLog(text, callback) {
-            if (currentTimer) clearInterval(currentTimer);
+            abortAllProcesses(); // 新しい文字を出す前に、前の処理を「完全に」抹殺する
+            
             let index = 0;
             output.textContent += '\n';
+            
+            // ヘルプメニューなど、文字数が極端に多い場合は即時表示してフリーズを回避
             if (text.length > 250) {
                 output.textContent += text;
                 if (callback) callback();
                 window.scrollTo(0, document.body.scrollHeight);
                 return;
             }
-            currentTimer = setInterval(() => {
+
+            timers.typeInterval = setInterval(() => {
                 if (index < text.length) {
                     output.textContent += text.charAt(index);
                     index++;
                     window.scrollTo(0, document.body.scrollHeight);
                 } else {
-                    clearInterval(currentTimer);
-                    currentTimer = null;
+                    clearInterval(timers.typeInterval);
+                    timers.typeInterval = null;
                     if (callback) callback();
                 }
-            }, 10);
+            }, 5); // 詰まりを防ぐために少し高速化
         }
 
         function generateRandomLine() {
@@ -113,12 +124,15 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
         }
 
         function executeCommand(cmd) {
+            // stpコマンド、または打ち間違えを含めていつでもプロセスを強制中断できる
             if (cmd === 'stp') {
-                clearAllTimers();
+                abortAllProcesses();
                 typeLog("[WARNING] Interrupted. System stabilized.");
                 return;
             }
-            clearAllTimers();
+
+            // 新しいコマンドが来たら、前の演出のタイマーをすべてリセット
+            abortAllProcesses();
 
             switch (cmd) {
                 case 'jp':
@@ -134,41 +148,39 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
                     );
                     break;
 
-                case 'ysu': // バグを完全に修正したサーバー乗っ取りシーケンス
+                case 'ysu': // 安全に完全自動で完結するサーバーハックシーケンス
                     typeLog("[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...", () => {
-                        timeoutTimers.push(setTimeout(() => typeLog("> ターゲットのIP「157.112.44.89」を特定。攻撃ルーティングを設定中..."), 500));
-                        timeoutTimers.push(setTimeout(() => typeLog("> SSL/TLSの脆弱性 CVE-2026-X を利用して暗号レイヤーを破砕中..."), 1200));
-                        timeoutTimers.push(setTimeout(() => typeLog("> [████████████░░░░░░░░] 60% メインフレームに侵入開始..."), 1800));
-                        timeoutTimers.push(setTimeout(() => typeLog("> 防御ファイアウォールを無効化。管理者ハッシュの強制解析へ移行..."), 2400));
                         
-                        // バグの原因だった無限ループを、1.5秒間で自動停止する安全な仕組みに変更
-                        timeoutTimers.push(setTimeout(() => {
+                        timers.timeouts.push(setTimeout(() => typeLog("> ターゲットのIP「157.112.44.89」を特定。攻撃ルート確立。"), 400));
+                        timers.timeouts.push(setTimeout(() => typeLog("> SSL/TLS脆弱性を検知。プロトコル暗号レイヤーを無効化中..."), 800));
+                        timers.timeouts.push(setTimeout(() => typeLog("> [████████████░░░░░░░░] 60% メインフレームに接続確立。"), 1200));
+                        timers.timeouts.push(setTimeout(() => typeLog("> 管理者ハッシュの強制解析シーケンスへ移行..."), 1600));
+                        
+                        // 暗号ストリームの演出
+                        timers.timeouts.push(setTimeout(() => {
                             output.textContent += "\n[CRACKING ROOT HASH...]\n";
-                            infiniteTimer = setInterval(() => {
-                                output.textContent += "0x" + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + " STATUS_INJECTING_PAYLOAD_MEMORY_OVERFLOW...\n";
+                            timers.infiniteInterval = setInterval(() => {
+                                output.textContent += "0x" + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + " STATUS_INJECTING_PAYLOAD...\n";
                                 window.scrollTo(0, document.body.scrollHeight);
-                            }, 40);
-                        }, 3000));
+                            }, 50);
+                        }, 2000));
 
-                        // 3000msから1.5秒後（4500ms）に暗号ストリームを確実に停止し、リザルトを出す
-                        timeoutTimers.push(setTimeout(() => {
-                            if (infiniteTimer) {
-                                clearInterval(infiniteTimer);
-                                infiniteTimer = null;
-                            }
+                        // 演出終了、結果表示
+                        timers.timeouts.push(setTimeout(() => {
+                            if (timers.infiniteInterval) { clearInterval(timers.infiniteInterval); timers.infiniteInterval = null; }
                             typeLog("\n[+] MATCH FOUND: ROOT PASSWORD DECRYPTED -> 'k1m1tsu_2026'\n" +
                                     "[+] ACCESS GRANTED: CONNECTING TO CORE SERVER...\n" +
                                     "====================================================\n" +
                                     "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
                                     "====================================================\n" +
-                                    "ターゲットサーバーの全権限を掌握しました。コマンド待機中...");
-                        }, 4500));
+                                    "ターゲットサーバーの全権限を掌握しました。次の入力を待機中...");
+                        }, 3500));
                     });
                     break;
 
                 case 'inf':
                     output.textContent += "\n[INITIALIZING INFINITE STREAM] Press 'stp' to abort.\n";
-                    infiniteTimer = setInterval(() => {
+                    timers.infiniteInterval = setInterval(() => {
                         output.textContent += "\n" + generateRandomLine();
                         window.scrollTo(0, document.body.scrollHeight);
                     }, 50);
@@ -176,7 +188,7 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
 
                 case 'sys': typeLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': typeLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': typeLog("Hydra Terminal Core v2.5.1-release (Build 20261015)"); break;
+                case 'ver': typeLog("Hydra Terminal Core v2.5.2-release (Build 20261015)"); break;
                 case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
                 case 'tim': typeLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': typeLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
@@ -187,11 +199,8 @@ Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
                 case 'ipc': typeLog("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\ninet 192.168.23.104  netmask 255.255.255.0"); break;
                 case 'run': 
                     typeLog("Executing exploit weapon...", () => { 
-                        timeoutTimers.push(setTimeout(() => typeLog("Injecting rootkit... [OK]"), 500));
-                        timeoutTimers.push(setTimeout(() => typeLog("System hijacked."), 1000));
+                        timers.timeouts.push(setTimeout(() => typeLog("Injecting rootkit... [OK]"), 400));
+                        timers.timeouts.push(setTimeout(() => typeLog("System hijacked."), 800));
                     }); 
                     break;
                 case 'bps': typeLog("Bypassing firewall layers...\nLayer 1: PASSED\nLayer 2: PASSED\nCloudflare: OVERIDDEN [100%]"); break;
-                case 'brt': typeLog("Starting Brute-Force on SSH...\nTrying wordlist (1/5000)...\n[MATCH] password='admin1234'"); break;
-                case 'dos': typeLog("Assembling Denial of Service attack...\nTarget flooded with UDP packets. Target status: DOWN"); break;
-                case 'log': typeLog("TIMESTAMP        EVENT              OPERATOR\n14:05:32     Root Access Granted  THIS TERMINAL"); break;

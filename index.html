@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYDRA-CORE RECON OS v3.2.0</title>
+    <title>HYDRA-CORE RECON OS v3.3.0</title>
     <style>
-        /* 見た目は最高にかっこいいまま、中身を単純にしました */
         body {
             background-color: #020202;
             color: #00ff66;
@@ -57,11 +56,12 @@
 <body>
 
     <div id="terminal-output">╔══════════════════════════════════════════════════════════════════════╗
-║  HYDRA INTERACTIVE NET-STALKER CORE v3.2.0 [ULTRA-SAFE EDITION]     ║
+║  HYDRA INTERACTIVE NET-STALKER CORE v3.3.0 [INFINITE SAFEMODE]      ║
 ║  SECURE ENCRYPTION NODE // ACCESS POINT: AUTHORIZED ONLY            ║
 ╚══════════════════════════════════════════════════════════════════════╝
 [SYSTEM] Node connection established online.
-[SYSTEM] Welcome back, Admin. Type 'jp' to load localized operation manual.</div>
+[SYSTEM] Welcome back, Admin. Type 'jp' to load localized operation manual.
+★ 'inf' で無限ログが出力されます。止めるには 'stp' を入力してください。</div>
 
     <div class="input-line">
         <span class="prompt" id="terminal-prompt">admin@hydra-node:~#</span>
@@ -72,32 +72,58 @@
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
         const prompt = document.getElementById('terminal-prompt');
+        let infiniteLoopId = null; // 無限ループを管理する安全なID
 
-        // 画面のどこをクリックしても入力欄にフォーカスを当てる
         document.addEventListener('click', () => input.focus());
 
-        // エンターキーが押された時の処理（一瞬でログを出力する最も安全な方式）
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const command = input.value.trim();
                 if (command !== '') {
-                    // 入力した文字を画面にそのまま出す
                     output.innerHTML += `\n<span style="color:#0fa;">${prompt.textContent} ${command}</span>`;
                     executeCommand(command.toLowerCase());
                 }
                 input.value = '';
-                // 確実に画面を一番下にスクロール
                 window.scrollTo(0, document.body.scrollHeight);
             }
         });
 
-        // 演出用のタイマーを一切使わず、即座にログを書き出す関数
         function printLog(text) {
             output.innerHTML += '\n' + text.replace(/\n/g, '<br>');
             window.scrollTo(0, document.body.scrollHeight);
         }
 
+        // 暴走を起こさない高速ログ自動生成
+        function startInfiniteLog() {
+            if (!infiniteLoopId) return;
+            
+            // ランダムなダミーパケットログを瞬時に追加
+            let line = `[DUMP] 0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()} -- ADDR:0x${Math.floor(Math.random()*65535).toString(16).toUpperCase()} -- STATE: INJECT_SUCCESS`;
+            output.innerHTML += "<br>" + line;
+            window.scrollTo(0, document.body.scrollHeight);
+            
+            // ブラウザの描画システムに完全に同期させて次を呼び出す（絶対に固まらない最安全処理）
+            infiniteLoopId = requestAnimationFrame(startInfiniteLog);
+        }
+
+        function stopInfiniteLog() {
+            if (infiniteLoopId) {
+                cancelAnimationFrame(infiniteLoopId);
+                infiniteLoopId = null;
+            }
+        }
+
         function executeCommand(cmd) {
+            // stpコマンドが来たら無限ループを最優先で停止
+            if (cmd === 'stp') {
+                stopInfiniteLog();
+                printLog("[WARNING] Infinite stream halted by user. Node standby.");
+                return;
+            }
+
+            // 他のコマンドが打たれた際も一度ループを安全に停止
+            stopInfiniteLog();
+
             switch (cmd) {
                 case 'jp':
                     printLog(
@@ -107,11 +133,17 @@
                         "scn - ポートスキャナーの展開 prx - 多層暗号プロキシの構築 png - 外部アドレス宛のパケット疎通\n" +
                         "run - 自動クラッキング兵器   bps - 防御隔壁強制オーバーライド log - セキュリティ履歴のダンプ\n" +
                         "src - 攻撃用C言語バイナリ   cat - 機密情報のインジェクション  rst - ターミナルシステム再起動\n" +
-                        "alt - 疑似逆追跡警報の起動    ysu - 【サーバー完全乗っ取り】（最速安全版）"
+                        "alt - 疑似逆追跡警報の起動    inf - 高速暗号データの無限垂れ流し  stp - 進行中プロセスの強制中断\n" +
+                        "ysu - 【サーバー完全乗っ取り】（最速安全版）"
                     );
                     break;
 
-                case 'ysu': // 一瞬で完了する安全・確実なサーバー乗っ取り
+                case 'inf': // ♾️ 無限スクロールコマンド
+                    printLog("[INITIALIZING MEMORY DUMP STREAM] Press 'stp' to stop.");
+                    infiniteLoopId = requestAnimationFrame(startInfiniteLog);
+                    break;
+
+                case 'ysu': 
                     printLog(
                         "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
                         "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
@@ -129,7 +161,7 @@
                     );
                     break;
 
-                case 'alt': // タイマーなしのアラートモード変更
+                case 'alt': 
                     document.body.classList.add('critical-alert');
                     prompt.textContent = "CRITICAL_ALERT@HYDRA:~#";
                     prompt.style.color = "#f33";
@@ -144,7 +176,7 @@
                     );
                     break;
 
-                case 'cls': // 画面消去
+                case 'cls': 
                     document.body.classList.remove('critical-alert');
                     prompt.textContent = "admin@hydra-node:~#";
                     prompt.style.color = "#00ffcc";
@@ -152,10 +184,9 @@
                     output.innerHTML = "[SYSTEM] Terminal buffers purged. Environment stabilized. Standby.";
                     break;
 
-                /* その他の基本コマンド（すべて一瞬で即座に出力されます） */
                 case 'sys': printLog("CORE MODULE: Hydra-Net Linux Stable 11.4-build\nENGINE: Quantum Thread Core x128\nCIPHER LAYER: AES-GCM-256 Enabled"); break;
                 case 'cfg': printLog("Parsing config.json...\n{\n  \"stealth_routing\": true,\n  \"node_hops\": 7\n}"); break;
-                case 'ver': printLog("Hydra Recon Core System Engine v3.2.0-SAFE"); break;
+                case 'ver': printLog("Hydra Recon Core System Engine v3.3.0-PRO_STABLE"); break;
                 case 'tim': printLog(`Network Timestamp: ${new Date().toISOString()}`); break;
                 case 'mem': printLog("Scanning Physical Memory Allocation...\nBank 0 [████████████░░░░░░] 68% Used"); break;
                 case 'scn': printLog("Probing ports via syn-stealth scan...\nPort 21/tcp  (ftp)     -> VULNERABLE\nPort 80/tcp  (http)    -> OPEN"); break;
@@ -173,7 +204,3 @@
                     printLog(`[ERROR] Command unrecognized: '${cmd}'. Execute 'jp' for localized instruction manual.`);
                     break;
             }
-        }
-    </script>
-</body>
-</html>

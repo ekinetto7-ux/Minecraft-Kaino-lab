@@ -3,25 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ROOT TERMINAL</title>
+    <title>ROOT@IPAD:~</title>
     <style>
-        body { background-color: #000; color: #0f0; font-family: monospace; padding: 20px; margin: 0; font-size: 16px; }
+        body { background-color: #050505; color: #00ff66; font-family: 'Courier New', Courier, monospace; padding: 20px; margin: 0; font-size: 15px; text-shadow: 0 0 2px #00ff66; }
         #output { width: 100%; height: calc(100vh - 80px); overflow-y: auto; box-sizing: border-box; white-space: pre-wrap; }
-        #input-line { display: flex; align-items: center; margin-top: 10px; background-color: #000; }
-        .prompt { color: #0f0; margin-right: 10px; font-weight: bold; }
-        #cmd-input { background: transparent; border: none; color: #fff; font-family: monospace; font-size: 16px; width: 100%; outline: none; }
-        .blue { color: #8af; }
-        .red { color: #f55; }
-        .yellow { color: #ff0; }
+        #input-line { display: flex; align-items: center; margin-top: 10px; }
+        .prompt { color: #33ccff; margin-right: 10px; font-weight: bold; }
+        #cmd-input { background: transparent; border: none; color: #ffffff; font-family: inherit; font-size: 15px; width: 100%; outline: none; }
+        .info { color: #00ccff; }
+        .warn { color: #ff3333; }
+        .yellow { color: #ffff00; }
+        .gray { color: #888888; }
     </style>
 </head>
 <body>
-    <div id="output">=== 🚨 ADMINISTRATIVE TERMINAL v2.0 🚨 ===
-[STATUS: READY] コマンド一覧: inf / scn / net / sys / atk / stp / bye / cls
-
+    <div id="output"><span class="gray">[    0.000000] Booting Linux kernel v6.1.0-ipad-arm64...
+[    0.084123] CPU0: Apple M-Series Core Initialized.
+[    0.542091] eMMC: Secure storage decrypted successfully.
+[    1.002495] Net: Ethernet/Wi-Fi drivers loaded. [OK]</span>
+============================================================
+Welcome to iPad Administrator Shell (bash v5.2)
+* Status: SECURE | Privilege: ROOT
+* Type '<span class="info">help</span>' to view administrative subsystems.
+============================================================
 </div>
     <div id="input-line">
-        <span class="prompt">root@ipad:~#</span>
+        <span class="prompt">root@ipad-terminal:~#</span>
         <input type="text" id="cmd-input" autocomplete="off" autocapitalize="none" spellcheck="false">
     </div>
 
@@ -29,6 +36,9 @@
         const output = document.getElementById('output');
         const input = document.getElementById('cmd-input');
         let globalLoop = null;
+        
+        let cmdHistory = [];
+        let historyIdx = -1;
 
         function focusInput() { input.focus(); }
         document.addEventListener('click', focusInput);
@@ -36,86 +46,136 @@
         window.onload = focusInput;
 
         input.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp') {
+                if (historyIdx < cmdHistory.length - 1) {
+                    historyIdx++;
+                    input.value = cmdHistory[cmdHistory.length - 1 - historyIdx];
+                }
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown') {
+                if (historyIdx > 0) {
+                    historyIdx--;
+                    input.value = cmdHistory[cmdHistory.length - 1 - historyIdx];
+                } else if (historyIdx === 0) {
+                    historyIdx = -1;
+                    input.value = '';
+                }
+                e.preventDefault();
+            }
+
             if (e.key === 'Enter') {
-                const command = input.value.trim().toLowerCase();
-                output.innerHTML += `<div><span class="prompt">root@ipad:~#</span> <span style="color:#fff">${input.value}</span></div>`;
+                const rawValue = input.value;
+                const command = rawValue.trim().toLowerCase();
                 
-                // コマンド分岐
-                if (command === 'inf') {
-                    output.innerHTML += `<div class="blue">[iPad_STATUS_LOG]
-➜ BATTERY: 100% (HEALTHY) | VOLTAGE: 3.82V
-➜ CPU_LOAD: 12.5% (STABLE) | CORE_ACTIVE: 8
-➜ NETWORK: CONNECTED (SECURE)</div>`;
+                output.innerHTML += `<div><span class="prompt">root@ipad-terminal:~#</span> <span style="color:#fff">${rawValue}</span></div>`;
+                
+                if (command !== "") {
+                    cmdHistory.push(rawValue);
+                    historyIdx = -1;
+                }
+
+                if (command === 'help') {
+                    output.innerHTML += `<div class="info">GNU bash, version 5.2.0-release (arm64-apple-darwin)
+These shell commands are defined internally. Type 'help' to see this list.
+
+  uname     : Print system architecture and kernel metadata
+  top       : Display realtime Linux tasks and CPU/Memory resource states
+  df        : Report file system disk space usage statistics
+  nmap      : Network exploration tool and security/port scanner
+  ssh       : Connect to remote host via secure shell (Password Bruteforce)
+  mtrx      : Activate Matrix code rain animation loop (Infinite)
+  ping      : Send ICMP ECHO_REQUEST packets to network hosts (Infinite)
+  shred     : Overwrite a file to hide its contents, and optionally delete it
+  kill      : Terminate background active stream loops
+  clear     : Clear the terminal screen
+  exit      : Exit the network administrator session</div>`;
                 } 
-                else if (command === 'cls') {
+                else if (command === 'clear') {
                     output.innerHTML = '';
                 } 
-                else if (command === 'scn') {
-                    output.innerHTML += `<div>[NETWORK_SCAN] スキャンを開始します...</div>`;
+                else if (command === 'uname') {
+                    output.innerHTML += `<div>Darwin ipad-terminal 23.4.0 Darwin Kernel Version 23.4.0: arm64e; root:Apple-M3/M4~iPadOS</div>`;
+                }
+                else if (command === 'df') {
+                    output.innerHTML += `<div class="info">Filesystem     1K-blocks      Used Available Use% Mounted on
+/dev/root      124032408  42104512  81927896  34% /
+devtmpfs         4012492         0   4012492   0% /dev
+/dev/sda1        2045612    541208   1504404  27% /boot
+/dev/mmcblk0p2 512409512 102451092 409958420  20% /var/storage</div>`;
+                }
+                else if (command === 'top') {
+                    output.innerHTML += `<div class="info">[Tasks: 142 total,   2 running, 140 sleeping]
+[CPU(s): 12.8% us,  3.2% sy,  0.0% ni, 84.0% id]
+[GiB Mem :  7.84G total,  4.12G free,  2.94G used,  0.78G buff/cache]
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+ 1042 root      20   0   45.2G  84.2M  32.1M R  11.5   1.1   0:04.12 ipad_kernel
+  941 root      20   0   12.1G  42.1M  12.4M S   2.4   0.5   0:01.85 launchd</div>`;
+                }
+                else if (command === 'nmap') {
+                    output.innerHTML += `<div>Starting Nmap 7.92 ( https://nmap.org ) at 2026-10-15...
+Nmap scan report for gateway.internal (192.168.1.1)</div>`;
                     let count = 0;
                     let interval = setInterval(() => {
-                        output.innerHTML += `<div class="blue">➜ Checking IP 192.168.1.${Math.floor(Math.random()*254)} ... [OK]</div>`;
+                        let currentPort = Math.floor(Math.random() * 900) + 21;
+                        output.innerHTML += `<div class="info">Discovered open port ${currentPort}/tcp on 192.168.1.1</div>`;
                         output.scrollTop = output.scrollHeight;
                         count++;
-                        if(count > 10) {
+                        if(count > 6) {
                             clearInterval(interval);
-                            output.innerHTML += `<div class="red">[SUCCESS] スキャン完了。脆弱性はありません。</div>`;
+                            output.innerHTML += `<div>Nmap done: 1 IP address scanned.</div>`;
+                            output.scrollTop = output.scrollHeight;
+                        }
+                    }, 180);
+                } 
+                else if (command === 'ping') {
+                    output.innerHTML += `<div class="info">PING 8.8.8.8 (8.8.8.8): 56 data bytes. (Execute 'kill' to stop)</div>`;
+                    if(globalLoop) clearInterval(globalLoop);
+                    let seq = 1;
+                    globalLoop = setInterval(() => {
+                        output.innerHTML += `<div>64 bytes from 8.8.8.8: icmp_seq=${seq} ttl=114 time=${(Math.random()*15+5).toFixed(1)} ms</div>`;
+                        output.scrollTop = output.scrollHeight;
+                        seq++;
+                    }, 100);
+                }
+                else if (command === 'ssh') {
+                    output.innerHTML += `<div>Connecting to admin@secure-server.gov...<br>[WARNING] Authentication required. Launching bypass...</div>`;
+                    let attempts = 0;
+                    if(globalLoop) clearInterval(globalLoop);
+                    globalLoop = setInterval(() => {
+                        attempts++;
+                        let fakePass = Math.random().toString(36).substring(2, 10).toUpperCase();
+                        output.innerHTML += `<div class="gray">[ATTEMPT ${attempts}] Testing Token: [${fakePass}] ➜ <span class="warn">DENIED</span></div>`;
+                        output.scrollTop = output.scrollHeight;
+                        if(attempts >= 15) {
+                            clearInterval(globalLoop);
+                            globalLoop = null;
+                            output.innerHTML += `<div class="yellow">==================================================<br>[SUCCESS] PASSWORD CRACKED: [ROOT_PASS_2026]<br> STATUS: ACCESS GRANTED TO REMOTE TERMINAL<br>==================================================</div>`;
                             output.scrollTop = output.scrollHeight;
                         }
                     }, 150);
-                } 
-                else if (command === 'net') {
-                    output.innerHTML += `<div class="blue">[NETWORK_CONFIG]
-➜ GLOBAL_IP: 210.${Math.floor(Math.random()*255)}.45.112
-➜ SUBNET_MASK: 255.255.255.0
-➜ HOSTNAME: apple.ipad.internal.root
-➜ OPEN_PORT: 80, 443, 22 (SSH_ACTIVE)</div>`;
                 }
-                else if (command === 'sys') {
-                    output.innerHTML += `<div>[SYSTEM_DECRYPT] ストレージを解析中...</div>`;
-                    let pct = 0;
-                    let interval = setInterval(() => {
-                        pct += Math.floor(Math.random()*15) + 5;
-                        if(pct > 100) pct = 100;
-                        output.innerHTML += `<div class="yellow">➜ Progress: ${pct}% ... 解読中</div>`;
-                        output.scrollTop = output.scrollHeight;
-                        if(pct >= 100) {
-                            clearInterval(interval);
-                            output.innerHTML += `<div class="blue">[COMPLETE] 全システムファイルの展開に成功しました。</div>`;
-                            output.scrollTop = output.scrollHeight;
-                        }
-                    }, 200);
-                }
-                else if (command === 'atk') {
-                    output.innerHTML += `<div class="red">[ATTACK_STREAM] 疑似パケットの高速送信を開始。停止は 'stp'</div>`;
+                else if (command === 'mtrx') {
+                    output.innerHTML += `<div class="info">[MATRIX] Initializing digital rain stream... (Execute 'kill' to stop)</div>`;
                     if(globalLoop) clearInterval(globalLoop);
                     globalLoop = setInterval(() => {
-                        output.innerHTML += `<div class="red">[SEND] PACKET ➜ DEST: 10.0.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)} | SIZE: 64KB | STATUS: 200</div>`;
+                        let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&";
+                        let rainLine = "";
+                        for(let i=0; i<4; i++) {
+                            rainLine += chars[Math.floor(Math.random()*chars.length)] + "    " + chars[Math.floor(Math.random()*chars.length)] + "  ";
+                        }
+                        output.innerHTML += `<div>${rainLine}</div>`;
                         output.scrollTop = output.scrollHeight;
-                    }, 50);
+                    }, 400);
                 }
-                else if (command === 'stp') {
-                    if(globalLoop) {
-                        clearInterval(globalLoop);
-                        globalLoop = null;
-                        output.innerHTML += `<div class="blue">[STOP] すべてのバックグラウンドログを強制停止しました。</div>`;
-                    } else {
-                        output.innerHTML += `<div>エラー: 動いているプロセスがありません。</div>`;
-                    }
-                }
-                else if (command === 'bye') {
-                    output.innerHTML += `<div class="red">[SHUTDOWN] 管理者セッションを終了します...
-[LOGOUT] root@ipad disconnected.</div>`;
-                    setTimeout(() => { output.innerHTML = ''; }, 1500);
-                }
-                else if (command !== "") {
-                    output.innerHTML += `<div class="red">エラー: '${command}' は存在しません。</div>`;
-                }
-
-                input.value = '';
-                output.scrollTop = output.scrollHeight;
-            }
-        });
-    </script>
-</body>
-</html>
+                else if (command === 'shred') {
+                    output.innerHTML += `<div class="warn">[SHRED] Target: /root/classified_data.conf</div>`;
+                    let passes = 1;
+                    if(globalLoop) clearInterval(globalLoop);
+                    globalLoop = setInterval(() => {
+                        let hex = Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+                        output.innerHTML += `<div class="gray">Shredding: Pass ${passes}/3 (${hex}...)</div>`;
+                        output.scrollTop = output.scrollHeight;
+                        passes++;
+                        if(passes > 3) {
+                            clearInterval(globalLoop);

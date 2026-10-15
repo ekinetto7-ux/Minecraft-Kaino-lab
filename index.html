@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.1.0</title>
+    <title>Hacker OS v2.2.0</title>
     <style>
         body {
             background-color: #000;
@@ -41,8 +41,9 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
-20個のコマンドが利用可能です。一覧を表示するには 'jp' と入力してください。
+Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
+21個のコマンドが利用可能です。一覧を表示するには 'jp' と入力してください。
+※タイピング中に 'stp' を実行すると、進行中のログを強制停止できます。
 ======================================================================</div>
 
     <div class="input-line">
@@ -53,6 +54,8 @@ Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
+        let currentTimer = null; // 進行中のタイマーを管理する変数
+        let timeoutTimers = [];  // runなどの遅延実行タイマーを管理する配列
 
         document.addEventListener('click', () => input.focus());
 
@@ -68,7 +71,22 @@ Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
             }
         });
 
+        // すべての進行中プロセス（タイマー）をクリアする関数
+        function clearAllTimers() {
+            if (currentTimer) {
+                clearInterval(currentTimer);
+                currentTimer = null;
+            }
+            timeoutTimers.forEach(t => clearTimeout(t));
+            timeoutTimers = [];
+        }
+
         function typeLog(text, callback) {
+            // 新しいログを流す前に、古いタイピング処理が残っていればクリア
+            if (currentTimer) {
+                clearInterval(currentTimer);
+            }
+            
             let index = 0;
             output.textContent += '\n';
             
@@ -79,35 +97,44 @@ Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
                 return;
             }
 
-            const timer = setInterval(() => {
+            currentTimer = setInterval(() => {
                 if (index < text.length) {
                     output.textContent += text.charAt(index);
                     index++;
                     window.scrollTo(0, document.body.scrollHeight);
                 } else {
-                    clearInterval(timer);
+                    clearInterval(currentTimer);
+                    currentTimer = null;
                     if (callback) callback();
                 }
             }, 10);
         }
 
         function executeCommand(cmd) {
+            // 特例：stpコマンドはタイマーを止めて終了する
+            if (cmd === 'stp') {
+                clearAllTimers();
+                typeLog("[WARNING] Process terminated by user. Standby for next command...");
+                return;
+            }
+
             switch (cmd) {
                 case 'jp':
                     typeLog(
-                        "=================== ハッカーシステム コマンドメニュー (厳選20種) ===================\n\n" +
+                        "=================== ハッカーシステム コマンドメニュー (21種) ===================\n\n" +
                         "jp  - メニュー表示      sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
                         "cls - 画面ログ消去      tim - 現在時刻の表示    mem - メモリ使用率      upt - 起動時間の計測\n" +
                         "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
-                        "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット"
+                        "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
+                        "stp - プロセス強制停止"
                     );
                     break;
 
                 // --- システム系 ---
                 case 'sys': typeLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': typeLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': typeLog("Hydra Terminal Core v2.1.0-release (Build 20261015)"); break;
+                case 'ver': typeLog("Hydra Terminal Core v2.2.0-release (Build 20261015)"); break;
                 case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
                 case 'tim': typeLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': typeLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
@@ -120,12 +147,18 @@ Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
                 case 'ipc': typeLog("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\ninet 192.168.23.104  netmask 255.255.255.0"); break;
 
                 // --- シミュレーション攻撃系 ---
-                case 'run': typeLog("Executing exploit weapon...", () => { setTimeout(() => typeLog("Injecting rootkit... [OK]\nSystem hijacked."), 400); }); break;
+                case 'run': 
+                    typeLog("Executing exploit weapon...", () => { 
+                        // 遅延タイマーを管理用配列に格納
+                        timeoutTimers.push(setTimeout(() => typeLog("Injecting rootkit... [OK]"), 500));
+                        timeoutTimers.push(setTimeout(() => typeLog("System hijacked."), 1000));
+                    }); 
+                    break;
                 case 'bps': typeLog("Bypassing firewall layers...\nLayer 1: PASSED\nLayer 2: PASSED\nCloudflare: OVERIDDEN [100%]"); break;
                 case 'brt': typeLog("Starting Brute-Force on SSH...\nTrying wordlist (1/5000)...\n[MATCH] password='admin1234'"); break;
                 case 'dos': typeLog("Assembling Denial of Service attack...\nTarget flooded with UDP packets. Target status: DOWN"); break;
 
-                // --- ファイル・ファイル操作系 ---
+                // --- ファイル・操作系 ---
                 case 'log': typeLog("TIMESTAMP        EVENT              OPERATOR\n14:05:32     Root Access Granted  THIS TERMINAL"); break;
                 case 'src': typeLog("void main() {\n    char *shield = malloc(1024);\n    while(1) { fork(); }\n}"); break;
                 case 'cat': typeLog("Reading secret.txt...\n[CONFIDENTIAL]\nPassphrase: 'omega_alpha'"); break;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.5.3</title>
+    <title>Hacker OS v2.6.0</title>
     <style>
         body {
             background-color: #000;
@@ -12,6 +12,7 @@
             padding: 20px;
             margin: 0;
             overflow-x: hidden;
+            transition: background-color 0.3s; /* 背景色のアニメーション用 */
         }
         #terminal-output {
             white-space: pre-wrap;
@@ -36,24 +37,37 @@
             outline: none;
             flex-grow: 1;
         }
+
+        /* アラートモード用の赤文字と激しい点滅アニメーション */
+        .alert-text {
+            color: #f00 !important;
+            font-weight: bold;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.1; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.5.3 [Simple Edition]
+Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
 一覧表示は 'jp' と入力してください。
-★ 'ysu' でサーバーを乗っ取ります。
+★おまかせ新コマンド 'alt' で緊急システムアラートが発動します。
 ======================================================================</div>
 
     <div class="input-line">
-        <span class="prompt">root@hydra-net:~#</span>
+        <span class="prompt" id="terminal-prompt">root@hydra-net:~#</span>
         <input type="text" id="cmd-input" autofocus autocomplete="off">
     </div>
 
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
+        const prompt = document.getElementById('terminal-prompt');
         let typeTimer = null; 
 
         document.addEventListener('click', () => input.focus());
@@ -62,7 +76,7 @@ Welcome to Hydra-Core Terminal v2.5.3 [Simple Edition]
             if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
                 if (command !== '') {
-                    output.textContent += `\nroot@hydra-net:~# ${command}`;
+                    output.textContent += `\n${prompt.textContent} ${command}`;
                     executeCommand(command);
                 }
                 input.value = '';
@@ -70,19 +84,16 @@ Welcome to Hydra-Core Terminal v2.5.3 [Simple Edition]
             }
         });
 
-        // 文字を出力するシンプルな関数
         function printLog(text) {
-            if (typeTimer) clearInterval(typeTimer); // 動いているタイマーがあれば止める
-            
+            if (typeTimer) clearInterval(typeTimer); 
             let index = 0;
             output.textContent += '\n';
             
-            // カタカタ演出
             typeTimer = setInterval(() => {
                 if (index < text.length) {
                     output.textContent += text.charAt(index);
-                    index++;
                     window.scrollTo(0, document.body.scrollHeight);
+                    index++;
                 } else {
                     clearInterval(typeTimer);
                     typeTimer = null;
@@ -93,19 +104,46 @@ Welcome to Hydra-Core Terminal v2.5.3 [Simple Edition]
         function executeCommand(cmd) {
             switch (cmd) {
                 case 'jp':
-                    // 文字数が多いヘルプメニューは一瞬で表示させてフリーズを完全に防ぐ
                     output.textContent += "\n" + 
                         "=================== ハッカーシステム コマンドメニュー ===================\n\n" +
-                        "jp  - メメニュー表示     sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
+                        "jp  - メニュー表示      sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
                         "cls - 画面ログ消去      tim - 現在時刻の表示    mem - メモリ使用率      upt - 起動時間の計測\n" +
                         "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
                         "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
-                        "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング・侵入";
+                        "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング・侵入\n" +
+                        "alt - 【緊急警告】 偽のシステム崩壊レッドアラートを起動";
                     window.scrollTo(0, document.body.scrollHeight);
                     break;
 
-                case 'ysu': // 👈 演出をすべてカットした超シンプルな乗っ取りコマンド
+                case 'alt': // 🚨 おまかせ追加：全画面アラートコマンド
+                    document.body.style.backgroundColor = "#200"; // 背景を暗い赤に
+                    prompt.textContent = "ALERT@SYSTEM:~#"; // プロンプトを警告用に変更
+                    prompt.style.color = "#f00";
+                    input.style.color = "#f00";
+                    
+                    // 激しく点滅する警告ログを注入
+                    output.innerHTML += `\n<span class="alert-text">` +
+                        "====================================================\n" +
+                        "🚨 [CRITICAL WARNING] SYSTEM OVERRUN DETECTED 🚨\n" +
+                        "====================================================\n" +
+                        "COUNTER-INTRUSION DETECTED BY FOREIGN HOST.\n" +
+                        "DELETING CORE DATABASE MODULES... [PENDING]\n" +
+                        "EMERGENCY OVERRIDE REQUIRED.\n" +
+                        "====================================================\n" +
+                        "⚠️ 警告: 逆ハッキングを検知しました。画面を戻すには 'cls' を実行してください。</span>";
+                    break;
+
+                case 'cls': // 画面クリアと同時にアラート状態も正常に戻す
+                    document.body.style.backgroundColor = "#000";
+                    prompt.textContent = "root@hydra-net:~#";
+                    prompt.style.color = "#0fa";
+                    input.style.color = "#0f0";
+                    output.textContent = "Screen cleared. Alert dismissed. Standby for command.";
+                    break;
+
+                // --- 既存のコマンド ---
+                case 'ysu':
                     printLog(
                         "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
                         "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
@@ -118,15 +156,13 @@ Welcome to Hydra-Core Terminal v2.5.3 [Simple Edition]
                     );
                     break;
 
-                // --- その他のコマンド（すべてシンプル仕様） ---
                 case 'sys': printLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': printLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': printLog("Hydra Terminal Core v2.5.3-release (Build 20261015)"); break;
-                case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
+                case 'ver': printLog("Hydra Terminal Core v2.6.0-release (Build 20261015)"); break;
                 case 'tim': printLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': printLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
                 case 'upt': printLog("System Uptime: 1,024 hours 43 minutes 12 seconds"); break;
-                case 'scn': printLog("Scanning ports...\nPort 22: OPEN (SSH)\nPort 80: OPEN (HTTP)\nPort 443: OPEN (HTTPS)\nPort 3306: OPEN (MySQL)"); break;
+                case 'scn': printLog("Scanning ports...\nPort 22: OPEN (SSH)\nPort 80: OPEN (HTTP)\nPort 443: OPEN (HTTPS)"); break;
                 case 'prx': printLog("Proxy status: ENCRYPTED\nChain: JP -> US -> DE -> IS\nAnonymity Level: 99.8%"); break;
                 case 'png': printLog("PING target.gov (10.4.21.99): 56 data bytes\n64 bytes from 10.4.21.99: icmp_seq=1 time=12.4 ms"); break;
                 case 'ipc': printLog("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\ninet 192.168.23.104  netmask 255.255.255.0"); break;

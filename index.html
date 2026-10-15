@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.5.0</title>
+    <title>Hacker OS v2.5.1</title>
     <style>
         body {
             background-color: #000;
@@ -41,7 +41,7 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.5.0 [Server Hijack Update]
+Welcome to Hydra-Core Terminal v2.5.1 [Fix Freezing Bug]
 一覧表示は 'jp' と入力してください。
 ★新コマンド 'ysu' でサーバー強制乗っ取りシーケンスが始動します。
 ======================================================================</div>
@@ -72,6 +72,7 @@ Welcome to Hydra-Core Terminal v2.5.0 [Server Hijack Update]
             }
         });
 
+        // すべてのタイマーを安全にリセットする修正関数
         function clearAllTimers() {
             if (currentTimer) { clearInterval(currentTimer); currentTimer = null; }
             if (infiniteTimer) { clearInterval(infiniteTimer); infiniteTimer = null; }
@@ -133,32 +134,35 @@ Welcome to Hydra-Core Terminal v2.5.0 [Server Hijack Update]
                     );
                     break;
 
-                case 'ysu': // お任せサーバー乗っ取りシーケンス
+                case 'ysu': // バグを完全に修正したサーバー乗っ取りシーケンス
                     typeLog("[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...", () => {
-                        timeoutTimers.push(setTimeout(() => typeLog("> ターゲットのIP「157.112.44.89」を特定。攻撃ルーティングを設定中..."), 600));
-                        timeoutTimers.push(setTimeout(() => typeLog("> SSL/TLSの脆弱性 CVE-2026-X を利用して暗号レイヤーを破砕中..."), 1400));
-                        timeoutTimers.push(setTimeout(() => typeLog("> [████████████░░░░░░░░] 60% メインフレームに侵入開始..."), 2000));
-                        timeoutTimers.push(setTimeout(() => typeLog("> 防御ファイアウォールを無効化。管理者パスワードの総当たりハッシュ解析に移行。"), 2800));
+                        timeoutTimers.push(setTimeout(() => typeLog("> ターゲットのIP「157.112.44.89」を特定。攻撃ルーティングを設定中..."), 500));
+                        timeoutTimers.push(setTimeout(() => typeLog("> SSL/TLSの脆弱性 CVE-2026-X を利用して暗号レイヤーを破砕中..."), 1200));
+                        timeoutTimers.push(setTimeout(() => typeLog("> [████████████░░░░░░░░] 60% メインフレームに侵入開始..."), 1800));
+                        timeoutTimers.push(setTimeout(() => typeLog("> 防御ファイアウォールを無効化。管理者ハッシュの強制解析へ移行..."), 2400));
                         
-                        // 途中でハイスピードで暗号コードが流れる演出
+                        // バグの原因だった無限ループを、1.5秒間で自動停止する安全な仕組みに変更
                         timeoutTimers.push(setTimeout(() => {
                             output.textContent += "\n[CRACKING ROOT HASH...]\n";
                             infiniteTimer = setInterval(() => {
                                 output.textContent += "0x" + Math.floor(Math.random()*16777215).toString(16).toUpperCase() + " STATUS_INJECTING_PAYLOAD_MEMORY_OVERFLOW...\n";
                                 window.scrollTo(0, document.body.scrollHeight);
-                            }, 30);
-                        }, 3600));
+                            }, 40);
+                        }, 3000));
 
-                        // 最後に完全にサーバーを制圧する
+                        // 3000msから1.5秒後（4500ms）に暗号ストリームを確実に停止し、リザルトを出す
                         timeoutTimers.push(setTimeout(() => {
-                            if (infiniteTimer) clearInterval(infiniteTimer);
+                            if (infiniteTimer) {
+                                clearInterval(infiniteTimer);
+                                infiniteTimer = null;
+                            }
                             typeLog("\n[+] MATCH FOUND: ROOT PASSWORD DECRYPTED -> 'k1m1tsu_2026'\n" +
                                     "[+] ACCESS GRANTED: CONNECTING TO CORE SERVER...\n" +
                                     "====================================================\n" +
                                     "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
                                     "====================================================\n" +
                                     "ターゲットサーバーの全権限を掌握しました。コマンド待機中...");
-                        }, 6000));
+                        }, 4500));
                     });
                     break;
 
@@ -172,7 +176,7 @@ Welcome to Hydra-Core Terminal v2.5.0 [Server Hijack Update]
 
                 case 'sys': typeLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': typeLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': typeLog("Hydra Terminal Core v2.5.0-release (Build 20261015)"); break;
+                case 'ver': typeLog("Hydra Terminal Core v2.5.1-release (Build 20261015)"); break;
                 case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
                 case 'tim': typeLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': typeLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
@@ -191,4 +195,3 @@ Welcome to Hydra-Core Terminal v2.5.0 [Server Hijack Update]
                 case 'brt': typeLog("Starting Brute-Force on SSH...\nTrying wordlist (1/5000)...\n[MATCH] password='admin1234'"); break;
                 case 'dos': typeLog("Assembling Denial of Service attack...\nTarget flooded with UDP packets. Target status: DOWN"); break;
                 case 'log': typeLog("TIMESTAMP        EVENT              OPERATOR\n14:05:32     Root Access Granted  THIS TERMINAL"); break;
-                case 'src': typeLog("void main() {\n    char *shield = malloc(1024);\n    while(1) { fork(); }\n}"); break;

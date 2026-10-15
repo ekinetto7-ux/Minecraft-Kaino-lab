@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.10 SECURE LOCK</title>
+    <title>CYBER TERMINAL - v7.11 SECURE HIDE</title>
     <style>
         body {
             background-color: #03070c;
@@ -86,6 +86,11 @@
             outline: none;
             width: 100%;
         }
+        /* ロック中は入力文字を透明（非表示）にするクラス */
+        .hidden-input {
+            color: transparent !important;
+            text-shadow: 0 0 8px rgba(0,255,204,0.5); /* 雰囲気としてうっすら光る演出にしてもOK */
+        }
         .warning { color: #ff3366; font-weight: bold; }
         .success { color: #00ffcc; }
         .system { color: #ffaa00; }
@@ -107,7 +112,7 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.10 [SECURE LOCK HIDE FIX]</span>
+            <span class="system">  CYBER TERMINAL v7.11 [SECURE HIDE FIXED]</span>
             <span class="system">=======================================================</span>
             Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 911).
         </div>
@@ -146,15 +151,15 @@
             
             input.value = '';
 
-            // 1. ロック中の処理（入力されたパスワードは画面に出さない・伏せ字にする）
+            // 1. ロック中のパスワード判定（入力文字は画面に一切表示させない）
             if (isLocked) {
-                appendOutput(`PASSCODE: [SECURED INPUT]`);
+                appendOutput(`PASSCODE: *********`); // 入力された内容は伏せ字でログに残す
                 
                 if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     promptLabel.style.color = "#ff007f";
-                    input.type = "text"; // 通常の文字入力に戻す
+                    input.classList.remove('hidden-input'); // 文字を元に戻す
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
@@ -242,7 +247,7 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v7.10)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v7.11)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  hak : ハック    |  lok : システムロック");
@@ -262,7 +267,7 @@
                     isLocked = true;
                     promptLabel.textContent = "PASSCODE:";
                     promptLabel.style.color = "#ff3366";
-                    input.type = "password"; // 入力文字を「●」や隠し文字にする
+                    input.classList.add('hidden-input'); // 入力文字を見えなくする
                     appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
@@ -370,7 +375,6 @@
                 case 'who':
                     appendOutput("root     pts/0        2026-10-15 18:30 (10.0.4.15 [REMOTE])");
                     appendOutput("admin    pts/1        2026-10-15 17:12 (LOCAL CONSOLE)");
-                    poolContext = true;
                     break;
 
                 case 'cpu':

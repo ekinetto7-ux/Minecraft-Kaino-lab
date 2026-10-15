@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.9</title>
+    <title>CYBER TERMINAL - v7.10 SECURE LOCK</title>
     <style>
         body {
             background-color: #03070c;
@@ -107,7 +107,7 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.9 [STABLE & REFINED]</span>
+            <span class="system">  CYBER TERMINAL v7.10 [SECURE LOCK HIDE FIX]</span>
             <span class="system">=======================================================</span>
             Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 911).
         </div>
@@ -146,12 +146,15 @@
             
             input.value = '';
 
+            // 1. ロック中の処理（入力されたパスワードは画面に出さない・伏せ字にする）
             if (isLocked) {
-                appendOutput(`PASSCODE: ***`);
+                appendOutput(`PASSCODE: [SECURED INPUT]`);
+                
                 if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     promptLabel.style.color = "#ff007f";
+                    input.type = "text"; // 通常の文字入力に戻す
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
@@ -160,6 +163,7 @@
                 return;
             }
 
+            // 2. 通常時のコマンド処理
             if (text.toLowerCase() !== 'aut' && text.toLowerCase() !== 'stp') {
                 stopAutoStream();
             }
@@ -238,7 +242,7 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v7.9)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v7.10)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  hak : ハック    |  lok : システムロック");
@@ -258,6 +262,7 @@
                     isLocked = true;
                     promptLabel.textContent = "PASSCODE:";
                     promptLabel.style.color = "#ff3366";
+                    input.type = "password"; // 入力文字を「●」や隠し文字にする
                     appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
@@ -365,6 +370,7 @@
                 case 'who':
                     appendOutput("root     pts/0        2026-10-15 18:30 (10.0.4.15 [REMOTE])");
                     appendOutput("admin    pts/1        2026-10-15 17:12 (LOCAL CONSOLE)");
+                    poolContext = true;
                     break;
 
                 case 'cpu':

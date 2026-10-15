@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.7 ULTIMATE STABLE</title>
+    <title>CYBER TERMINAL - v7.8 MORE COMMANDS</title>
     <style>
         body {
             background-color: #03070c;
@@ -107,7 +107,7 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.7 [ULTIMATE STABLE]</span>
+            <span class="system">  CYBER TERMINAL v7.8 [EXPANDED COMMAND SET]</span>
             <span class="system">=======================================================</span>
             Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 911).
         </div>
@@ -128,7 +128,6 @@
         let isProcessing = false;
         let isLocked = false;
 
-        // 常にフォーカスを維持
         document.addEventListener('click', () => { 
             if (!isProcessing) input.focus(); 
         });
@@ -137,7 +136,6 @@
             input.focus(); 
         };
 
-        // フォーム送信（エンターキー / 送信）を確実に処理
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (isProcessing) return;
@@ -148,7 +146,6 @@
             
             input.value = '';
 
-            // 1. ロック中のパスワード判定
             if (isLocked) {
                 appendOutput(`PASSCODE: ***`);
                 if (text === '911') {
@@ -163,7 +160,6 @@
                 return;
             }
 
-            // 2. 通常時のコマンド処理
             if (text.toLowerCase() !== 'aut' && text.toLowerCase() !== 'stp') {
                 stopAutoStream();
             }
@@ -242,19 +238,20 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v7.8)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  hak : ハック    |  lok : システムロック");
+                    appendOutput("  spy : Webカメラハック | dos : DDoS攻撃  |  err : エラー連打");
                     appendOutput("  scn : 脆弱性スキャン|  gen : 鍵生成    |  mtr : マトリックス");
                     appendOutput("  brk : クラッシュ  |  sat : 衛星接続  |  bck : バックドア");
                     appendOutput("  ai  : AIコアハック|  inf : IP確認    |  pwd : 階層表示");
-                    appendOutput("  ls  : ファイル一覧|  dlc : データDL  |  who : ログイン者");
+                    appendOutput("  ls  : ファイル一覧|  dlc : Data DL   |  who : ログイン者");
                     appendOutput("  cpu : CPU確認     |  cls : 画面消去  |  rst : 再起動");
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, hlp, aut, stp, hak, lok, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, hlp, aut, stp, hak, lok, spy, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
                     break;
 
                 case 'lok':
@@ -262,6 +259,26 @@
                     promptLabel.textContent = "PASSCODE:";
                     promptLabel.style.color = "#ff3366";
                     appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
+                    break;
+
+                case 'spy':
+                    runSimulatedTask("Bypassing target webcam security", "Webcam feed intercepted successfully.", () => {
+                        appendOutput("  .-''''-.  \n.'        '.\n/   O    O   \\\n|    __    |  \n\\   \\__/   /  \n '.______.'   ", "success");
+                        appendOutput("[LIVE FEED] TARGET IDENTIFIED AT DESK.", "success");
+                    });
+                    break;
+
+                case 'dos':
+                    runSimulatedTask("Launching DDoS attack on target IP", "Target server overwhelmed by 1.2M packets/sec.", () => {
+                        appendOutput("[STATUS] TARGET OFFLINE (HTTP 503 Service Unavailable)", "warning");
+                    });
+                    break;
+
+                case 'err':
+                    appendOutput("[!] CRITICAL ERROR: MEMORY LEAK IN SECTOR 4", "warning");
+                    appendOutput("[!] EXCEPTION 0xC0000005 AT 0x7FFF50", "warning");
+                    appendOutput("[!] KERNEL PANIC: UNABLE TO MOUNT ROOT FS", "warning");
+                    appendOutput("[!] SEGMENTATION FAULT (CORE DUMPED)", "warning");
                     break;
 
                 case 'aut': startAutoStream(); break;

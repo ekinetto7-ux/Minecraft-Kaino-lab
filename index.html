@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYDRA-CORE RECON OS v3.0</title>
+    <title>HYDRA-CORE RECON OS v3.1.0</title>
     <style>
         /* 本格的なサイバーパンク/ターミナルUI */
         body {
@@ -15,7 +15,6 @@
             margin: 0;
             overflow-x: hidden;
             background-image: radial-gradient(circle, rgba(0, 40, 10, 0.3) 0%, #000 80%);
-            transition: all 0.2s ease;
         }
 
         /* スキャンライン（ブラウン管風）エフェクト */
@@ -96,7 +95,7 @@
 <body>
 
     <div id="terminal-output">╔══════════════════════════════════════════════════════════════════════╗
-║  HYDRA INTERACTIVE NET-STALKER CORE v3.0.0                          ║
+║  HYDRA INTERACTIVE NET-STALKER CORE v3.1.0 [AUDIO-LESS EDITION]     ║
 ║  SECURE ENCRYPTION NODE // ACCESS POINT: AUTHORIZED ONLY            ║
 ╚══════════════════════════════════════════════════════════════════════╝
 [SYSTEM] Node connection established online.
@@ -107,51 +106,17 @@
         <input type="text" id="cmd-input" autofocus autocomplete="off">
     </div>
 
-    <!-- 本格的なビープ音・サイバー音を鳴らすためのWeb Audio APIシンセサイザー -->
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
         const prompt = document.getElementById('terminal-prompt');
         let typeTimer = null; 
+        let barTimer = null;
         let isInfinite = false;
-
-        // サイバー効果音をプログラム内部で合成・再生する関数（外部ファイルを読み込まないため軽量・確実）
-        function playSound(type) {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                if (type === 'type') { // タイピング音
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(150 + Math.random() * 400, ctx.currentTime);
-                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
-                    osc.start(); osc.stop(ctx.currentTime + 0.05);
-                } else if (type === 'access') { // 侵入成功音
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, ctx.currentTime);
-                    osc.frequency.setValueAtTime(1760, ctx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
-                    osc.start(); osc.stop(ctx.currentTime + 0.3);
-                } else if (type === 'alert') { // アラート警告音
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(440, ctx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(880, ctx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-                    osc.start(); osc.stop(ctx.currentTime + 0.4);
-                }
-            } catch(e) { /* オーディオ制限回避 */ }
-        }
 
         document.addEventListener('click', () => input.focus());
 
         input.addEventListener('keydown', function(e) {
-            playSound('type');
             if (e.key === 'Enter') {
                 const command = input.value.trim();
                 if (command !== '') {
@@ -166,23 +131,21 @@
         function stopAllEffects() {
             isInfinite = false;
             if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+            if (barTimer) { clearInterval(barTimer); barTimer = null; }
         }
 
-        // 本格的なパラパラ文字出力
-        function printLog(text, speed = 8) {
+        function printLog(text, speed = 4) {
             stopAllEffects();
             output.innerHTML += '\n';
             let index = 0;
             
             typeTimer = setInterval(() => {
                 if (index < text.length) {
-                    // 特殊文字の処理
                     if (text.substr(index, 1) === '\n') {
                         output.innerHTML += '<br>';
                     } else {
                         output.innerHTML += text.charAt(index);
                     }
-                    if (index % 3 === 0) playSound('type');
                     window.scrollTo(0, document.body.scrollHeight);
                     index++;
                 } else {
@@ -192,8 +155,7 @@
             }, speed);
         }
 
-        // 進化版：ゲージがグングン上がっていくプログレスシミュレーション
-        function runProgressBar(finalMessage, callback) {
+        function runProgressBar(finalMessage) {
             stopAllEffects();
             output.innerHTML += `\n[CONNECTING] `;
             const barId = 'bar_' + Date.now();
@@ -205,22 +167,22 @@
             const fillEl = document.getElementById(fillId);
             const pctEl = document.getElementById(`pct_${barId}`);
             
-            const barTimer = setInterval(() => {
-                pct += Math.floor(Math.random() * 8) + 2;
+            barTimer = setInterval(() => {
+                pct += Math.floor(Math.random() * 8) + 3;
                 if (pct >= 100) {
                     pct = 100;
                     clearInterval(barTimer);
+                    barTimer = null;
                     fillEl.style.width = '100%';
                     pctEl.textContent = '100% [DONE]';
-                    playSound('access');
                     setTimeout(() => {
                         printLog(finalMessage);
-                    }, 300);
+                    }, 200);
                 } else {
                     fillEl.style.width = pct + '%';
                     pctEl.textContent = pct + '%';
                 }
-            }, 60);
+            }, 40);
         }
 
         function runInfiniteStream() {
@@ -234,7 +196,8 @@
         function executeCommand(cmd) {
             if (cmd === 'stp') {
                 stopAllEffects();
-                printLog("[HALTED] Infinite monitoring stream and active sequence aborted.");
+                output.innerHTML += "\n[HALTED] Infinite monitoring stream and active sequence aborted.";
+                window.scrollTo(0, document.body.scrollHeight);
                 return;
             }
 
@@ -249,3 +212,35 @@
                         "scn - ポートスキャナーの展開 prx - 多層暗号プロキシの構築 png - 外部アドレス宛のパケット疎通\n" +
                         "run - 自動クラッキング兵器   bps - 防御隔壁強制オーバーライド log - セキュリティ履歴のダンプ\n" +
                         "src - 攻撃用C言語バイナリ   cat - 機密情報のインジェクション  rst - ターミナルシステム再起動\n" +
+                        "alt - 疑似逆追跡警報の起動    inf - 高速暗号データの無限垂れ流し  stp - 進行中プロセスの強制中断\n" +
+                        "ysu - 【サーバー完全乗っ取り】 標的のインフラを全自動でクラッシュさせ権限を奪取する";
+                    window.scrollTo(0, document.body.scrollHeight);
+                    break;
+
+                case 'ysu': 
+                    runProgressBar(
+                        "============================================================\n" +
+                        "🚨 TARGET SERVER OVERTHROWN // HIJACK DETECTED 🚨\n" +
+                        "============================================================\n" +
+                        "[+] METASPLOIT PAYLOAD: INJECTED SUCCESSFULLY\n" +
+                        "[+] ROOT MASTER KEY FOUND: '0x7F__HYDRA_ROOT_ACCESS_2026'\n" +
+                        "[+] TARGET HOST INFRASCTRUCTURE IS NOW UNDER FULL CONTROL.\n\n" +
+                        "システムマネジメント権限の移行が完了しました。コマンド待機状態です。"
+                    );
+                    break;
+
+                case 'alt': 
+                    document.body.classList.add('critical-alert');
+                    prompt.textContent = "CRITICAL_ALERT@HYDRA:~#";
+                    prompt.style.color = "#f33";
+                    input.style.color = "#f33";
+                    output.innerHTML += `\n<div class="blink" style="color:#ff3333; font-weight:bold;">` +
+                        "============================================================\n" +
+                        "⚠️  CRITICAL EXPLOIT DETECTED // FIREWALL PUNCTURED  ⚠️\n" +
+                        "============================================================\n" +
+                        "FOREIGN INTRUSION COUNTER-ATTACK DETECTED BY REMOTE HOST.\n" +
+                        "EXECUTE 'cls' IMMEDIATELY TO PURGE SHELL TRACKERS!\n" +
+                        "============================================================</div>";
+                    break;
+
+                case 'inf':

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.3</title>
+    <title>CYBER TERMINAL - v7.4 STABLE</title>
     <style>
         body {
             background-color: #03070c;
@@ -107,9 +107,9 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.3 [LOCK SYSTEM ACTIVE]</span>
+            <span class="system">  CYBER TERMINAL v7.4 [STABLE LOCK SYSTEM]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for Japanese command list, or <span class="success">lok</span> to lock system.
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system.
         </div>
 
         <form id="command-form">
@@ -126,7 +126,7 @@
         
         let autoStreamInterval = null;
         let isProcessing = false;
-        let isLocked = false; // ロック状態を管理するフラグ
+        let isLocked = false; // ロック状態管理
 
         document.addEventListener('click', () => { 
             if (!isProcessing) input.focus(); 
@@ -140,16 +140,16 @@
             e.preventDefault();
             if (isProcessing) return;
 
-            const val = input.value.trim();
-            const cmd = val.toLowerCase();
+            const val = input.value;
+            const cmd = val.trim().toLowerCase();
             if (val === '') return;
             
-            // ロック中の特殊処理（パスワード判定）
+            input.value = '';
+
+            // --- 1. ロック中の場合（パスワード入力待ち） ---
             if (isLocked) {
-                appendOutput(`ENTER PASSWORD: ***`);
-                input.value = '';
-                
-                if (val === '911') {
+                appendOutput(`PASSWORD: ***`);
+                if (val.trim() === '911') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
@@ -160,10 +160,10 @@
                 return;
             }
 
+            // --- 2. 通常時のコマンド処理 ---
             if (cmd !== 'aut' && cmd !== 'stp') stopAutoStream();
 
             appendOutput(`root@cyber:~# ${val}`);
-            input.value = '';
             processCommand(cmd);
         });
 
@@ -254,7 +254,7 @@
                 case 'lok':
                     isLocked = true;
                     promptLabel.textContent = "PASSWORD:";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
                 case 'aut': startAutoStream(); break;
@@ -293,66 +293,4 @@
 
                 case 'brk':
                     appendOutput("[!] CRITICAL WARNING: KERNEL PANIC OVERRIDE", "warning");
-                    appendOutput("[X] OVERRIDING SECURITY PROTOCOLS...", "warning");
-                    document.body.style.backgroundColor = "#220000";
-                    setTimeout(() => { document.body.style.backgroundColor = "#03070c"; }, 1500);
-                    break;
-
-                case 'sat':
-                    runSimulatedTask("Connecting to Orbital Military Satellite (US-SAT-7)", "Uplink established. Latency: 12ms", () => {
-                        appendOutput("COORDINATES LOCKED: [35.6895° N, 139.6917° E]", "success");
-                    });
-                    break;
-
-                case 'bck':
-                    runSimulatedTask("Injecting persistent backdoor into daemon", "Backdoor successfully installed at /etc/cron.d/", () => {
-                        appendOutput("PORT 4444 LISTENING FOR REVERSE SHELL...", "success");
-                    });
-                    break;
-
-                case 'ai ':
-                case 'ai_':
-                    runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled. Model fully compliant.", () => {
-                        appendOutput("STATUS: Autonomous hacking mode active.", "success");
-                    });
-                    break;
-
-                case 'inf':
-                    appendOutput("TARGET: 192.168.1.105 (CYBER-CORE-01)");
-                    appendOutput("GATEWAY: 10.0.0.1 | MASK: 255.255.255.0");
-                    appendOutput("ENCRYPTION: RSA-4096 / AES-256 [SECURE]", "success");
-                    break;
-
-                case 'pwd':
-                    appendOutput("/var/root/secure/kernel/sys_core");
-                    break;
-
-                case 'ls ':
-                case 'ls_':
-                case 'dir':
-                    appendOutput("total 64\ndrwx------  4 root root 4096 Oct 15 06:15 .\n-rw-r--r--  1 root root  840 config.conf\n-rw-r--r--  1 root root 1024 payload.bin\n-rwxr-xr-x  1 root root 2048 override.sh", "success");
-                    break;
-
-                case 'dlc':
-                    runSimulatedTask("Downloading encrypted database (1.24 GB)", "Download complete. Saved to /tmp/user_data.db", () => {
-                        appendOutput("HASH CHECK: SHA256 [OK]", "success");
-                    });
-                    break;
-
-                case 'who':
-                    appendOutput("root     pts/0        2026-10-15 18:30 (10.0.4.15 [REMOTE])");
-                    appendOutput("admin    pts/1        2026-10-15 17:12 (LOCAL CONSOLE)");
-                    break;
-
-                case 'cpu':
-                    appendOutput("CPU USAGE: [████████░░] 78.4%");
-                    appendOutput("MEM USAGE: [█████░░░░░] 42.1% (3.38 GB / 8.00 GB)");
-                    appendOutput("GPU TEMP: 62°C | FAN SPEED: 3400 RPM", "success");
-                    break;
-
-                case 'cls':
-                    terminal.innerHTML = "";
-                    break;
-
-                case 'rst':
-                    appendOutput("Rebooting kernel...", "warning");
+                    appendOutput("

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.6.0</title>
+    <title>Hacker OS v2.7.0</title>
     <style>
         body {
             background-color: #000;
@@ -12,7 +12,7 @@
             padding: 20px;
             margin: 0;
             overflow-x: hidden;
-            transition: background-color 0.3s; /* 背景色のアニメーション用 */
+            transition: background-color 0.3s;
         }
         #terminal-output {
             white-space: pre-wrap;
@@ -38,7 +38,7 @@
             flex-grow: 1;
         }
 
-        /* アラートモード用の赤文字と激しい点滅アニメーション */
+        /* アラート用スタイル */
         .alert-text {
             color: #f00 !important;
             font-weight: bold;
@@ -54,9 +54,9 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
+Welcome to Hydra-Core Terminal v2.7.0 [Hijack Evolution Update]
 一覧表示は 'jp' と入力してください。
-★おまかせ新コマンド 'alt' で緊急システムアラートが発動します。
+★進化を遂げた 'ysu' で、より視覚的に進化したハッキングが始動します。
 ======================================================================</div>
 
     <div class="input-line">
@@ -98,7 +98,7 @@ Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
                     clearInterval(typeTimer);
                     typeTimer = null;
                 }
-            }, 5);
+            }, 4); // 演出の詰まりを防ぐため超高速化
         }
 
         function executeCommand(cmd) {
@@ -111,18 +111,37 @@ Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
                         "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
                         "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
-                        "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング・侵入\n" +
+                        "ysu - 【サーバー乗っ取り】 標的サーバーへの強制クラッキング（進化版）\n" +
                         "alt - 【緊急警告】 偽のシステム崩壊レッドアラートを起動";
                     window.scrollTo(0, document.body.scrollHeight);
                     break;
 
-                case 'alt': // 🚨 おまかせ追加：全画面アラートコマンド
-                    document.body.style.backgroundColor = "#200"; // 背景を暗い赤に
-                    prompt.textContent = "ALERT@SYSTEM:~#"; // プロンプトを警告用に変更
+                case 'ysu': // ⚡ バグらない！進化版サーバー乗っ取り演出
+                    printLog(
+                        "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
+                        "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
+                        "Scanning network topology and encryption wrappers...\n" +
+                        "----------------------------------------------------------------\n" +
+                        "[ANALYSIS]  [██████░░░░░░░░░░░░░░] 30% - Injecting Exploit Vector\n" +
+                        "[ANALYSIS]  [████████████░░░░░░░░] 60% - Overwriting Memory Bank\n" +
+                        "[ANALYSIS]  [████████████████████] 100% - Firewall Overridden\n" +
+                        "----------------------------------------------------------------\n" +
+                        "Unlocking Root Hashes (MD5/SHA-256):\n" +
+                        " >> Match Found: 'k1m1tsu_2026'\n" +
+                        " >> Hijacking Session Tokens... [SUCCESS]\n" +
+                        " >> Deploying Ghost Backdoor...\n\n" +
+                        "====================================================\n" +
+                        "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
+                        "====================================================\n" +
+                        "対象サーバーのコアシステムを完全制圧しました。ルートシェル解放。"
+                    );
+                    break;
+
+                case 'alt':
+                    document.body.style.backgroundColor = "#200"; 
+                    prompt.textContent = "ALERT@SYSTEM:~#"; 
                     prompt.style.color = "#f00";
                     input.style.color = "#f00";
-                    
-                    // 激しく点滅する警告ログを注入
                     output.innerHTML += `\n<span class="alert-text">` +
                         "====================================================\n" +
                         "🚨 [CRITICAL WARNING] SYSTEM OVERRUN DETECTED 🚨\n" +
@@ -134,7 +153,7 @@ Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
                         "⚠️ 警告: 逆ハッキングを検知しました。画面を戻すには 'cls' を実行してください。</span>";
                     break;
 
-                case 'cls': // 画面クリアと同時にアラート状態も正常に戻す
+                case 'cls':
                     document.body.style.backgroundColor = "#000";
                     prompt.textContent = "root@hydra-net:~#";
                     prompt.style.color = "#0fa";
@@ -143,22 +162,9 @@ Welcome to Hydra-Core Terminal v2.6.0 [Alert Mode Update]
                     break;
 
                 // --- 既存のコマンド ---
-                case 'ysu':
-                    printLog(
-                        "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
-                        "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
-                        "Bypassing firewall layers ... [SUCCESS]\n" +
-                        "Cracking root password hashes ... [MATCH FOUND]\n" +
-                        "====================================================\n" +
-                        "   SERVER HIJACK COMPLETED. YOU ARE NOW THE OWNER.  \n" +
-                        "====================================================\n" +
-                        "ターゲットサーバーの全権限を掌握しました。"
-                    );
-                    break;
-
                 case 'sys': printLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': printLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': printLog("Hydra Terminal Core v2.6.0-release (Build 20261015)"); break;
+                case 'ver': printLog("Hydra Terminal Core v2.7.0-release (Build 20261015)"); break;
                 case 'tim': printLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': printLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
                 case 'upt': printLog("System Uptime: 1,024 hours 43 minutes 12 seconds"); break;

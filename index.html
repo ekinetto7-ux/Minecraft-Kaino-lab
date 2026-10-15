@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -6,10 +6,18 @@
     <title>ROOT@IPAD:~</title>
     <style>
         body { background-color: #050505; color: #00ff66; font-family: 'Courier New', Courier, monospace; padding: 20px; margin: 0; font-size: 15px; text-shadow: 0 0 2px #00ff66; }
-        #output { width: 100%; height: calc(100vh - 120px); overflow-y: auto; box-sizing: border-box; white-space: pre-wrap; }
-        #input-line { display: flex; align-items: center; margin-top: 15px; padding: 10px; background-color: #0a0a0a; border: 1px solid #00ff66; border-radius: 5px; }
+        #output { width: 100%; height: calc(100vh - 140px); overflow-y: auto; box-sizing: border-box; white-space: pre-wrap; }
+        
+        /* 入力エリアと実行ボタンの横並び配置 */
+        #input-area { display: flex; align-items: center; margin-top: 15px; width: 100%; box-sizing: border-box; }
+        #input-line { display: flex; align-items: center; padding: 10px; background-color: #0a0a0a; border: 1px solid #00ff66; border-radius: 5px; flex-grow: 1; margin-right: 10px; }
         .prompt { color: #33ccff; margin-right: 10px; font-weight: bold; white-space: nowrap; }
         #cmd-input { background: transparent; border: none; color: #ffffff; font-family: inherit; font-size: 16px; width: 100%; outline: none; -webkit-appearance: none; }
+        
+        /* 確実に入力実行できる物理ボタンのスタイル */
+        #run-btn { background-color: #00ff66; color: #000000; border: none; padding: 10px 20px; font-family: inherit; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; text-shadow: none; white-space: nowrap; }
+        #run-btn:active { background-color: #00aa44; }
+
         .info { color: #00ccff; }
         .warn { color: #ff3333; }
         .yellow { color: #ffff00; }
@@ -24,13 +32,17 @@
 ============================================================
 Welcome to iPad Administrator Shell (bash v5.2)
 * Status: SECURE | Privilege: ROOT
-* 💡日本語のヘルプ表示 ➜ '<span class="yellow">jp</span>' と打ってEnter！
+* 💡日本語のヘルプ表示 ➜ '<span class="yellow">jp</span>' と打って下の[実行]をタップ！
 ============================================================
 </div>
     
-    <div id="input-line">
-        <span class="prompt">root@ipad-terminal:~#</span>
-        <input type="text" id="cmd-input" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ここにタップして入力">
+    <div id="input-area">
+        <div id="input-line">
+            <span class="prompt">root@ipad-terminal:~#</span>
+            <input type="text" id="cmd-input" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="ここに入力">
+        </div>
+        <!-- Enterが効かない場合もこれで強制実行可能 -->
+        <button id="run-btn" onclick="executeCommand()">実行</button>
     </div>
 
     <script>
@@ -41,7 +53,8 @@ Welcome to iPad Administrator Shell (bash v5.2)
         let historyIdx = -1;
 
         function focusInput(e) {
-            if(e && e.target !== input) e.preventDefault();
+            if (e && e.target === input) return;
+            if (e && e.target === document.getElementById('run-btn')) return;
             input.focus();
         }
         
@@ -49,104 +62,98 @@ Welcome to iPad Administrator Shell (bash v5.2)
         document.addEventListener('touchstart', focusInput);
         window.onload = focusInput;
 
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.keyCode === 13) {
-                e.preventDefault(); 
-                
-                const rawValue = input.value;
-                const command = rawValue.trim().toLowerCase();
-                
-                output.innerHTML += '<div><span class="prompt">root@ipad-terminal:~#</span> <span style="color:#fff">' + rawValue + '</span></div>';
-                
-                if (command !== "") {
-                    cmdHistory.push(rawValue);
-                    historyIdx = -1;
-                }
+        // コマンドを実行するメイン処理（Enterでもボタンタップでもここを通る）
+        function executeCommand() {
+            const rawValue = input.value;
+            const command = rawValue.trim().toLowerCase();
+            
+            output.innerHTML += '<div><span class="prompt">root@ipad-terminal:~#</span> <span style="color:#fff">' + rawValue + '</span></div>';
+            
+            if (command !== "") {
+                cmdHistory.push(rawValue);
+                historyIdx = -1;
+            }
 
-                // コマンド判定
-                if (command === 'jp') {
-                    output.innerHTML += '<div class="yellow">============================================================\n 🛠️  管理者コマンド一覧（日本語マニュアル）\n============================================================\n  jp      : この日本語コマンド一覧を表示する\n  uname   : iPadOSの内部システム情報を表示\n  top     : 現在のCPUとメモリの動きをリアルタイム監視\n  df      : iPadのストレージ容量（ハードディスク）の生ログを表示\n  nmap    : 周辺のネットワークをセキュリティスキャンする\n  ssh     : 外部サーバーへ秘密のパスワード強制解読（ハッキング演出）\n  mtrx    : 映画マトリックス風のコードが滝のように流れる（無限ループ）\n  ping    : ネットワークパケットを無限に送信し続ける（無限ループ）\n  shred   : 極秘ファイルをゴミデータで3回上書きして完全消去する\n  kill    : 『mtrx』や『ping』の無限ログを途中で強制停止する\n  clear   : 画面に溜まったログをすべて消去して真っ黒に戻す\n  exit    : 管理者セッションを閉じて終了する\n============================================================</div>';
-                }
-                else if (command === 'help') {
-                    output.innerHTML += '<div class="info">Available commands: jp, uname, top, df, nmap, ssh, mtrx, ping, shred, kill, clear, exit</div>';
-                } 
-                else if (command === 'clear') {
-                    output.innerHTML = '';
-                } 
-                else if (command === 'uname') {
-                    output.innerHTML += '<div>Darwin ipad-terminal 23.4.0 Darwin Kernel Version 23.4.0: arm64e; root:Apple-M3/M4~iPadOS</div>';
-                }
-                else if (command === 'df') {
-                    output.innerHTML += '<div class="info">Filesystem     1K-blocks      Used Available Use% Mounted on\n/dev/root      124032408  42104512  81927896  34% /\ndevtmpfs         4012492         0   4012492   0% /dev\n/dev/sda1        2045612    541208   1504404  27% /boot\n/dev/mmcblk0p2 512409512 102451092 409958420  20% /var/storage</div>';
-                }
-                else if (command === 'top') {
-                    output.innerHTML += '<div class="info">[Tasks: 142 total,   2 running, 140 sleeping]\n[CPU(s): 12.8% us,  3.2% sy,  0.0% ni, 84.0% id]\n[GiB Mem :  7.84G total,  4.12G free,  2.94G used,  0.78G buff/cache]\n\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 1042 root      20   0   45.2G  84.2M  32.1M R  11.5   1.1   0:04.12 ipad_kernel\n  941 root      20   0   12.1G  42.1M  12.4M S   2.4   0.5   0:01.85 launchd</div>';
-                }
-                else if (command === 'nmap') {
-                    output.innerHTML += '<div>Starting Nmap 7.92 ( https://nmap.org ) at 2026-10-15...\nNmap scan report for gateway.internal (192.168.1.1)</div>';
-                    let count = 0;
-                    let interval = setInterval(() => {
-                        let currentPort = Math.floor(Math.random() * 900) + 21;
-                        output.innerHTML += '<div class="info">Discovered open port ' + currentPort + '/tcp on 192.168.1.1</div>';
+            // 各種ハッカーコマンドの判定
+            if (command === 'jp') {
+                output.innerHTML += '<div class="yellow">============================================================\n 🛠️  管理者コマンド一覧（日本語マニュアル）\n============================================================\n  jp      : この日本語コマンド一覧を表示する\n  uname   : iPadOSの内部システム情報を表示\n  top     : 現在のCPUとメモリの動きをリアルタイム監視\n  df      : iPadのストレージ容量（ハードディスク）の生ログを表示\n  nmap    : 周辺のネットワークをセキュリティスキャンする\n  ssh     : 外部サーバーへ秘密のパスワード強制解読（ハッキング演出）\n  mtrx    : 映画マトリックス風のコードが滝のように流れる（無限ループ）\n  ping    : ネットワークパケットを無限に送信し続ける（無限ループ）\n  shred   : 極秘ファイルをゴミデータで3回上書きして完全消去する\n  kill    : 『mtrx』や『ping』の無限ログを途中で強制停止する\n  clear   : 画面に溜まったログをすべて消去して真っ黒に戻す\n  exit    : 管理者セッションを閉じて終了する\n============================================================</div>';
+            }
+            else if (command === 'help') {
+                output.innerHTML += '<div class="info">Available commands: jp, uname, top, df, nmap, ssh, mtrx, ping, shred, kill, clear, exit</div>';
+            } 
+            else if (command === 'clear') {
+                output.innerHTML = '';
+            } 
+            else if (command === 'uname') {
+                output.innerHTML += '<div>Darwin ipad-terminal 23.4.0 Darwin Kernel Version 23.4.0: arm64e; root:Apple-M3/M4~iPadOS</div>';
+            }
+            else if (command === 'df') {
+                output.innerHTML += '<div class="info">Filesystem     1K-blocks      Used Available Use% Mounted on\n/dev/root      124032408  42104512  81927896  34% /\ndevtmpfs         4012492         0   4012492   0% /dev\n/dev/sda1        2045612    541208   1504404  27% /boot\n/dev/mmcblk0p2 512409512 102451092 409958420  20% /var/storage</div>';
+            }
+            else if (command === 'top') {
+                output.innerHTML += '<div class="info">[Tasks: 142 total,   2 running, 140 sleeping]\n[CPU(s): 12.8% us,  3.2% sy,  0.0% ni, 84.0% id]\n[GiB Mem :  7.84G total,  4.12G free,  2.94G used,  0.78G buff/cache]\n\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND\n 1042 root      20   0   45.2G  84.2M  32.1M R  11.5   1.1   0:04.12 ipad_kernel\n  941 root      20   0   12.1G  42.1M  12.4M S   2.4   0.5   0:01.85 launchd</div>';
+            }
+            else if (command === 'nmap') {
+                output.innerHTML += '<div>Starting Nmap 7.92 ( https://nmap.org ) at 2026-10-15...\nNmap scan report for gateway.internal (192.168.1.1)</div>';
+                let count = 0;
+                let interval = setInterval(() => {
+                    let currentPort = Math.floor(Math.random() * 900) + 21;
+                    output.innerHTML += '<div class="info">Discovered open port ' + currentPort + '/tcp on 192.168.1.1</div>';
+                    output.scrollTop = output.scrollHeight;
+                    count++;
+                    if(count > 6) {
+                        clearInterval(interval);
+                        output.innerHTML += '<div>Nmap done: 1 IP address scanned.</div>';
                         output.scrollTop = output.scrollHeight;
-                        count++;
-                        if(count > 6) {
-                            clearInterval(interval);
-                            output.innerHTML += '<div>Nmap done: 1 IP address scanned.</div>';
-                            output.scrollTop = output.scrollHeight;
-                        }
-                    }, 180);
-                } 
-                else if (command === 'ping') {
-                    output.innerHTML += '<div class="info">PING 8.8.8.8 (8.8.8.8): 56 data bytes. (Execute \'kill\' to stop)</div>';
-                    if(globalLoop) clearInterval(globalLoop);
-                    let seq = 1;
-                    globalLoop = setInterval(() => {
-                        output.innerHTML += '<div>64 bytes from 8.8.8.8: icmp_seq=' + seq + ' ttl=114 time=' + (Math.random()*15+5).toFixed(1) + ' ms</div>';
+                    }
+                }, 180);
+            } 
+            else if (command === 'ping') {
+                output.innerHTML += '<div class="info">PING 8.8.8.8 (8.8.8.8): 56 data bytes. (Execute \'kill\' to stop)</div>';
+                if(globalLoop) clearInterval(globalLoop);
+                let seq = 1;
+                globalLoop = setInterval(() => {
+                    output.innerHTML += '<div>64 bytes from 8.8.8.8: icmp_seq=' + seq + ' ttl=114 time=' + (Math.random()*15+5).toFixed(1) + ' ms</div>';
+                    output.scrollTop = output.scrollHeight;
+                    seq++;
+                }, 100);
+            }
+            else if (command === 'ssh') {
+                output.innerHTML += '<div>Connecting to admin@secure-server.gov...<br>[WARNING] Authentication required. Launching bypass...</div>';
+                let attempts = 0;
+                if(globalLoop) clearInterval(globalLoop);
+                globalLoop = setInterval(() => {
+                    attempts++;
+                    let fakePass = Math.random().toString(36).substring(2, 10).toUpperCase();
+                    output.innerHTML += '<div class="gray">[ATTEMPT ' + attempts + '] Testing Token: [' + fakePass + '] ➜ <span class="warn">DENIED</span></div>';
+                    output.scrollTop = output.scrollHeight;
+                    if(attempts >= 15) {
+                        clearInterval(globalLoop);
+                        globalLoop = null;
+                        output.innerHTML += '<div class="yellow">==================================================<br>[SUCCESS] PASSWORD CRACKED: [ROOT_PASS_2026]<br> STATUS: ACCESS GRANTED TO REMOTE TERMINAL<br>==================================================</div>';
                         output.scrollTop = output.scrollHeight;
-                        seq++;
-                    }, 100);
-                }
-                else if (command === 'ssh') {
-                    output.innerHTML += '<div>Connecting to admin@secure-server.gov...<br>[WARNING] Authentication required. Launching bypass...</div>';
-                    let attempts = 0;
-                    if(globalLoop) clearInterval(globalLoop);
-                    globalLoop = setInterval(() => {
-                        attempts++;
-                        let fakePass = Math.random().toString(36).substring(2, 10).toUpperCase();
-                        output.innerHTML += '<div class="gray">[ATTEMPT ' + attempts + '] Testing Token: [' + fakePass + '] ➜ <span class="warn">DENIED</span></div>';
-                        output.scrollTop = output.scrollHeight;
-                        if(attempts >= 15) {
-                            clearInterval(globalLoop);
-                            globalLoop = null;
-                            output.innerHTML += '<div class="yellow">==================================================<br>[SUCCESS] PASSWORD CRACKED: [ROOT_PASS_2026]<br> STATUS: ACCESS GRANTED TO REMOTE TERMINAL<br>==================================================</div>';
-                            output.scrollTop = output.scrollHeight;
-                        }
-                    }, 150);
-                }
-                else if (command === 'mtrx') {
-                    output.innerHTML += '<div class="info">[MATRIX] Initializing digital rain stream... (Execute \'kill\' to stop)</div>';
-                    if(globalLoop) clearInterval(globalLoop);
-                    globalLoop = setInterval(() => {
-                        let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&";
-                        let rainLine = "";
-                        for(let i=0; i<4; i++) {
-                            rainLine += chars[Math.floor(Math.random()*chars.length)] + "    " + chars[Math.floor(Math.random()*chars.length)] + "  ";
-                        }
-                        output.innerHTML += '<div>' + rainLine + '</div>';
-                        output.scrollTop = output.scrollHeight;
-                    }, 400);
-                }
-                else if (command === 'shred') {
-                    output.innerHTML += '<div class="warn">[SHRED] Target: /root/classified_data.conf</div>';
-                    let passes = 1;
-                    if(globalLoop) clearInterval(globalLoop);
-                    globalLoop = setInterval(() => {
-                        let hex = Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('');
-                        output.innerHTML += '<div class="gray">Shredding: Pass ' + passes + '/3 (' + hex + '...)</div>';
-                        output.scrollTop = output.scrollHeight;
-                        passes++;
-                        if(passes > 3) {
-                            clearInterval(globalLoop);
-                            globalLoop = null;
-                            output.innerHTML += '<div class="info">[SUCCESS] File /root/classified_data.conf zeroed and unlinked.</div>';
+                    }
+                }, 150);
+            }
+            else if (command === 'mtrx') {
+                output.innerHTML += '<div class="info">[MATRIX] Initializing digital rain stream... (Execute \'kill\' to stop)</div>';
+                if(globalLoop) clearInterval(globalLoop);
+                globalLoop = setInterval(() => {
+                    let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%&";
+                    let rainLine = "";
+                    for(let i=0; i<4; i++) {
+                        rainLine += chars[Math.floor(Math.random()*chars.length)] + "    " + chars[Math.floor(Math.random()*chars.length)] + "  ";
+                    }
+                    output.innerHTML += '<div>' + rainLine + '</div>';
+                    output.scrollTop = output.scrollHeight;
+                }, 400);
+            }
+            else if (command === 'shred') {
+                output.innerHTML += '<div class="warn">[SHRED] Target: /root/classified_data.conf</div>';
+                let passes = 1;
+                if(globalLoop) clearInterval(globalLoop);
+                globalLoop = setInterval(() => {
+                    let hex = Array.from({length:40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+                    output.innerHTML += '<div class="gray">Shredding: Pass ' + passes + '/3 (' + hex + '...)</div>';
+                    output.scrollTop = output.scrollHeight;
+                    passes++;

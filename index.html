@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKER TERMINAL</title>
+    <title>SECURE KERNEL - TERMINAL v4.2</title>
     <style>
         body {
-            background-color: #050505;
+            background-color: #030a05;
             color: #00ff66;
             font-family: 'Courier New', Courier, monospace;
             margin: 0;
@@ -14,53 +14,60 @@
             overflow: hidden;
             height: 100vh;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
         #terminal {
+            flex-grow: 1;
             white-space: pre-wrap;
             word-wrap: break-word;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.4;
-            height: 85%;
             overflow-y: auto;
+            margin-bottom: 10px;
+            padding-right: 10px;
         }
         #command-form {
             display: flex;
             align-items: center;
-            font-size: 18px;
-            margin-top: 10px;
+            font-size: 16px;
             border-top: 1px solid #003311;
-            padding-top: 10px;
+            padding-top: 12px;
+            background-color: #030a05;
         }
         .prompt {
             color: #33ccff;
             font-weight: bold;
             margin-right: 8px;
+            flex-shrink: 0;
         }
         #command-input {
             background: transparent;
             border: none;
             color: #00ff66;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 18px;
+            font-size: 16px;
             outline: none;
             width: 100%;
         }
-        .warning { color: #ff3333; font-weight: bold; }
+        .warning { color: #ff3333; font-weight: boolean; font-weight: bold; }
         .success { color: #33ccff; }
         .system { color: #ffcc00; }
         .stream { color: #00aa44; }
+        .dim { color: #006622; }
     </style>
 </head>
 <body>
 
     <div id="terminal">
-        <span class="system">=== SECURE SHELL v4.2.1 ===</span>
-        Type <span class="success">jp</span> for Japanese command list.
+        <span class="system">=======================================================</span>
+        <span class="system">  SECURE TERMINAL v4.2.1-RELEASE [GNU/Linux x86_64]</span>
+        <span class="system">=======================================================</span>
+        Type <span class="success">jp</span> for Japanese command list, or <span class="success">aut</span> for auto stream.
     </div>
 
-    <!-- formタグで囲むことでエンターや送信ボタンを確実にキャッチする -->
     <form id="command-form">
-        <span class="prompt">root@system:~$</span>
+        <span class="prompt">root@mainframe:~#</span>
         <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
     </form>
 
@@ -70,30 +77,34 @@
         const form = document.getElementById('command-form');
         
         let autoStreamInterval = null;
+        let isProcessing = false; // バグ・連打防止用フラグ
 
         // 画面をクリックしたら常に入力欄にフォーカス
         document.addEventListener('click', () => {
-            input.focus();
+            if (!isProcessing) input.focus();
         });
 
         window.onload = () => {
             input.focus();
         };
 
-        // フォームの送信（Enterキーやスマホの決定ボタン）で実行
+        // フォーム送信時（Enterキー）の処理
         form.addEventListener('submit', (e) => {
-            e.preventDefault(); // ページが勝手にリロードされるのを防ぐ
-            
+            e.preventDefault();
+            if (isProcessing) return; // 処理中は入力を受け付けない（バグ防止）
+
             const cmd = input.value.trim().toLowerCase();
             if (cmd === '') return;
             
-            stopAutoStream();
+            // 別コマンド実行時はオートモードを強制停止
+            if (cmd !== 'aut' && cmd !== 'stp') {
+                stopAutoStream();
+            }
 
-            appendOutput(`root@system:~$ ${cmd}`);
-            processCommand(cmd);
-
+            appendOutput(`root@mainframe:~# ${cmd}`);
             input.value = '';
-            terminal.scrollTop = terminal.scrollHeight;
+
+            processCommand(cmd);
         });
 
         function appendOutput(text, className = '') {
@@ -104,28 +115,54 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
+        // プログレスバー付きリアル風処理（バグ防止対応）
+        function runSimulatedTask(title, successMsg, callback) {
+            isProcessing = true;
+            input.disabled = true; // 処理中に入力できないようにする
+
+            appendOutput(`[*] ${title}...`, "system");
+            let progress = 0;
+            
+            const timer = setInterval(() => {
+                progress += Math.floor(Math.random() * 25) + 10;
+                if (progress >= 100) progress = 100;
+                
+                // 最後の行を更新してプログレスバーを表現
+                const bars = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
+                terminal.lastChild.textContent = `[*] ${title}... [${bars}] ${progress}%`;
+
+                if (progress === 100) {
+                    clearInterval(timer);
+                    appendOutput(`[OK] ${successMsg}`, "success");
+                    isProcessing = false;
+                    input.disabled = false;
+                    input.focus();
+                    if (callback) callback();
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+            }, 150);
+        }
+
         function startAutoStream() {
             if (autoStreamInterval) return;
 
-            appendOutput("[*] 自動流し込みモード起動", "system");
+            appendOutput("[*] LIVE SECURITY STREAM ACTIVATED (Type 'stp' to stop)", "system");
 
             const streamLogs = [
-                "カーネルファイアウォールを回避中...",
-                "暗号ハッシュを解読中: 0x8F9A2C1B4E...",
-                "ポート443にシェルコードを注入中...",
-                "リモートデータベースにアクセス中...",
-                "プロキシサーバーを経由中 [10.42.8.1]...",
-                "ペイロードのダウンロード完了... [OK]",
-                "管理者権限（ROOT）を取得しました。",
-                "パケットを送信中 -> 宛先: 192.168.1.105",
-                "システムログを消去中..."
+                "KERNEL: Segment fault avoided at 0x7ffd4a",
+                "NET: Inbound packet from 185.220.101.5 [TOR EXIT NODE]",
+                "AUTH: Failed login attempt for user 'admin' from 10.0.4.15",
+                "SYS: Memory usage stable at 14.2% [OK]",
+                "SEC: Firewall block rule applied to port 22 (SSH)",
+                "ENCR: AES-256 handshake established with proxy node",
+                "DB: Query executed: SELECT * FROM secure_vault WHERE status='LOCKED'",
+                "WARN: High CPU temperature detected (58°C)"
             ];
 
             autoStreamInterval = setInterval(() => {
                 const log = streamLogs[Math.floor(Math.random() * streamLogs.length)];
-                const prefix = Math.random() > 0.5 ? "[+] " : "[x] ";
-                appendOutput(prefix + log, "stream");
-            }, 300);
+                appendOutput(log, "dim");
+            }, 400);
         }
 
         function stopAutoStream() {
@@ -135,30 +172,34 @@
             }
         }
 
+        // リアルなコマンド処理
         function processCommand(cmd) {
             if (cmd !== 'jp' && cmd.length !== 3) {
-                appendOutput("エラー: コマンドは 'jp' または3文字で入力してください", "warning");
+                appendOutput(`bash: ${cmd}: command not found. Type 'jp' for help.`, "warning");
                 return;
             }
 
             switch(cmd) {
                 case 'jp':
-                    appendOutput("【日本語コマンド一覧】", "system");
-                    appendOutput("  jp  : 日本語コマンド一覧");
-                    appendOutput("  hlp : 英語コマンド一覧");
-                    appendOutput("  aut : 自動オートモード開始");
-                    appendOutput("  stp : 自動モード停止");
-                    appendOutput("  hak : ハッキング開始");
-                    appendOutput("  inf : ネットワーク情報表示");
-                    appendOutput("  pwd : ディレクトリ表示");
-                    appendOutput("  ls  : ファイル一覧");
-                    appendOutput("  dlc : データダウンロード");
-                    appendOutput("  cls : 画面クリア");
-                    appendOutput("  rst : システム再起動");
+                    appendOutput("========================================", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v4.2)】", "system");
+                    appendOutput("========================================", "system");
+                    appendOutput("  jp  : 日本語コマンド一覧を表示");
+                    appendOutput("  hlp : 英語ヘルプを表示");
+                    appendOutput("  aut : リアルタイム監視ログを流す");
+                    appendOutput("  stp : 監視ログを停止する");
+                    appendOutput("  hak : メインフレームのハッキングを実行");
+                    appendOutput("  log : システム診断とパケット解析を実行");
+                    appendOutput("  inf : ネットワーク＆IPステータス確認");
+                    appendOutput("  pwd : 現在の作業ディレクトリを表示");
+                    appendOutput("  ls  : ディレクトリ内のファイル一覧");
+                    appendOutput("  dlc : 機密データベースの抜出（ダウンロード）");
+                    appendOutput("  cls : 画面をクリアする");
+                    appendOutput("  rst : カーネルを再起動する");
                     break;
 
                 case 'hlp':
-                    appendOutput("Available commands: jp, hlp, aut, stp, hak, inf, pwd, ls, dlc, cls, rst", "system");
+                    appendOutput("Commands: jp, hlp, aut, stp, hak, log, inf, pwd, ls, dlc, cls, rst", "system");
                     break;
 
                 case 'aut':
@@ -167,30 +208,45 @@
 
                 case 'stp':
                     stopAutoStream();
-                    appendOutput("[*] ストリーム停止", "warning");
+                    appendOutput("[*] ストリームを停止しました。", "warning");
                     break;
 
                 case 'hak':
-                    appendOutput("[!] ファイアウォール突破...", "warning");
-                    appendOutput("[OK] アクセス許可されました。", "success");
+                    runSimulatedTask("Bypassing mainframe firewall", "Root privileges granted. Welcome back, Admin.", () => {
+                        appendOutput("ACCESS TOKEN: 0x9F8B2C4E1A-ROOT", "success");
+                    });
+                    break;
+
+                case 'log':
+                    runSimulatedTask("Analyzing network packets & memory dumps", "System integrity verified. No threats found.", () => {
+                        appendOutput("ACTIVE CONNECTIONS: 4 | BLOCKED IPS: 12", "success");
+                    });
                     break;
 
                 case 'inf':
-                    appendOutput("IP: 192.168.1.105 | GATEWAY: 10.0.0.1 [SECURE]", "success");
+                    appendOutput("TARGET: 192.168.1.105 (MAINFRAME-01)");
+                    appendOutput("GATEWAY: 10.0.0.1 | MASK: 255.255.255.0");
+                    appendOutput("ENCRYPTION: RSA-4096 / AES-256 [SECURE]", "success");
                     break;
 
                 case 'pwd':
-                    appendOutput("/var/root/secure/kernel");
+                    appendOutput("/var/root/secure/kernel/sys_core");
                     break;
 
                 case 'ls ':
                 case 'ls_':
                 case 'dir':
-                    appendOutput("payload.bin  override.sh  user_data.db", "success");
+                    appendOutput("total 64");
+                    appendOutput("drwx------  4 root root 4096 Oct 15 06:15 .");
+                    appendOutput("-rw-r--r--  1 root root  840 config.conf");
+                    appendOutput("-rw-r--r--  1 root root 1024 payload.bin");
+                    appendOutput("-rwxr-xr-x  1 root root 2048 override.sh", "success");
                     break;
 
                 case 'dlc':
-                    appendOutput("Downloading... [████████████] 100% [OK]", "success");
+                    runSimulatedTask("Downloading encrypted database (1.24 GB)", "Download complete. Saved to /tmp/user_data.db", () => {
+                        appendOutput("HASH CHECK: SHA256 [OK]", "success");
+                    });
                     break;
 
                 case 'cls':
@@ -198,14 +254,19 @@
                     break;
 
                 case 'rst':
-                    appendOutput("Rebooting...", "warning");
+                    appendOutput("Rebooting kernel...", "warning");
+                    isProcessing = true;
+                    input.disabled = true;
                     setTimeout(() => {
-                        terminal.innerHTML = '<span class="system">=== RESTARTED ===</span>\nType <span class="success">jp</span>';
-                    }, 800);
+                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">jp</span> for command list.';
+                        isProcessing = false;
+                        input.disabled = false;
+                        input.focus();
+                    }, 1200);
                     break;
 
                 default:
-                    appendOutput(`不明なコマンド: '${cmd}' ('jp'で一覧)`, "warning");
+                    appendOutput(`Command '${cmd}' not recognized. Type 'jp'.`, "warning");
                     break;
             }
         }

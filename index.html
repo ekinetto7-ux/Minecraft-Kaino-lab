@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKER TERMINAL - Auto Stream & 3-Letter Commands</title>
+    <title>HACKER TERMINAL - Japanese Command List</title>
     <style>
         body {
             background-color: #050505;
@@ -55,7 +55,7 @@
 
     <div id="terminal">
         <span class="system">=== SECURE SHELL v4.2.1 (x86_64-pc-gnu) ===</span>
-        Type <span class="success">hlp</span> for commands, or <span class="success">aut</span> to start auto-hacking stream.
+        Type <span class="success">hlp</span> for English, or <span class="success">jp </span> for Japanese commands.
     </div>
 
     <div id="input-area">
@@ -69,15 +69,12 @@
         
         let autoStreamInterval = null;
 
-        // 画面をクリックしたら常に入力欄にフォーカスが当たる
         document.addEventListener('click', () => input.focus());
 
-        // エンターキーを押したときの処理
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const cmd = input.value.trim().toLowerCase();
                 
-                // コマンドを入力したら自動ストリームは一旦止める
                 stopAutoStream();
 
                 appendOutput(`root@system:~$ ${cmd}`);
@@ -96,33 +93,31 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // 自動で文字が流れ出すストリーム機能
         function startAutoStream() {
-            if (autoStreamInterval) return; // 既に動いていれば何もしない
+            if (autoStreamInterval) return;
 
-            appendOutput("[*] AUTO-HACK STREAM ACTIVATED. (Type any command to stop)", "system");
+            appendOutput("[*] 自動流し込みモード起動（キー入力で停止）", "system");
 
             const streamLogs = [
-                "BYPASSING KERNEL FIREWALL...",
-                "DECRYPTING HASH: 0x8F9A2C1B4E...",
-                "INJECTING SHELLCODE INTO PORT 443...",
-                "ACCESSING REMOTE DATABASE: user_records.db...",
-                "TRACING ENCRYPTED PROXY [10.42.8.1]...",
-                "DOWNLOADING PAYLOAD... [OK]",
-                "OVERRIDING BIOMETRIC SENSORS...",
-                "ROOT ACCESS GRANTED. WELCOME BACK, ADMIN.",
-                "SENDING PACKETS -> DESTINATION: 192.168.1.105",
-                "CLEANING UP SYSTEM LOGS...",
-                "WARNING: ANOMALY DETECTED IN SECTOR 7",
-                "ROUTING THROUGH SECURE TOR NETWORK..."
+                "カーネルファイアウォールを回避中...",
+                "暗号ハッシュを解読中: 0x8F9A2C1B4E...",
+                "ポート443にシェルコードを注入中...",
+                "リモートデータベースにアクセス中: user_records.db...",
+                "プロキシサーバーを経由中 [10.42.8.1]...",
+                "ペイロードのダウンロード完了... [OK]",
+                "生体認証センサーをオーバーライド中...",
+                "管理者権限（ROOT）を取得しました。",
+                "パケットを送信中 -> 宛先: 192.168.1.105",
+                "システムログを消去中...",
+                "警告: セクター7で異常を検知",
+                "TORネットワークを経由して再接続中..."
             ];
 
-            let index = 0;
             autoStreamInterval = setInterval(() => {
                 const log = streamLogs[Math.floor(Math.random() * streamLogs.length)];
                 const prefix = Math.random() > 0.5 ? "[+] " : "[x] ";
                 appendOutput(prefix + log, "stream");
-            }, 300); // 0.3秒ごとに文字が流れる
+            }, 300);
         }
 
         function stopAutoStream() {
@@ -132,16 +127,32 @@
             }
         }
 
-        // 3文字コマンドの定義
         function processCommand(cmd) {
-            if (cmd.length !== 3 && cmd !== '') {
-                appendOutput("Error: Commands must be exactly 3 characters. Type 'hlp'.", "warning");
+            // jp コマンド（2文字）または従来の3文字コマンドを受け付ける
+            if (cmd !== 'jp' && cmd.length !== 3 && cmd !== '') {
+                appendOutput("エラー: コマンドは 'jp' または3文字で入力してください ('jp' で一覧表示)", "warning");
                 return;
             }
 
             switch(cmd) {
+                case 'jp':
+                    appendOutput("【日本語コマンド一覧】", "system");
+                    appendOutput("  jp  : 日本語コマンド一覧を表示");
+                    appendOutput("  hlp : 英語コマンド一覧を表示");
+                    appendOutput("  aut : 文字をずっと自動で流す（オートモード）");
+                    appendOutput("  stp : 自動流し込みをストップ");
+                    appendOutput("  hak : ハッキングを開始する");
+                    appendOutput("  inf : ターゲットのIP・ネットワーク情報を表示");
+                    appendOutput("  pwd : 現在のディレクトリを表示");
+                    appendOutput("  ls  : ファイル一覧を表示");
+                    appendOutput("  dlc : データベースをダウンロード");
+                    appendOutput("  cls : 画面をクリア（消去）");
+                    appendOutput("  rst : システム再起動");
+                    break;
+
                 case 'hlp':
                     appendOutput("Available 3-letter commands:", "system");
+                    appendOutput("  jp  : Japanese command help");
                     appendOutput("  hlp : Show help list");
                     appendOutput("  aut : Start auto-hacking text stream");
                     appendOutput("  stp : Stop auto-hacking stream");
@@ -160,19 +171,19 @@
 
                 case 'stp':
                     stopAutoStream();
-                    appendOutput("[*] Stream stopped by user.", "warning");
+                    appendOutput("[*] 自動ストリームを停止しました。", "warning");
                     break;
 
                 case 'hak':
-                    appendOutput("[!] Bypassing firewall...", "warning");
-                    appendOutput("[*] Injecting payload into kernel...");
-                    appendOutput("[OK] Access granted. Welcome, Admin.", "success");
+                    appendOutput("[!] ファイアウォールを回避中...", "warning");
+                    appendOutput("[*] カーネルにコードを注入中...");
+                    appendOutput("[OK] アクセスが許可されました。管理者としてログイン完了。", "success");
                     break;
 
                 case 'inf':
-                    appendOutput("TARGET HOST: 192.168.1.105");
-                    appendOutput("GATEWAY: 10.0.0.1 (SECURE)");
-                    appendOutput("ENCRYPTION: AES-256-GCM [ACTIVE]", "success");
+                    appendOutput("ターゲット情報: 192.168.1.105");
+                    appendOutput("ゲートウェイ: 10.0.0.1 (保護中)");
+                    appendOutput("暗号化方式: AES-256-GCM [有効]", "success");
                     break;
 
                 case 'pwd':
@@ -182,16 +193,16 @@
                 case 'ls ':
                 case 'ls_':
                 case 'dir':
-                    appendOutput("total 48");
-                    appendOutput("drwx------  2 root root 4096 Oct 15 06:10 .");
+                    appendOutput("合計 48");
+                    appendOutput("drwx------  2 root root 4096 10月 15 06:10 .");
                     appendOutput("-rw-r--r--  1 root root  512 payload.bin");
                     appendOutput("-rwxr-xr-x  1 root root 1024 override.sh", "success");
                     break;
 
                 case 'dlc':
-                    appendOutput("Connecting to remote server...");
-                    appendOutput("Downloading user_data_backup.db (1.24 GB)... [████████████] 100%");
-                    appendOutput("Download complete. Saved to /tmp/", "success");
+                    appendOutput("リモートサーバーに接続中...");
+                    appendOutput("機密データをダウンロード中... [████████████] 100%");
+                    appendOutput("ダウンロード完了。 /tmp/ に保存されました。", "success");
                     break;
 
                 case 'cls':
@@ -199,18 +210,11 @@
                     break;
 
                 case 'rst':
-                    appendOutput("Rebooting kernel...", "warning");
+                    appendOutput("システムを再起動中...", "warning");
                     setTimeout(() => {
-                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">hlp</span> to start.';
+                        terminal.innerHTML = '<span class="system">=== システムが再起動しました ===</span>\n<span class="success">jp</span> と入力するとコマンド一覧が出ます。';
                     }, 800);
                     break;
 
                 default:
-                    if (cmd === '') break;
-                    appendOutput(`Command '${cmd}' not recognized. Type 'hlp' for help.`, "warning");
-                    break;
-            }
-        }
-    </script>
-</body>
-</html>
+                    if (cmd

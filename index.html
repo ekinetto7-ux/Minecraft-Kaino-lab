@@ -3,212 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYDRA-CORE RECON OS v4.1.0</title>
+    <title>HACKER TERMINAL - Auto Stream & 3-Letter Commands</title>
     <style>
-        /* ハッカーらしい映画風のデザイン・エフェクトは完全にキープ */
         body {
-            background-color: #020202;
+            background-color: #050505;
             color: #00ff66;
-            font-family: 'Consolas', 'Courier New', monospace;
-            text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
-            padding: 25px;
+            font-family: 'Courier New', Courier, monospace;
             margin: 0;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle, rgba(0, 40, 10, 0.3) 0%, #000 80%);
+            padding: 20px;
+            overflow: hidden;
+            height: 100vh;
+            box-sizing: border-box;
         }
-
-        /* 横縞（スキャンライン）ビジュアルエフェクト */
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            z-index: 9999;
-            background-size: 100% 4px;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        #terminal-output {
+        #terminal {
             white-space: pre-wrap;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.4;
+            height: 85%;
+            overflow-y: auto;
         }
-
-        .input-line {
+        #input-area {
             display: flex;
             align-items: center;
-            border-top: 1px solid rgba(0, 255, 102, 0.1);
+            font-size: 18px;
+            margin-top: 10px;
+            border-top: 1px solid #003311;
             padding-top: 10px;
         }
-
         .prompt {
-            color: #00ffcc;
+            color: #33ccff;
             font-weight: bold;
-            margin-right: 12px;
-            user-select: none;
+            margin-right: 8px;
         }
-
-        #cmd-input {
+        #command-input {
             background: transparent;
             border: none;
             color: #00ff66;
-            font-family: inherit;
-            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
             outline: none;
-            flex-grow: 1;
-            text-shadow: 0 0 5px rgba(0, 255, 102, 0.8);
+            width: 100%;
         }
-
-        /* 警告時のレッドアラート */
-        .critical-alert {
-            background-color: #250000 !important;
-            color: #ff3333 !important;
-            text-shadow: 0 0 8px rgba(255, 51, 51, 0.8);
-        }
-
-        .camera-feed {
-            color: #00ff66;
-            font-weight: bold;
-            line-height: 1.2;
-            margin: 10px 0;
-        }
+        .warning { color: #ff3333; font-weight: bold; }
+        .success { color: #33ccff; }
+        .system { color: #ffcc00; }
+        .stream { color: #00aa44; }
     </style>
 </head>
 <body>
 
-    <!-- ログが出力されるエリア -->
-    <div id="terminal-output">╔══════════════════════════════════════════════════════════════════════╗
-║  HYDRA INTERACTIVE NET-STALKER CORE v4.1.0 [ULTRA-STABLE EDITION]   ║
-║  SECURE ENCRYPTION NODE // ACCESS POINT: AUTHORIZED ONLY            ║
-╚══════════════════════════════════════════════════════════════════════╝
-[SYSTEM] Node connection established online.
-[SYSTEM] Welcome back, Admin. Type 'jp' to load operation manual.</div>
+    <div id="terminal">
+        <span class="system">=== SECURE SHELL v4.2.1 (x86_64-pc-gnu) ===</span>
+        Type <span class="success">hlp</span> for commands, or <span class="success">aut</span> to start auto-hacking stream.
+    </div>
 
-    <!-- 入力エリア -->
-    <div class="input-line">
-        <span class="prompt" id="terminal-prompt">admin@hydra-node:~#</span>
-        <input type="text" id="cmd-input" autofocus autocomplete="off">
+    <div id="input-area">
+        <span class="prompt">root@system:~$</span>
+        <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
     </div>
 
     <script>
-        const input = document.getElementById('cmd-input');
-        const output = document.getElementById('terminal-output');
-        const prompt = document.getElementById('terminal-prompt');
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('command-input');
+        
+        let autoStreamInterval = null;
 
-        // 画面のどこをクリックしても、確実に入力欄にフォーカスを当てる
+        // 画面をクリックしたら常に入力欄にフォーカスが当たる
         document.addEventListener('click', () => input.focus());
 
-        // エンターキーが押された時の処理（一瞬でログを出力する最も安全な方式）
-        input.addEventListener('keydown', function(e) {
+        // エンターキーを押したときの処理
+        input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const command = input.value.trim();
-                if (command !== '') {
-                    // 入力したテキストを画面に直接追加
-                    output.insertAdjacentHTML('beforeend', `\n<span style="color:#0fa;">${prompt.textContent} ${command}</span>`);
-                    executeCommand(command.toLowerCase());
-                }
+                const cmd = input.value.trim().toLowerCase();
+                
+                // コマンドを入力したら自動ストリームは一旦止める
+                stopAutoStream();
+
+                appendOutput(`root@system:~$ ${cmd}`);
+                processCommand(cmd);
+
                 input.value = '';
-                // 画面を最下部に移動
-                document.documentElement.scrollTop = document.documentElement.scrollHeight;
+                terminal.scrollTop = terminal.scrollHeight;
             }
         });
 
-        // テキストを一瞬で安全に追加する関数
-        function printLog(text) {
-            const formattedText = '\n' + text.replace(/\n/g, '<br>');
-            output.insertAdjacentHTML('beforeend', formattedText);
-            document.documentElement.scrollTop = document.documentElement.scrollHeight;
+        function appendOutput(text, className = '') {
+            const div = document.createElement('div');
+            if (className) div.className = className;
+            div.textContent = text;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function executeCommand(cmd) {
-            switch (cmd) {
-                case 'jp':
-                    printLog(
-                        "=================== HYDRA OPERATION MANUAL ===================\n\n" +
-                        "jp  - ヘルプメニューの出力  sys - コアノード構成の取得   cfg - 環境設定ファイルのパース\n" +
-                        "cls - ターミナルログの完全消去 tim - 世界標準サーバー時刻   mem - メモリ割り当てバンクの走査\n" +
-                        "scn - ポートスキャナーの展開 prx - 多層暗号プロキシの構築 png - 外部アドレス宛のパケット疎通\n" +
-                        "run - 自動クラッキング兵器   bps - 防御隔壁強制オーバーライド log - セキュリティ履歴のダンプ\n" +
-                        "src - 攻撃用C言語バイナリ   cat - 機密情報のインジェクション  rst - ターミナルシステム再起動\n" +
-                        "alt - 疑似逆追跡警報の起動    ysu - 【サーバー完全乗っ取り】   cam - 【防犯カメラハック】"
-                    );
+        // 自動で文字が流れ出すストリーム機能
+        function startAutoStream() {
+            if (autoStreamInterval) return; // 既に動いていれば何もしない
+
+            appendOutput("[*] AUTO-HACK STREAM ACTIVATED. (Type any command to stop)", "system");
+
+            const streamLogs = [
+                "BYPASSING KERNEL FIREWALL...",
+                "DECRYPTING HASH: 0x8F9A2C1B4E...",
+                "INJECTING SHELLCODE INTO PORT 443...",
+                "ACCESSING REMOTE DATABASE: user_records.db...",
+                "TRACING ENCRYPTED PROXY [10.42.8.1]...",
+                "DOWNLOADING PAYLOAD... [OK]",
+                "OVERRIDING BIOMETRIC SENSORS...",
+                "ROOT ACCESS GRANTED. WELCOME BACK, ADMIN.",
+                "SENDING PACKETS -> DESTINATION: 192.168.1.105",
+                "CLEANING UP SYSTEM LOGS...",
+                "WARNING: ANOMALY DETECTED IN SECTOR 7",
+                "ROUTING THROUGH SECURE TOR NETWORK..."
+            ];
+
+            let index = 0;
+            autoStreamInterval = setInterval(() => {
+                const log = streamLogs[Math.floor(Math.random() * streamLogs.length)];
+                const prefix = Math.random() > 0.5 ? "[+] " : "[x] ";
+                appendOutput(prefix + log, "stream");
+            }, 300); // 0.3秒ごとに文字が流れる
+        }
+
+        function stopAutoStream() {
+            if (autoStreamInterval) {
+                clearInterval(autoStreamInterval);
+                autoStreamInterval = null;
+            }
+        }
+
+        // 3文字コマンドの定義
+        function processCommand(cmd) {
+            if (cmd.length !== 3 && cmd !== '') {
+                appendOutput("Error: Commands must be exactly 3 characters. Type 'hlp'.", "warning");
+                return;
+            }
+
+            switch(cmd) {
+                case 'hlp':
+                    appendOutput("Available 3-letter commands:", "system");
+                    appendOutput("  hlp : Show help list");
+                    appendOutput("  aut : Start auto-hacking text stream");
+                    appendOutput("  stp : Stop auto-hacking stream");
+                    appendOutput("  hak : Initiate main system hack");
+                    appendOutput("  inf : Display network info & IP");
+                    appendOutput("  pwd : Print working directory");
+                    appendOutput("  ls  : List directory contents");
+                    appendOutput("  dlc : Download encrypted database");
+                    appendOutput("  cls : Clear terminal screen");
+                    appendOutput("  rst : System hard reset");
                     break;
 
-                case 'ysu': 
-                    printLog(
-                        "[CRITICAL] TARGET SERVER HIJACK SEQUENCE INITIATED...\n" +
-                        "Connecting to target IP: 157.112.44.89 ... [OK]\n" +
-                        "Scanning network topology and encryption wrappers...\n" +
-                        "----------------------------------------------------------------\n" +
-                        "[ANALYSIS]  [████████████████████] 100% - Firewall Overridden\n" +
-                        "----------------------------------------------------------------\n" +
-                        " Unlocking Root Hashes (MD5/SHA-256): Match Found -> 'k1m1tsu_2026'\n" +
-                        " Hijacking Session Tokens... [SUCCESS]\n" +
-                        "============================================================\n" +
-                        "🚨 TARGET SERVER OVERTHROWN // HIJACK DETECTED 🚨\n" +
-                        "============================================================\n" +
-                        "対象サーバーのコアシステムを完全制圧しました。権限を掌握。"
-                    );
+                case 'aut':
+                    startAutoStream();
                     break;
 
-                case 'cam':
-                    const randFps = Math.floor(Math.random() * 5) + 26;
-                    const nowStr = new Date().toLocaleString('ja-JP');
-                    output.insertAdjacentHTML('beforeend', `
-<div class="camera-feed">
-[+] CONNECTING TO CLOSED-CIRCUIT TELEVISION (CCTV) FEED... [OK]
-----------------------------------------------------------------------
-🎥 CAMERA_FEED_04: BANK_VAULT_ENTRANCE               🔴 LIVE STREAMING
-📅 ${nowStr}   |   📶 STABLE LINK   |   🎞️ FPS: ${randFps}.00
-----------------------------------------------------------------------
- ____________________________________________________
-
-|  ________________________________________________  |
-| |                                                | |
-| |   [⚡ SECURITY CAMERA DETACHED]                | |
-| |        ___________________                     | |
-| |       ||                 ||                    | |
-| |       ||   [  VAULT  ]   ||   [⚙️ CONTROL]      | |
-| |       ||_________________||                    | |
-| |   STATUS: ROOT ENCRYPT KEY COPIED.             | |
-| |________________________________________________| |
-|____________________________________________________|
-</div>`);
-                    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+                case 'stp':
+                    stopAutoStream();
+                    appendOutput("[*] Stream stopped by user.", "warning");
                     break;
 
-                case 'alt': 
-                    document.body.classList.add('critical-alert');
-                    prompt.textContent = "CRITICAL_ALERT@HYDRA:~#";
-                    prompt.style.color = "#f33";
-                    input.style.color = "#f33";
-                    printLog(
-                        "============================================================\n" +
-                        "⚠️  CRITICAL EXPLOIT DETECTED // FIREWALL PUNCTURED  ⚠️\n" +
-                        "============================================================\n" +
-                        "FOREIGN INTRUSION COUNTER-ATTACK DETECTED BY REMOTE HOST.\n" +
-                        "EXECUTE 'cls' IMMEDIATELY TO PURGE SHELL TRACKERS!\n" +
-                        "============================================================"
-                    );
+                case 'hak':
+                    appendOutput("[!] Bypassing firewall...", "warning");
+                    appendOutput("[*] Injecting payload into kernel...");
+                    appendOutput("[OK] Access granted. Welcome, Admin.", "success");
                     break;
 
-                case 'cls': 
-                    document.body.classList.remove('critical-alert');
-                    prompt.textContent = "admin@hydra-node:~#";
-                    prompt.style.color = "#00ffcc";
-                    input.style.color = "#00ff66";
-                    output.innerHTML = "[SYSTEM] Terminal purges completed. Environment stabilized.";
-                    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+                case 'inf':
+                    appendOutput("TARGET HOST: 192.168.1.105");
+                    appendOutput("GATEWAY: 10.0.0.1 (SECURE)");
+                    appendOutput("ENCRYPTION: AES-256-GCM [ACTIVE]", "success");
                     break;
 
-                case 'sys': printLog("CORE MODULE: Hydra-Net Linux Stable 11.4\nENGINE: Quantum Thread Core x128\nCIPHER LAYER: AES-GCM-256"); break;
-                case 'cfg': printLog("Parsing config.json...\n{\n  \"stealth_routing\": true,\n  \"node_hops\": 7\n}"); break;
-                case 'ver': printLog("Hydra Recon Core System Engine v4.1.0-STABLE"); break;
-                case 'tim': printLog(`Network Timestamp: ${new Date().toISOString()}`); break;
-                case 'mem': printLog("Scanning Memory Banks...\nBank 0 [████████████░░░░░░] 68% Used"); break;
-                case 'scn': printLog("Probing ports via syn-stealth scan...\nPort 21/tcp  (ftp)     -> VULNERABLE\nPort 80/tcp  (http)    -> OPEN"); break;
-                case 'prx': printLog("Establishing Secure Multi-hop Proxy Chains...\n[LOCAL] -> [TOKYO, JP] -> [TARGET]"); break;
-                case 'png': printLog("PING secure.node.net (10.24.110.1): 56 data bytes\n64 bytes from 10.24.110.1: time=4.12ms"); break;
-                case 'ipc': printLog("interface: wlan0\ninet addr: 10.24.110.89  Mask: 255.255.255.0"); break;
+                case 'pwd':
+                    appendOutput("/var/root/secure/kernel/sys_core");
+                    break;
+
+                case 'ls ':
+                case 'ls_':
+                case 'dir':
+                    appendOutput("total 48");
+                    appendOutput("drwx------  2 root root 4096 Oct 15 06:10 .");
+                    appendOutput("-rw-r--r--  1 root root  512 payload.bin");
+                    appendOutput("-rwxr-xr-x  1 root root 1024 override.sh", "success");
+                    break;
+
+                case 'dlc':
+                    appendOutput("Connecting to remote server...");
+                    appendOutput("Downloading user_data_backup.db (1.24 GB)... [████████████] 100%");
+                    appendOutput("Download complete. Saved to /tmp/", "success");
+                    break;
+
+                case 'cls':
+                    terminal.innerHTML = "";
+                    break;
+
+                case 'rst':
+                    appendOutput("Rebooting kernel...", "warning");
+                    setTimeout(() => {
+                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">hlp</span> to start.';
+                    }, 800);
+                    break;
+
+                default:
+                    if (cmd === '') break;
+                    appendOutput(`Command '${cmd}' not recognized. Type 'hlp' for help.`, "warning");
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

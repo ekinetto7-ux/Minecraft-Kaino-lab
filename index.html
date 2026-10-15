@@ -3,63 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laki 動画シアター</title>
+    <title>ROOT TERMINAL</title>
     <style>
-        /* 🎨 映画館のようなカッコいい黒とピンクのデザイン */
-        body {
-            background-color: #0d0f12; /* 暗い背景 */
-            color: #ffffff; /* 白い文字 */
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* 画面の真ん中に集める */
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-            color: #ff007f; /* Lakiをイメージしたピンク色の文字 */
-            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); /* 文字を光らせる */
-        }
-
-        p {
-            font-size: 14px;
-            color: #8a99ad;
-            margin-bottom: 25px;
-        }
-
-        /* 📺 動画プレイヤーの枠 */
-        .video-container {
-            width: 100%;
-            max-width: 700px; /* パソコンで見るときの最大の横幅 */
-            background: #181b22;
-            padding: 12px;
-            border-radius: 16px; /* カドを丸くする */
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6); /* 後ろに影をつける */
-            border: 2px solid #ff007f; /* ピンクに光る枠線 */
-            box-sizing: border-box;
-        }
-
-        video {
-            width: 100%; /* 画面の幅に合わせて自動でぴったりサイズになる */
-            border-radius: 8px;
-            outline: none;
-            display: block;
-        }
+        body { background-color: #000; color: #0f0; font-family: monospace; padding: 20px; margin: 0; font-size: 16px; }
+        #output { width: 100%; height: calc(100vh - 80px); overflow-y: auto; box-sizing: border-box; white-space: pre-wrap; }
+        #input-line { display: flex; align-items: center; margin-top: 10px; }
+        .prompt { color: #0f0; margin-right: 10px; white-space: nowrap; }
+        #cmd-input { background: transparent; border: none; color: #fff; font-family: monospace; font-size: 16px; width: 100%; outline: none; }
+        .info { color: #8af; }
+        .warn { color: #f55; }
     </style>
 </head>
 <body>
+    <div id="output">=== 🚨 ADMINISTRATIVE INTERFACE INITIALIZED 🚨 ===
+[STATUS: ACTIVE] ENTER 'help' TO VIEW AVAILABLE COMMANDS.
 
-    <h1>Laki ミュージックシアター</h1>
-    <p>お気に入りの動画を再生するよ！</p>
-
-    <!-- 📺 動画を再生する部分 -->
-    <div class="video-container">
-        <!-- さっき名前を変えた「laki.mp4」をここで読み込んでいるよ！ -->
-        <video src="laki.mp4" controls playsinline></video>
+</div>
+    <div id="input-line">
+        <span class="prompt">root@ipad:~#</span>
+        <input type="text" id="cmd-input" autofocus autocomplete="off" autocapitalize="none">
     </div>
 
+    <script>
+        const output = document.getElementById('output');
+        const input = document.getElementById('cmd-input');
+
+        // iPadの画面どこをタップしても常に入力状態（キーボードが出る状態）にする
+        document.addEventListener('click', () => input.focus());
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = input.value.trim().toLowerCase();
+                
+                // 入力したコマンドを画面に表示
+                output.innerHTML += `<div><span class="prompt">root@ipad:~#</span> <span style="color:#fff">${input.value}</span></div>`;
+                
+                // コマンドの判定処理
+                if (command === 'help') {
+                    output.innerHTML += `<div class="info">Available Commands:
+  - help      : Show this manual
+  - clear     : Clear the terminal screen
+  - sysstat   : Check iPad CPU and Memory usage
+  - netscan   : Execute network gateway port scan
+  - logstream : Start infinite system log stream</div>`;
+                } 
+                else if (command === 'clear') {
+                    output.innerHTML = '';
+                } 
+                else if (command === 'sysstat') {
+                    output.innerHTML += `<div class="info">[MEM_MGR] Fetching core system stats...
+[CPU_LOAD] Core 0-3: 14.2% | Core 4-7: 2.5% (STABLE)
+[MEMORY]   Active: 2.84 GB / Total: 4.00 GB
+[BATTERY]  Voltage: 3.82V | Charging: FALSE</div>`;
+                } 
+                else if (command === 'netscan') {
+                    output.innerHTML += `<div>[NET_SCAN] Initializing port scan on 192.168.1.1...</div>`;
+                    let p = 0;
+                    let interval = setInterval(() => {
+                        let ports =;
+                        let currentPort = Math.floor(Math.random() * 1000) + 10;
+                        if(Math.random() > 0.8) {
+                            output.innerHTML += `<div class="warn">➜ Port ${currentPort}: OPEN (Unauthorized Access Blocked)</div>`;
+                        } else {
+                            output.innerHTML += `<div class="info">➜ Port ${currentPort}: CLOSED</div>`;
+                        }
+                        output.scrollTop = output.scrollHeight;
+                        p++;
+                        if(p > 15) {
+                            clearInterval(interval);
+                            output.innerHTML += `<div>[NET_SCAN] Scan complete. 0 critical vulnerabilities found.</div>`;
+                        }
+                    }, 150);
+                } 
+                else if (command === 'logstream') {
+                    output.innerHTML += `<div class="warn">[STREAM] Starting system log loop. Press enter to interrupt.</div>`;
+                    window.logLoop = setInterval(() => {
+                        let timestamp = `[${new Date().toLocaleTimeString()}]`;
+                        output.innerHTML += `<div class="info">${timestamp} [KERNEL] PID:${Math.floor(Math.random()*9000+1000)} -> Task priority executed successfully.</div>`;
+                        output.scrollTop = output.scrollHeight;
+                    }, 200);
+                }
+                else {
+                    if(window.logLoop) {
+                        // logstream起動中に何かエンターを押したら止める処理
+                        clearInterval(window.logLoop);
+                        window.logLoop = null;
+                        output.innerHTML += `<div>[STREAM] Loop interrupted by administrator.</div>`;
+                    } else if (command !== "") {
+                        output.innerHTML += `<div class="warn">Command not found: '${command}'. Type 'help' for options.</div>`;
+                    }
+                }
+
+                // 入力欄を空にして最下部へスクロール
+                input.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.2.0</title>
+    <title>Hacker OS v2.3.0</title>
     <style>
         body {
             background-color: #000;
@@ -41,9 +41,9 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
-21個のコマンドが利用可能です。一覧を表示するには 'jp' と入力してください。
-※タイピング中に 'stp' を実行すると、進行中のログを強制停止できます。
+Welcome to Hydra-Core Terminal v2.3.0 [Infinite Mode Edition]
+一覧表示は 'jp' と入力してください。
+★新コマンド 'inf' で無限に文字列が出力されます。（止めるには 'stp'）
 ======================================================================</div>
 
     <div class="input-line">
@@ -54,8 +54,9 @@ Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
-        let currentTimer = null; // 進行中のタイマーを管理する変数
-        let timeoutTimers = [];  // runなどの遅延実行タイマーを管理する配列
+        let currentTimer = null; 
+        let timeoutTimers = [];  
+        let infiniteTimer = null; // 無限ループを管理するタイマー
 
         document.addEventListener('click', () => input.focus());
 
@@ -71,21 +72,22 @@ Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
             }
         });
 
-        // すべての進行中プロセス（タイマー）をクリアする関数
+        // すべての進行中プロセス（無限ループも含む）をクリアする関数
         function clearAllTimers() {
             if (currentTimer) {
                 clearInterval(currentTimer);
                 currentTimer = null;
+            }
+            if (infiniteTimer) {
+                clearInterval(infiniteTimer);
+                infiniteTimer = null;
             }
             timeoutTimers.forEach(t => clearTimeout(t));
             timeoutTimers = [];
         }
 
         function typeLog(text, callback) {
-            // 新しいログを流す前に、古いタイピング処理が残っていればクリア
-            if (currentTimer) {
-                clearInterval(currentTimer);
-            }
+            if (currentTimer) clearInterval(currentTimer);
             
             let index = 0;
             output.textContent += '\n';
@@ -110,31 +112,53 @@ Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
             }, 10);
         }
 
+        // 無限に出力する謎の暗号・コードのパーツ
+        const hexChars = "0123456789ABCDEFSYSTEM_ERROR_BYPASS_INJECT_LOG_DATA_";
+        function generateRandomLine() {
+            let line = "SYSTEM_DATA: ";
+            for (let i = 0; i < 4; i++) {
+                line += "0x" + Math.floor(Math.random() * 16).toString(16).toUpperCase() + Math.floor(Math.random() * 16).toString(16).toUpperCase() + " ";
+            }
+            line += " -- [LOADING MODULE " + Math.floor(Math.random() * 999) + "] -- " + (Math.random() > 0.5 ? "SUCCESS" : "OVERFLOW");
+            return line;
+        }
+
         function executeCommand(cmd) {
-            // 特例：stpコマンドはタイマーを止めて終了する
+            // stpコマンド、または他のコマンドが打たれたら無限ループを即停止
             if (cmd === 'stp') {
                 clearAllTimers();
-                typeLog("[WARNING] Process terminated by user. Standby for next command...");
+                typeLog("[WARNING] Infinite loop halted. System stabilized.");
                 return;
             }
+
+            // 新しいコマンドが実行されたら一度すべて停止
+            clearAllTimers();
 
             switch (cmd) {
                 case 'jp':
                     typeLog(
-                        "=================== ハッカーシステム コマンドメニュー (21種) ===================\n\n" +
+                        "=================== ハッカーシステム コマンドメニュー (22種) ===================\n\n" +
                         "jp  - メニュー表示      sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
                         "cls - 画面ログ消去      tim - 現在時刻の表示    mem - メモリ使用率      upt - 起動時間の計測\n" +
                         "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
                         "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット\n" +
-                        "stp - プロセス強制停止"
+                        "inf - 文字無限出力      stp - プロセス強制停止"
                     );
+                    break;
+
+                case 'inf': // 【新機能】無限ログ出力
+                    output.textContent += "\n[INITIALIZING INFINITE STREAM] Press 'stp' to abort.\n";
+                    infiniteTimer = setInterval(() => {
+                        output.textContent += "\n" + generateRandomLine();
+                        window.scrollTo(0, document.body.scrollHeight);
+                    }, 50); // 50ミリ秒ごとに新しいログをずっと生成
                     break;
 
                 // --- システム系 ---
                 case 'sys': typeLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': typeLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': typeLog("Hydra Terminal Core v2.2.0-release (Build 20261015)"); break;
+                case 'ver': typeLog("Hydra Terminal Core v2.3.0-release (Build 20261015)"); break;
                 case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
                 case 'tim': typeLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
                 case 'mem': typeLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
@@ -149,7 +173,6 @@ Welcome to Hydra-Core Terminal v2.2.0 [Process Stop Edition]
                 // --- シミュレーション攻撃系 ---
                 case 'run': 
                     typeLog("Executing exploit weapon...", () => { 
-                        // 遅延タイマーを管理用配列に格納
                         timeoutTimers.push(setTimeout(() => typeLog("Injecting rootkit... [OK]"), 500));
                         timeoutTimers.push(setTimeout(() => typeLog("System hijacked."), 1000));
                     }); 

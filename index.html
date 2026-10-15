@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker OS v2.0.0</title>
+    <title>Hacker OS v2.1.0</title>
     <style>
         body {
             background-color: #000;
@@ -41,38 +41,44 @@
 <body>
 
     <div id="terminal-output">======================================================================
-Welcome to Hydra-Core Terminal v2.0.0 [Secure Edition]
-45個のコマンドが利用可能です。一覧を表示するには 'jp' と入力してください。
+Welcome to Hydra-Core Terminal v2.1.0 [20 Commands Edition]
+20個のコマンドが利用可能です。一覧を表示するには 'jp' と入力してください。
 ======================================================================</div>
 
     <div class="input-line">
         <span class="prompt">root@hydra-net:~#</span>
-        <input type="text" id="cmd-input" autofocus autocomplete="off" maxlength="3">
+        <input type="text" id="cmd-input" autofocus autocomplete="off">
     </div>
 
     <script>
         const input = document.getElementById('cmd-input');
         const output = document.getElementById('terminal-output');
-        let isTyping = false;
 
         document.addEventListener('click', () => input.focus());
 
         input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !isTyping) {
+            if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
                 if (command !== '') {
                     output.textContent += `\nroot@hydra-net:~# ${command}`;
                     executeCommand(command);
                 }
                 input.value = '';
-                window.scrollTo(0, document.body.scrollHeight);
+                setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 10);
             }
         });
 
         function typeLog(text, callback) {
-            isTyping = true;
             let index = 0;
             output.textContent += '\n';
+            
+            if (text.length > 200) {
+                output.textContent += text;
+                if (callback) callback();
+                window.scrollTo(0, document.body.scrollHeight);
+                return;
+            }
+
             const timer = setInterval(() => {
                 if (index < text.length) {
                     output.textContent += text.charAt(index);
@@ -80,80 +86,56 @@ Welcome to Hydra-Core Terminal v2.0.0 [Secure Edition]
                     window.scrollTo(0, document.body.scrollHeight);
                 } else {
                     clearInterval(timer);
-                    isTyping = false;
                     if (callback) callback();
                 }
-            }, 8); // コマンド数が多いためタイピング速度を少し高速化
+            }, 10);
         }
 
         function executeCommand(cmd) {
             switch (cmd) {
                 case 'jp':
                     typeLog(
-                        "=================== ハッカーシステム コマンドメニュー (全45種) ===================\n\n" +
-                        "【1. システム・基本】\n" +
+                        "=================== ハッカーシステム コマンドメニュー (厳選20種) ===================\n\n" +
                         "jp  - メニュー表示      sys - システム情報      cfg - コンフィグ閲覧    ver - バージョン確認\n" +
-                        "cls - 画面ログ消去      tim - 現在時刻の表示    who - ログイン中の端末  env - 環境変数の出力\n" +
-                        "mem - メモリ使用率      uptime - 起動時間の計測\n\n" +
-                        "【2. ネットワーク・情報収集】\n" +
-                        "scn - ポートスキャン    prx - プロキシ状態      ping - 疎通テストを実行  ipc - IP構成の確認\n" +
-                        "dns - DNSレコード参照   mac - MACアドレス偽装   ssl - 証明書失効チェック trace - ルート追跡\n" +
-                        "map - ネットワーク回線図 arp - キャッシュテーブル\n\n" +
-                        "【3. クラッキング・攻撃】\n" +
+                        "cls - 画面ログ消去      tim - 現在時刻の表示    mem - メモリ使用率      upt - 起動時間の計測\n" +
+                        "scn - ポートスキャン    prx - プロキシ状態      png - 疎通テストを実行  ipc - IP構成の確認\n" +
                         "run - ペイロード実行    bps - 防御壁バイパス    brt - 総当たり攻撃開始  dos - DDOS攻撃の装填\n" +
-                        "inj - SQLインジェク    sql - データベース侵入  sql注入 - バックドア設置  sqlinj - パスワード解析\n" +
-                        "dec - 暗号鍵の解読      spo - パケット偽装送信\n\n" +
-                        "【4. ファイル・ログ操作】\n" +
-                        "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 ls  - ディレクトリ一覧\n" +
-                        "pwd - カレントパス表示  del - ログ消去履歴隠蔽  bak - バックアップ奪取  crypt - ファイル暗号化\n" +
-                        "vrs - ウイルス混入検査  key - キーログの抽出\n\n" +
-                        "【5. 緊急・その他】\n" +
-                        "ext - ターミナル終了    fnc - ファンクションテスト fix - システム自動修復  rst - 強制リセット"
+                        "log - 侵入履歴の閲覧    src - ソースコード展開  cat - 秘密ファイルの閲覧 rst - 強制リセット"
                     );
                     break;
 
-                // --- 1. システム・基本 ---
+                // --- システム系 ---
                 case 'sys': typeLog("OS: Hydra Linux 9.4\nCPU: Quantum 128-Core\nRAM: 512GB\nSecure Layer: ENABLED"); break;
                 case 'cfg': typeLog("Reading config...\n{\n  \"stealth\": true,\n  \"proxy_chains\": 4,\n  \"auto_destruct\": false\n}"); break;
-                case 'ver': typeLog("Hydra Terminal Core v2.0.0-release (Build 20261015)"); break;
+                case 'ver': typeLog("Hydra Terminal Core v2.1.0-release (Build 20261015)"); break;
                 case 'cls': output.textContent = "Screen cleared. Type 'jp' for commands."; break;
                 case 'tim': typeLog(`Current Server Time: ${new Date().toLocaleString('ja-JP')}`); break;
-                case 'who': typeLog("Active sessions:\n- root (pts/0)\n- guest (pts/1) [Hidden]"); break;
-                case 'env': typeLog("PATH=/usr/bin:/bin\nSHELL=/bin/hydrash\nUSER=root\nHACK_MODE=1"); break;
                 case 'mem': typeLog("Memory Allocation:\n[██████████░░░░░░░░░░] 52% Used\nFree: 245.7 GB / 512 GB"); break;
                 case 'upt': typeLog("System Uptime: 1,024 hours 43 minutes 12 seconds"); break;
 
-                // --- 2. ネットワーク・情報収集 ---
-                case 'scn': typeLog("Scanning ports...\nPort 21: OPEN (FTP)\nPort 22: OPEN (SSH)\nPort 80: OPEN (HTTP)\nPort 3306: OPEN (MySQL)"); break;
+                // --- ネットワーク系 ---
+                case 'scn': typeLog("Scanning ports...\nPort 22: OPEN (SSH)\nPort 80: OPEN (HTTP)\nPort 443: OPEN (HTTPS)\nPort 3306: OPEN (MySQL)"); break;
                 case 'prx': typeLog("Proxy status: ENCRYPTED\nChain: JP -> US -> DE -> IS\nAnonymity Level: 99.8%"); break;
                 case 'png': typeLog("PING target.gov (10.4.21.99): 56 data bytes\n64 bytes from 10.4.21.99: icmp_seq=1 ttl=54 time=12.4 ms\nConnection stable."); break;
                 case 'ipc': typeLog("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\ninet 192.168.23.104  netmask 255.255.255.0"); break;
-                case 'dns': typeLog("Fetching DNS Records...\nA: 104.244.42.1\nMX: mail.target.gov [Priority: 10]\nTXT: v=spf1 include:_://google.com"); break;
-                case 'mac': typeLog("Spoofing hardware address...\nOld: 00:1A:2B:3C:4D:5E\nNew: 7E:8D:9C:0B:1A:2B [SUCCESS]"); break;
-                case 'ssl': typeLog("Analyzing SSL Certificate...\nIssuer: Let's Encrypt\nStrength: RSA 4096-bit\nStatus: VULNERABLE (Heartbleed risk)"); break;
-                case 'trc': typeLog("Traceroute to target...\n1. 192.168.1.1 (2ms)\n2. 10.0.0.1 (12ms)\n3. 172.16.2.5 (24ms)\n4. TARGET (31ms)"); break;
-                case 'map': typeLog("Global Node Map:\n[Tokyo] -- (Encrypted) -- [Silicon Valley] -- (VPN) -- [Frankfurt]"); break;
-                case 'arp': typeLog("Address Resolution Protocol Table:\nInternet Address      Physical Address      Type\n192.168.1.1           00-00-5e-00-53-01     dynamic"); break;
 
-                // --- 3. クラッキング・攻撃 ---
-                case 'run': typeLog("Executing exploit weapon...", () => { setTimeout(() => typeLog("Injecting rootkit... [OK]\nSystem hijacked."), 800); }); break;
+                // --- シミュレーション攻撃系 ---
+                case 'run': typeLog("Executing exploit weapon...", () => { setTimeout(() => typeLog("Injecting rootkit... [OK]\nSystem hijacked."), 400); }); break;
                 case 'bps': typeLog("Bypassing firewall layers...\nLayer 1: PASSED\nLayer 2: PASSED\nCloudflare: OVERIDDEN [100%]"); break;
-                case 'brt': typeLog("Starting Brute-Force on SSH...\nTrying wordlist (1/5000)...\nTrying wordlist (432/5000)...\n[MATCH] password='admin1234'"); break;
-                case 'dos': typeLog("Assembling Denial of Service attack modules...\nThread count: 2048\nTarget flooded with UDP packets. Target status: DOWN"); break;
-                case 'inj': typeLog("Testing SQL injection vectors...\nTarget URL parameter 'id=' is vulnerable.\nExtracting schema..."); break;
-                case 'sql': typeLog("Accessing core database Tables...\n- users (24,510 entries)\n- transactions (104,291 entries)\n- admin_credentials"); break;
-                case 'bdo': typeLog("Planting stealth backdoor in /usr/bin/crontab...\nListening on reverse port 4444... [STANDBY]"); break;
-                case 'pwd': typeLog("Decrypting MD5/SHA256 hashes...\nHash: 5e884898da28047151d0e56f8... -> Decoded: 'password'"); break;
-                case 'dec': typeLog("Cracking RSA private key packet...\nBit length: 2048\nPrivate key reconstructed successfully."); break;
-                case 'spo': typeLog("IP Spoofing initiated.\nDisguising source traffic as trusted Internal IP: 10.0.0.1"); break;
+                case 'brt': typeLog("Starting Brute-Force on SSH...\nTrying wordlist (1/5000)...\n[MATCH] password='admin1234'"); break;
+                case 'dos': typeLog("Assembling Denial of Service attack...\nTarget flooded with UDP packets. Target status: DOWN"); break;
 
-                // --- 4. ファイル・ログ操作 ---
-                case 'log': typeLog("TIMESTAMP        EVENT              OPERATOR\n14:02:11     SSH Auth Fail       192.168.1.100\n14:05:32     Root Access Granted  THIS TERMINAL"); break;
+                // --- ファイル・ファイル操作系 ---
+                case 'log': typeLog("TIMESTAMP        EVENT              OPERATOR\n14:05:32     Root Access Granted  THIS TERMINAL"); break;
                 case 'src': typeLog("void main() {\n    char *shield = malloc(1024);\n    while(1) { fork(); }\n}"); break;
-                case 'cat': typeLog("Reading secret.txt...\n[CONFIDENTIAL]\nProject X blueprints relocated to Sector 7.\nPassphrase: 'omega_alpha'"); break;
-                case 'ls':  typeLog("Directory listing of /root/shadow/:\n- bin/   - etc/   - secret.txt   - exploit.py   - logs.dat"); break;
-                case 'pth': typeLog("Current Virtual Directory:\n/home/root/hydra-core/net-modules/"); break;
-                case 'del': typeLog("Purging system logs to cover tracks...\n/var/log/auth.log [CLEARED]\n/var/log/syslog [CLEARED]\nNo footprints left."); break;
-                case 'bak': typeLog("Downloading database backup file: backup_2026.sql.gz\n[████████████████████] 100% (4.2 GB/s) Download Complete."); break;
-                case 'enc': typeLog("Encrypting entire target file system with AES-256...\nAll files locked. RSA ransom note generated."); break;
-                case 'vrs': typeLog("Scanning local memory for unauthorized tracker viruses...\nClean. Integrity rate: 100%."); break;
+                case 'cat': typeLog("Reading secret.txt...\n[CONFIDENTIAL]\nPassphrase: 'omega_alpha'"); break;
+                case 'rst': typeLog("Resetting secure shell environment...", () => { location.reload(); }); break;
+
+                default:
+                    typeLog(`エラー: コマンド '${cmd}' は存在しません。 'jp' を入力してください。`);
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

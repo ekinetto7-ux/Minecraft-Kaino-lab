@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKER TERMINAL - Japanese Command List</title>
+    <title>HACKER TERMINAL</title>
     <style>
         body {
             background-color: #050505;
@@ -54,8 +54,8 @@
 <body>
 
     <div id="terminal">
-        <span class="system">=== SECURE SHELL v4.2.1 (x86_64-pc-gnu) ===</span>
-        Type <span class="success">hlp</span> for English, or <span class="success">jp </span> for Japanese commands.
+        <span class="system">=== SECURE SHELL v4.2.1 ===</span>
+        Type <span class="success">jp</span> for Japanese command list.
     </div>
 
     <div id="input-area">
@@ -69,8 +69,17 @@
         
         let autoStreamInterval = null;
 
-        document.addEventListener('click', () => input.focus());
+        // ページ内のどこをクリックしても入力欄にフォーカスを戻す
+        document.addEventListener('click', () => {
+            input.focus();
+        });
 
+        // ページ読み込み時にも強制フォーカス
+        window.onload = () => {
+            input.focus();
+        };
+
+        // エンターキーの検知を確実にする
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const cmd = input.value.trim().toLowerCase();
@@ -96,21 +105,18 @@
         function startAutoStream() {
             if (autoStreamInterval) return;
 
-            appendOutput("[*] 自動流し込みモード起動（キー入力で停止）", "system");
+            appendOutput("[*] 自動流し込みモード起動", "system");
 
             const streamLogs = [
                 "カーネルファイアウォールを回避中...",
                 "暗号ハッシュを解読中: 0x8F9A2C1B4E...",
                 "ポート443にシェルコードを注入中...",
-                "リモートデータベースにアクセス中: user_records.db...",
+                "リモートデータベースにアクセス中...",
                 "プロキシサーバーを経由中 [10.42.8.1]...",
                 "ペイロードのダウンロード完了... [OK]",
-                "生体認証センサーをオーバーライド中...",
                 "管理者権限（ROOT）を取得しました。",
                 "パケットを送信中 -> 宛先: 192.168.1.105",
-                "システムログを消去中...",
-                "警告: セクター7で異常を検知",
-                "TORネットワークを経由して再接続中..."
+                "システムログを消去中..."
             ];
 
             autoStreamInterval = setInterval(() => {
@@ -128,41 +134,29 @@
         }
 
         function processCommand(cmd) {
-            // jp コマンド（2文字）または従来の3文字コマンドを受け付ける
             if (cmd !== 'jp' && cmd.length !== 3 && cmd !== '') {
-                appendOutput("エラー: コマンドは 'jp' または3文字で入力してください ('jp' で一覧表示)", "warning");
+                appendOutput("エラー: コマンドは 'jp' または3文字で入力してください", "warning");
                 return;
             }
 
             switch(cmd) {
                 case 'jp':
                     appendOutput("【日本語コマンド一覧】", "system");
-                    appendOutput("  jp  : 日本語コマンド一覧を表示");
-                    appendOutput("  hlp : 英語コマンド一覧を表示");
-                    appendOutput("  aut : 文字をずっと自動で流す（オートモード）");
-                    appendOutput("  stp : 自動流し込みをストップ");
-                    appendOutput("  hak : ハッキングを開始する");
-                    appendOutput("  inf : ターゲットのIP・ネットワーク情報を表示");
-                    appendOutput("  pwd : 現在のディレクトリを表示");
-                    appendOutput("  ls  : ファイル一覧を表示");
-                    appendOutput("  dlc : データベースをダウンロード");
-                    appendOutput("  cls : 画面をクリア（消去）");
+                    appendOutput("  jp  : 日本語コマンド一覧");
+                    appendOutput("  hlp : 英語コマンド一覧");
+                    appendOutput("  aut : 自動オートモード開始");
+                    appendOutput("  stp : 自動モード停止");
+                    appendOutput("  hak : ハッキング開始");
+                    appendOutput("  inf : ネットワーク情報表示");
+                    appendOutput("  pwd : ディレクトリ表示");
+                    appendOutput("  ls  : ファイル一覧");
+                    appendOutput("  dlc : データダウンロード");
+                    appendOutput("  cls : 画面クリア");
                     appendOutput("  rst : システム再起動");
                     break;
 
                 case 'hlp':
-                    appendOutput("Available 3-letter commands:", "system");
-                    appendOutput("  jp  : Japanese command help");
-                    appendOutput("  hlp : Show help list");
-                    appendOutput("  aut : Start auto-hacking text stream");
-                    appendOutput("  stp : Stop auto-hacking stream");
-                    appendOutput("  hak : Initiate main system hack");
-                    appendOutput("  inf : Display network info & IP");
-                    appendOutput("  pwd : Print working directory");
-                    appendOutput("  ls  : List directory contents");
-                    appendOutput("  dlc : Download encrypted database");
-                    appendOutput("  cls : Clear terminal screen");
-                    appendOutput("  rst : System hard reset");
+                    appendOutput("Available commands: jp, hlp, aut, stp, hak, inf, pwd, ls, dlc, cls, rst", "system");
                     break;
 
                 case 'aut':
@@ -171,38 +165,30 @@
 
                 case 'stp':
                     stopAutoStream();
-                    appendOutput("[*] 自動ストリームを停止しました。", "warning");
+                    appendOutput("[*] ストリーム停止", "warning");
                     break;
 
                 case 'hak':
-                    appendOutput("[!] ファイアウォールを回避中...", "warning");
-                    appendOutput("[*] カーネルにコードを注入中...");
-                    appendOutput("[OK] アクセスが許可されました。管理者としてログイン完了。", "success");
+                    appendOutput("[!] ファイアウォール突破...", "warning");
+                    appendOutput("[OK] アクセス許可されました。", "success");
                     break;
 
                 case 'inf':
-                    appendOutput("ターゲット情報: 192.168.1.105");
-                    appendOutput("ゲートウェイ: 10.0.0.1 (保護中)");
-                    appendOutput("暗号化方式: AES-256-GCM [有効]", "success");
+                    appendOutput("IP: 192.168.1.105 | GATEWAY: 10.0.0.1 [SECURE]", "success");
                     break;
 
                 case 'pwd':
-                    appendOutput("/var/root/secure/kernel/sys_core");
+                    appendOutput("/var/root/secure/kernel");
                     break;
 
                 case 'ls ':
                 case 'ls_':
                 case 'dir':
-                    appendOutput("合計 48");
-                    appendOutput("drwx------  2 root root 4096 10月 15 06:10 .");
-                    appendOutput("-rw-r--r--  1 root root  512 payload.bin");
-                    appendOutput("-rwxr-xr-x  1 root root 1024 override.sh", "success");
+                    appendOutput("payload.bin  override.sh  user_data.db", "success");
                     break;
 
                 case 'dlc':
-                    appendOutput("リモートサーバーに接続中...");
-                    appendOutput("機密データをダウンロード中... [████████████] 100%");
-                    appendOutput("ダウンロード完了。 /tmp/ に保存されました。", "success");
+                    appendOutput("Downloading... [████████████] 100% [OK]", "success");
                     break;
 
                 case 'cls':
@@ -210,11 +196,18 @@
                     break;
 
                 case 'rst':
-                    appendOutput("システムを再起動中...", "warning");
+                    appendOutput("Rebooting...", "warning");
                     setTimeout(() => {
-                        terminal.innerHTML = '<span class="system">=== システムが再起動しました ===</span>\n<span class="success">jp</span> と入力するとコマンド一覧が出ます。';
+                        terminal.innerHTML = '<span class="system">=== RESTARTED ===</span>\nType <span class="success">jp</span>';
                     }, 800);
                     break;
 
                 default:
-                    if (cmd
+                    if (cmd === '') break;
+                    appendOutput(`不明なコマンド: '${cmd}' ('jp'で一覧)`, "warning");
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

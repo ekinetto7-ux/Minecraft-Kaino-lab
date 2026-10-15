@@ -2,99 +2,116 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ROOT TERMINAL</title>
     <style>
         body { background-color: #000; color: #0f0; font-family: monospace; padding: 20px; margin: 0; font-size: 16px; }
         #output { width: 100%; height: calc(100vh - 80px); overflow-y: auto; box-sizing: border-box; white-space: pre-wrap; }
-        #input-line { display: flex; align-items: center; margin-top: 10px; }
-        .prompt { color: #0f0; margin-right: 10px; white-space: nowrap; }
+        #input-line { display: flex; align-items: center; margin-top: 10px; background-color: #000; }
+        .prompt { color: #0f0; margin-right: 10px; font-weight: bold; }
         #cmd-input { background: transparent; border: none; color: #fff; font-family: monospace; font-size: 16px; width: 100%; outline: none; }
-        .info { color: #8af; }
-        .warn { color: #f55; }
+        .blue { color: #8af; }
+        .red { color: #f55; }
+        .yellow { color: #ff0; }
     </style>
 </head>
 <body>
-    <div id="output">=== 🚨 ADMINISTRATIVE INTERFACE INITIALIZED 🚨 ===
-[STATUS: ACTIVE] ENTER 'help' TO VIEW AVAILABLE COMMANDS.
+    <div id="output">=== 🚨 ADMINISTRATIVE TERMINAL v2.0 🚨 ===
+[STATUS: READY] コマンド一覧: inf / scn / net / sys / atk / stp / bye / cls
 
 </div>
     <div id="input-line">
         <span class="prompt">root@ipad:~#</span>
-        <input type="text" id="cmd-input" autofocus autocomplete="off" autocapitalize="none">
+        <input type="text" id="cmd-input" autocomplete="off" autocapitalize="none" spellcheck="false">
     </div>
 
     <script>
         const output = document.getElementById('output');
         const input = document.getElementById('cmd-input');
+        let globalLoop = null;
 
-        // iPadの画面どこをタップしても常に入力状態（キーボードが出る状態）にする
-        document.addEventListener('click', () => input.focus());
+        function focusInput() { input.focus(); }
+        document.addEventListener('click', focusInput);
+        document.addEventListener('touchstart', focusInput);
+        window.onload = focusInput;
 
         input.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const command = input.value.trim().toLowerCase();
-                
-                // 入力したコマンドを画面に表示
                 output.innerHTML += `<div><span class="prompt">root@ipad:~#</span> <span style="color:#fff">${input.value}</span></div>`;
                 
-                // コマンドの判定処理
-                if (command === 'help') {
-                    output.innerHTML += `<div class="info">Available Commands:
-  - help      : Show this manual
-  - clear     : Clear the terminal screen
-  - sysstat   : Check iPad CPU and Memory usage
-  - netscan   : Execute network gateway port scan
-  - logstream : Start infinite system log stream</div>`;
+                // コマンド分岐
+                if (command === 'inf') {
+                    output.innerHTML += `<div class="blue">[iPad_STATUS_LOG]
+➜ BATTERY: 100% (HEALTHY) | VOLTAGE: 3.82V
+➜ CPU_LOAD: 12.5% (STABLE) | CORE_ACTIVE: 8
+➜ NETWORK: CONNECTED (SECURE)</div>`;
                 } 
-                else if (command === 'clear') {
+                else if (command === 'cls') {
                     output.innerHTML = '';
                 } 
-                else if (command === 'sysstat') {
-                    output.innerHTML += `<div class="info">[MEM_MGR] Fetching core system stats...
-[CPU_LOAD] Core 0-3: 14.2% | Core 4-7: 2.5% (STABLE)
-[MEMORY]   Active: 2.84 GB / Total: 4.00 GB
-[BATTERY]  Voltage: 3.82V | Charging: FALSE</div>`;
-                } 
-                else if (command === 'netscan') {
-                    output.innerHTML += `<div>[NET_SCAN] Initializing port scan on 192.168.1.1...</div>`;
-                    let p = 0;
+                else if (command === 'scn') {
+                    output.innerHTML += `<div>[NETWORK_SCAN] スキャンを開始します...</div>`;
+                    let count = 0;
                     let interval = setInterval(() => {
-                        let ports =;
-                        let currentPort = Math.floor(Math.random() * 1000) + 10;
-                        if(Math.random() > 0.8) {
-                            output.innerHTML += `<div class="warn">➜ Port ${currentPort}: OPEN (Unauthorized Access Blocked)</div>`;
-                        } else {
-                            output.innerHTML += `<div class="info">➜ Port ${currentPort}: CLOSED</div>`;
-                        }
+                        output.innerHTML += `<div class="blue">➜ Checking IP 192.168.1.${Math.floor(Math.random()*254)} ... [OK]</div>`;
                         output.scrollTop = output.scrollHeight;
-                        p++;
-                        if(p > 15) {
+                        count++;
+                        if(count > 10) {
                             clearInterval(interval);
-                            output.innerHTML += `<div>[NET_SCAN] Scan complete. 0 critical vulnerabilities found.</div>`;
+                            output.innerHTML += `<div class="red">[SUCCESS] スキャン完了。脆弱性はありません。</div>`;
+                            output.scrollTop = output.scrollHeight;
                         }
                     }, 150);
                 } 
-                else if (command === 'logstream') {
-                    output.innerHTML += `<div class="warn">[STREAM] Starting system log loop. Press enter to interrupt.</div>`;
-                    window.logLoop = setInterval(() => {
-                        let timestamp = `[${new Date().toLocaleTimeString()}]`;
-                        output.innerHTML += `<div class="info">${timestamp} [KERNEL] PID:${Math.floor(Math.random()*9000+1000)} -> Task priority executed successfully.</div>`;
+                else if (command === 'net') {
+                    output.innerHTML += `<div class="blue">[NETWORK_CONFIG]
+➜ GLOBAL_IP: 210.${Math.floor(Math.random()*255)}.45.112
+➜ SUBNET_MASK: 255.255.255.0
+➜ HOSTNAME: apple.ipad.internal.root
+➜ OPEN_PORT: 80, 443, 22 (SSH_ACTIVE)</div>`;
+                }
+                else if (command === 'sys') {
+                    output.innerHTML += `<div>[SYSTEM_DECRYPT] ストレージを解析中...</div>`;
+                    let pct = 0;
+                    let interval = setInterval(() => {
+                        pct += Math.floor(Math.random()*15) + 5;
+                        if(pct > 100) pct = 100;
+                        output.innerHTML += `<div class="yellow">➜ Progress: ${pct}% ... 解読中</div>`;
                         output.scrollTop = output.scrollHeight;
+                        if(pct >= 100) {
+                            clearInterval(interval);
+                            output.innerHTML += `<div class="blue">[COMPLETE] 全システムファイルの展開に成功しました。</div>`;
+                            output.scrollTop = output.scrollHeight;
+                        }
                     }, 200);
                 }
-                else {
-                    if(window.logLoop) {
-                        // logstream起動中に何かエンターを押したら止める処理
-                        clearInterval(window.logLoop);
-                        window.logLoop = null;
-                        output.innerHTML += `<div>[STREAM] Loop interrupted by administrator.</div>`;
-                    } else if (command !== "") {
-                        output.innerHTML += `<div class="warn">Command not found: '${command}'. Type 'help' for options.</div>`;
+                else if (command === 'atk') {
+                    output.innerHTML += `<div class="red">[ATTACK_STREAM] 疑似パケットの高速送信を開始。停止は 'stp'</div>`;
+                    if(globalLoop) clearInterval(globalLoop);
+                    globalLoop = setInterval(() => {
+                        output.innerHTML += `<div class="red">[SEND] PACKET ➜ DEST: 10.0.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)} | SIZE: 64KB | STATUS: 200</div>`;
+                        output.scrollTop = output.scrollHeight;
+                    }, 50);
+                }
+                else if (command === 'stp') {
+                    if(globalLoop) {
+                        clearInterval(globalLoop);
+                        globalLoop = null;
+                        output.innerHTML += `<div class="blue">[STOP] すべてのバックグラウンドログを強制停止しました。</div>`;
+                    } else {
+                        output.innerHTML += `<div>エラー: 動いているプロセスがありません。</div>`;
                     }
                 }
+                else if (command === 'bye') {
+                    output.innerHTML += `<div class="red">[SHUTDOWN] 管理者セッションを終了します...
+[LOGOUT] root@ipad disconnected.</div>`;
+                    setTimeout(() => { output.innerHTML = ''; }, 1500);
+                }
+                else if (command !== "") {
+                    output.innerHTML += `<div class="red">エラー: '${command}' は存在しません。</div>`;
+                }
 
-                // 入力欄を空にして最下部へスクロール
                 input.value = '';
                 output.scrollTop = output.scrollHeight;
             }

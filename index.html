@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.6 ADVANCED LOCK</title>
+    <title>CYBER TERMINAL - v7.7 ULTIMATE STABLE</title>
     <style>
         body {
             background-color: #03070c;
@@ -107,9 +107,9 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.6 [ADVANCED LOCK SYSTEM]</span>
+            <span class="system">  CYBER TERMINAL v7.7 [ULTIMATE STABLE]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system.
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 911).
         </div>
 
         <form id="command-form">
@@ -126,8 +126,9 @@
         
         let autoStreamInterval = null;
         let isProcessing = false;
-        let isLocked = false; // ロック状態フラグ
+        let isLocked = false;
 
+        // 常にフォーカスを維持
         document.addEventListener('click', () => { 
             if (!isProcessing) input.focus(); 
         });
@@ -136,38 +137,39 @@
             input.focus(); 
         };
 
-        // フォーム送信（Enterキー / 決定）
+        // フォーム送信（エンターキー / 送信）を確実に処理
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             if (isProcessing) return;
 
-            const text = input.value;
-            const cmd = text.trim().toLowerCase();
+            const rawText = input.value;
+            const text = rawText.trim();
             if (text === '') return;
             
             input.value = '';
 
-            // --- 【進化したロック中の処理】 ---
+            // 1. ロック中のパスワード判定
             if (isLocked) {
-                appendOutput(`ENTER PASSCODE: ***`);
-                
-                if (text.trim() === '911') {
+                appendOutput(`PASSCODE: ***`);
+                if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     promptLabel.style.color = "#ff007f";
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                 } else {
-                    appendOutput("[X] ACCESS DENIED. WRONG PASSWORD. TRY AGAIN.", "warning");
+                    appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
                 }
                 terminal.scrollTop = terminal.scrollHeight;
                 return;
             }
 
-            // --- 通常時の処理 ---
-            if (cmd !== 'aut' && cmd !== 'stp') stopAutoStream();
+            // 2. 通常時のコマンド処理
+            if (text.toLowerCase() !== 'aut' && text.toLowerCase() !== 'stp') {
+                stopAutoStream();
+            }
 
-            appendOutput(`root@cyber:~# ${text}`);
-            processCommand(cmd);
+            appendOutput(`root@cyber:~# ${rawText}`);
+            processCommand(text.toLowerCase());
             terminal.scrollTop = terminal.scrollHeight;
         });
 
@@ -259,7 +261,7 @@
                     isLocked = true;
                     promptLabel.textContent = "PASSCODE:";
                     promptLabel.style.color = "#ff3366";
-                    appendOutput("[!] SYSTEM SECURED. ENTER PASSCODE TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
                 case 'aut': startAutoStream(); break;
@@ -346,4 +348,36 @@
 
                 case 'who':
                     appendOutput("root     pts/0        2026-10-15 18:30 (10.0.4.15 [REMOTE])");
-                    appendOutput("admin    pts/1        2026-10-15 17:12 (LOCAL
+                    appendOutput("admin    pts/1        2026-10-15 17:12 (LOCAL CONSOLE)");
+                    break;
+
+                case 'cpu':
+                    appendOutput("CPU USAGE: [████████░░] 78.4%");
+                    appendOutput("MEM USAGE: [█████░░░░░] 42.1% (3.38 GB / 8.00 GB)");
+                    appendOutput("GPU TEMP: 62°C | FAN SPEED: 3400 RPM", "success");
+                    break;
+
+                case 'cls':
+                    terminal.innerHTML = "";
+                    break;
+
+                case 'rst':
+                    appendOutput("Rebooting kernel...", "warning");
+                    isProcessing = true;
+                    input.disabled = true;
+                    setTimeout(() => {
+                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">jp</span> for command list.';
+                        isProcessing = false;
+                        input.disabled = false;
+                        input.focus();
+                    }, 1200);
+                    break;
+
+                default:
+                    appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

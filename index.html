@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v7.11 SECURE HIDE</title>
+    <title>CYBER TERMINAL - v8.0 ALL-IN-ONE</title>
     <style>
         body {
             background-color: #03070c;
@@ -34,8 +34,14 @@
             background-color: #0d121f;
             padding: 10px 15px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #00ffcc22;
+        }
+        .window-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         .window-buttons {
             display: flex;
@@ -50,9 +56,18 @@
         .btn-yellow { background-color: #ffbd2e; }
         .btn-green { background-color: #27c93f; }
         .window-title {
-            margin-left: 15px;
             font-size: 13px;
             color: #8899a6;
+        }
+        /* 常時ステータス表示 */
+        .header-status {
+            font-size: 12px;
+            color: #ff3366;
+            background: #1a0508;
+            padding: 3px 8px;
+            border: 1px solid #ff336644;
+            border-radius: 3px;
+            font-weight: bold;
         }
         #terminal {
             flex-grow: 1;
@@ -86,10 +101,9 @@
             outline: none;
             width: 100%;
         }
-        /* ロック中は入力文字を透明（非表示）にするクラス */
         .hidden-input {
             color: transparent !important;
-            text-shadow: 0 0 8px rgba(0,255,204,0.5); /* 雰囲気としてうっすら光る演出にしてもOK */
+            text-shadow: 0 0 8px rgba(0,255,204,0.5);
         }
         .warning { color: #ff3366; font-weight: bold; }
         .success { color: #00ffcc; }
@@ -102,19 +116,22 @@
 
     <div id="window-frame">
         <div class="window-header">
-            <div class="window-buttons">
-                <div class="btn btn-red"></div>
-                <div class="btn btn-yellow"></div>
-                <div class="btn btn-green"></div>
+            <div class="window-left">
+                <div class="window-buttons">
+                    <div class="btn btn-red"></div>
+                    <div class="btn btn-yellow"></div>
+                    <div class="btn btn-green"></div>
+                </div>
+                <div class="window-title">root@cyber-shell:~</div>
             </div>
-            <div class="window-title">root@cyber-shell:~</div>
+            <div class="header-status" id="sec-badge">DEFCON 2 // TRACE ACTIVE</div>
         </div>
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v7.11 [SECURE HIDE FIXED]</span>
+            <span class="system">  CYBER TERMINAL v8.0 [ALL-IN-ONE SECURE EDITION]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: ***).
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 1007).
         </div>
 
         <form id="command-form">
@@ -128,6 +145,7 @@
         const input = document.getElementById('command-input');
         const form = document.getElementById('command-form');
         const promptLabel = document.getElementById('prompt-label');
+        const secBadge = document.getElementById('sec-badge');
         
         let autoStreamInterval = null;
         let isProcessing = false;
@@ -151,15 +169,19 @@
             
             input.value = '';
 
-            // 1. ロック中のパスワード判定（入力文字は画面に一切表示させない）
+            // ロック中のパスワード判定 (1007)
             if (isLocked) {
-                appendOutput(`PASSCODE: *********`); // 入力された内容は伏せ字でログに残す
+                appendOutput(`PASSCODE: *********`);
                 
-                if (text === '911') {
+                if (text === '1007') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     promptLabel.style.color = "#ff007f";
-                    input.classList.remove('hidden-input'); // 文字を元に戻す
+                    input.classList.remove('hidden-input');
+                    secBadge.textContent = "DEFCON 2 // SECURE";
+                    secBadge.style.color = "#00ffcc";
+                    secBadge.style.borderColor = "#00ffcc44";
+                    secBadge.style.background = "#031a14";
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
@@ -168,7 +190,6 @@
                 return;
             }
 
-            // 2. 通常時のコマンド処理
             if (text.toLowerCase() !== 'aut' && text.toLowerCase() !== 'stp') {
                 stopAutoStream();
             }
@@ -239,6 +260,14 @@
         }
 
         function processCommand(cmd) {
+            // シークレット隠しコマンドの判定
+            if (cmd === 'matrix_on') {
+                appendOutput("[SECRET] OVERRIDING MAINFRAME MATRIX VISUALS...", "matrix");
+                document.body.style.backgroundColor = "#001100";
+                setTimeout(() => { document.body.style.backgroundColor = "#03070c"; }, 2000);
+                return;
+            }
+
             if (cmd !== 'jp' && cmd.length !== 3) {
                 appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
                 return;
@@ -247,10 +276,10 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v7.11)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v8.0)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
-                    appendOutput("  stp : ログ停止    |  hak : ハック    |  lok : システムロック");
+                    appendOutput("  stp : ログ停止    |  geo : 位置情報  |  lok : システムロック");
                     appendOutput("  dec : 暗号総当り  |  dos : DDoS攻撃  |  err : エラー連打");
                     appendOutput("  scn : 脆弱性スキャン|  gen : 鍵生成    |  mtr : マトリックス");
                     appendOutput("  brk : クラッシュ  |  sat : 衛星接続  |  bck : バックドア");
@@ -260,15 +289,26 @@
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, hlp, aut, stp, hak, lok, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, hlp, aut, stp, geo, lok, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
                     break;
 
                 case 'lok':
                     isLocked = true;
                     promptLabel.textContent = "PASSCODE:";
                     promptLabel.style.color = "#ff3366";
-                    input.classList.add('hidden-input'); // 入力文字を見えなくする
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE TO UNLOCK.", "warning");
+                    input.classList.add('hidden-input');
+                    secBadge.textContent = "DEFCON 1 // LOCKED";
+                    secBadge.style.color = "#ff3366";
+                    secBadge.style.borderColor = "#ff336644";
+                    secBadge.style.background = "#1a0508";
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
+                    break;
+
+                case 'geo':
+                    runSimulatedTask("TrIangulating target geolocation coordinates", "Target node successfully located.", () => {
+                        appendOutput("GEO-LOCATION: [35.6895° N, 139.6917° E] (TOKYO, JP)", "success");
+                        appendOutput("ISP: CYBER-NET GLOBAL BACKBONE / PROXY NODE #4", "success");
+                    });
                     break;
 
                 case 'dec':
@@ -343,8 +383,7 @@
                     });
                     break;
 
-                case 'ai ':
-                case 'ai_':
+                case 'ai':
                     runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled. Model fully compliant.", () => {
                         appendOutput("STATUS: Autonomous hacking mode active.", "success");
                     });
@@ -360,8 +399,7 @@
                     appendOutput("/var/root/secure/kernel/sys_core");
                     break;
 
-                case 'ls ':
-                case 'ls_':
+                case 'ls':
                 case 'dir':
                     appendOutput("total 64\ndrwx------  4 root root 4096 Oct 15 06:15 .\n-rw-r--r--  1 root root  840 config.conf\n-rw-r--r--  1 root root 1024 payload.bin\n-rwxr-xr-x  1 root root 2048 override.sh", "success");
                     break;
@@ -393,6 +431,10 @@
                     input.disabled = true;
                     setTimeout(() => {
                         terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">jp</span> for command list.';
+                        secBadge.textContent = "DEFCON 2 // TRACE ACTIVE";
+                        secBadge.style.color = "#ff3366";
+                        secBadge.style.borderColor = "#ff336644";
+                        secBadge.style.background = "#1a0508";
                         isProcessing = false;
                         input.disabled = false;
                         input.focus();

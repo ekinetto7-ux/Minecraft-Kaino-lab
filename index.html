@@ -131,7 +131,7 @@
             <span class="system">=======================================================</span>
             <span class="system">  CYBER TERMINAL v8.0 [ALL-IN-ONE SECURE EDITION]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 1007).
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: ***).
         </div>
 
         <form id="command-form">
@@ -169,11 +169,11 @@
             
             input.value = '';
 
-            // ロック中のパスワード判定 (1007)
+            // ロック中のパスワード判定 (911)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
                 
-                if (text === '1007') {
+                if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = "root@cyber:~#";
                     promptLabel.style.color = "#ff007f";
@@ -301,7 +301,7 @@
                     secBadge.style.color = "#ff3366";
                     secBadge.style.borderColor = "#ff336644";
                     secBadge.style.background = "#1a0508";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (***) TO UNLOCK.", "warning");
                     break;
 
                 case 'geo':

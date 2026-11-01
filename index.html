@@ -225,10 +225,10 @@
             
             input.value = '';
 
-            // ロック中のパスワード判定 (1007)
+            // ロック中のパスワード判定 (911)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
-                if (text === '1007') {
+                if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = isDevMode ? "DEV-MODE> " : "root@cyber:~#";
                     promptLabel.style.color = isDevMode ? "#00aaff" : "#ff007f";
@@ -597,7 +597,7 @@
                     secBadge.style.borderColor = "rgba(255, 51, 102, 0.4)";
                     secBadge.style.background = "#200205";
                     windowFrame.style.borderColor = "rgba(255, 51, 102, 0.4)";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
                 case 'geo':

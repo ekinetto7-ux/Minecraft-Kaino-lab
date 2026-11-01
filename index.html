@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v9.0 MANUAL DEV EDITION</title>
+    <title>CYBER TERMINAL - v10.0 DEFINITIVE EDITION</title>
     <style>
         body {
             background-color: #020509;
@@ -114,6 +114,7 @@
         .success { color: #00ffcc; text-shadow: 0 0 5px rgba(0, 255, 204, 0.4); }
         .system { color: #ffaa00; text-shadow: 0 0 5px rgba(255, 170, 0, 0.4); }
         .dev { color: #00aaff; text-shadow: 0 0 5px rgba(0, 170, 255, 0.4); }
+        .police { color: #ffcc00; font-weight: bold; text-shadow: 0 0 8px rgba(255, 204, 0, 0.6); }
         .matrix { color: #00ff00; text-shadow: 0 0 5px rgba(0, 255, 0, 0.4); }
         .secret { color: #ff00ff; font-weight: bold; text-shadow: 0 0 5px rgba(255, 0, 255, 0.4); }
         .dim { color: #1e3d33; }
@@ -136,9 +137,9 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v9.0 [MANUAL DEV ENGINE]</span>
+            <span class="system">  CYBER TERMINAL v10.0 [DEFINITIVE EDITION]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="dev">man</span> for manual code mode.
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 1007).
         </div>
 
         <form id="command-form">
@@ -306,7 +307,6 @@
 
             if (subCmd === 'calc') {
                 try {
-                    // 安全な簡易計算
                     const cleanMath = args.replace(/[^0-9+\-*/().]/g, '');
                     if (!cleanMath) {
                         appendOutput("[DEV ERROR] Invalid calculation expression.", "warning");
@@ -381,17 +381,17 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v9.0)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v10.0 決定版)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
-                    appendOutput("  stp : ログ停止    |  man : 手動開発  |  lok : システムロック");
-                    appendOutput("  geo : 位置情報    |  dec : 暗号総当り|  dos : DDoS攻撃");
-                    appendOutput("  err : エラー連打  |  scn : 脆弱性スキャン|  gen : 鍵生成");
-                    appendOutput("  mtr : マトリックス|  brk : クラッシュ  |  sat : 衛星接続");
-                    appendOutput("  bck : バックドア  |  ai  : AIコアハック|  inf : IP確認");
-                    appendOutput("  pwd : 階層表示    |  ls  : ファイル一覧|  dlc : Data DL");
-                    appendOutput("  who : ログイン者  |  cpu : CPU確認     |  cls : 画面消去");
-                    appendOutput("  rst : 再起動");
+                    appendOutput("  stp : ログ停止    |  man : 手動開発  |  pol : 警察連携");
+                    appendOutput("  lok : ロック      |  geo : 位置情報  |  dec : 暗号総当り");
+                    appendOutput("  dos : DDoS攻撃    |  err : エラー    |  scn : スキャン");
+                    appendOutput("  gen : 鍵生成      |  mtr : マトリクス|  brk : クラッシュ");
+                    appendOutput("  sat : 衛星接続    |  bck : バックドア|  ai  : AIコアハック");
+                    appendOutput("  inf : IP確認      |  pwd : 階層表示  |  ls  : ファイル一覧");
+                    appendOutput("  dlc : Data DL     |  who : ログイン者|  cpu : CPU確認");
+                    appendOutput("  cls : 画面消去    |  rst : 再起動");
                     appendOutput("  (ヒント: 秘密コードを表示するには 'jpl' を入力)");
                     break;
 
@@ -403,7 +403,15 @@
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    break;
+
+                case 'pol':
+                    runSimulatedTask("Establishing secure VPN tunnel to National Police Cyber Agency", "Encrypted link verified.", () => {
+                        appendOutput("[POLICE INTERFACE] Connected to Cyber Crime Incident Response Center.", "police");
+                        appendOutput("ALERT LEVEL: SECURE // INCIDENT REPORT ENCRYPTED", "police");
+                        appendOutput("TARGET TRACE DATA DISPATCHED TO INVESTIGATION DATABASE.", "police");
+                    });
                     break;
 
                 case 'man':

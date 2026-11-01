@@ -221,7 +221,7 @@
             
             input.value = '';
 
-            // ロック中のパスワード判定 (1007)
+            // ロック中のパスワード判定 (911)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
                 if (text === '911') {
@@ -548,7 +548,7 @@
                     secBadge.style.color = "#ff3366";
                     secBadge.style.borderColor = "rgba(255, 51, 102, 0.4)";
                     secBadge.style.background = "#200205";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (***) TO UNLOCK.", "warning");
                     break;
 
                 case 'geo':

@@ -180,7 +180,7 @@
             <span class="system">=======================================================</span>
             <span class="system">  CYBER TERMINAL v11.1 [FIXED ULTIMATE EDITION]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 1007).
+            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: ***).
         </div>
 
         <form id="command-form">
@@ -224,7 +224,7 @@
             // ロック中のパスワード判定 (1007)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
-                if (text === '1007') {
+                if (text === '911') {
                     isLocked = false;
                     promptLabel.textContent = isDevMode ? "DEV-MODE> " : "root@cyber:~#";
                     promptLabel.style.color = isDevMode ? "#00aaff" : "#ff007f";

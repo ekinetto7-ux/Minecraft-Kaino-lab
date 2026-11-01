@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v11.1 FIXED ULTIMATE EDITION</title>
+    <title>CYBER TERMINAL - v12.0 VIVANT SPECIAL EDITION</title>
     <style>
         :root {
             --bg-color: #010409;
@@ -13,6 +13,7 @@
             --accent-pink: #ff007f;
             --accent-blue: #00aaff;
             --accent-yellow: #ffcc00;
+            --accent-red: #ff2255;
             --border-glow: rgba(0, 255, 204, 0.35);
         }
 
@@ -28,6 +29,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            transition: background-color 0.5s ease;
         }
 
         #window-frame {
@@ -41,6 +43,7 @@
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 0 40px rgba(0, 255, 204, 0.12), inset 0 0 20px rgba(0, 255, 204, 0.03);
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         .window-header {
@@ -103,7 +106,6 @@
             scroll-behavior: smooth;
         }
 
-        /* カスタムスクロールバー */
         #terminal::-webkit-scrollbar {
             width: 6px;
         }
@@ -156,6 +158,7 @@
         .system { color: #ffaa00; text-shadow: 0 0 6px rgba(255, 170, 0, 0.5); }
         .dev { color: var(--accent-blue); text-shadow: 0 0 6px rgba(0, 170, 255, 0.5); }
         .police { color: var(--accent-yellow); font-weight: bold; text-shadow: 0 0 10px rgba(255, 204, 0, 0.7); }
+        .vivant { color: var(--accent-red); font-weight: bold; text-shadow: 0 0 10px rgba(255, 34, 85, 0.8); }
         .matrix { color: #00ff00; text-shadow: 0 0 6px rgba(0, 255, 0, 0.5); }
         .secret { color: var(--accent-pink); font-weight: bold; text-shadow: 0 0 6px rgba(255, 0, 255, 0.5); }
         .dim { color: #1a3830; }
@@ -178,9 +181,9 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v11.1 [FIXED ULTIMATE EDITION]</span>
+            <span class="system">  CYBER TERMINAL v12.0 [VIVANT SPECIAL EDITION]</span>
             <span class="system">=======================================================</span>
-            Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: ***).
+            Type <span class="success">jp</span> for command list, or <span class="vivant">viv</span> to launch VIVANT Cyber Mode.
         </div>
 
         <form id="command-form">
@@ -196,6 +199,7 @@
         const promptLabel = document.getElementById('prompt-label');
         const secBadge = document.getElementById('sec-badge');
         const shellTitle = document.getElementById('shell-title');
+        const windowFrame = document.getElementById('window-frame');
         
         let autoStreamInterval = null;
         let isProcessing = false;
@@ -221,10 +225,10 @@
             
             input.value = '';
 
-            // ロック中のパスワード判定 (911)
+            // ロック中のパスワード判定 (1007)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
-                if (text === '911') {
+                if (text === '1007') {
                     isLocked = false;
                     promptLabel.textContent = isDevMode ? "DEV-MODE> " : "root@cyber:~#";
                     promptLabel.style.color = isDevMode ? "#00aaff" : "#ff007f";
@@ -233,6 +237,7 @@
                     secBadge.style.color = "#00ffcc";
                     secBadge.style.borderColor = "rgba(0, 255, 204, 0.4)";
                     secBadge.style.background = "#022019";
+                    windowFrame.style.borderColor = "rgba(0, 255, 204, 0.35)";
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
@@ -293,6 +298,44 @@
             }, 80);
         }
 
+        // VIVANTモード特殊アニメーション演出
+        function startVivantModeAnimation() {
+            isProcessing = true;
+            input.disabled = true;
+
+            secBadge.textContent = "ALERT: VIVANT OPERATION";
+            secBadge.style.color = "#ff2255";
+            secBadge.style.borderColor = "rgba(255, 34, 85, 0.6)";
+            secBadge.style.background = "#2a000c";
+            windowFrame.style.borderColor = "rgba(255, 34, 85, 0.6)";
+
+            const logs = [
+                "[*] CONNECTING TO ENCRYPTED DARKCOM PROXY NETWORK...",
+                "[*] BYPASSING MULTI-LAYER SYSTEM FIREWALL [TENTH NODE]...",
+                "[*] INTERCEPTING ENCRYPTED SATELLITE COMMUNICATIONS...",
+                "[*] EXTRACTING ACCESSED LOGS & FINANCIAL TRANSACTION DATA...",
+                "[VIVANT] OPERATION COMPLETED. ACCESSED SECURE TARGET DATABASE."
+            ];
+
+            let index = 0;
+            const timer = setInterval(() => {
+                if (index < logs.length) {
+                    appendOutput(logs[index], index === logs.length - 1 ? "vivant" : "warning");
+                    index++;
+                } else {
+                    clearInterval(timer);
+                    appendOutput("--------------------------------------------------", "vivant");
+                    appendOutput("TARGET IP: 185.220.101.44 [TOR EXIT NODE - BALKA SECTOR]", "vivant");
+                    appendOutput("STATUS: HACK OVERRIDE COMPLETE. NO TRACE DETECTED.", "vivant");
+                    appendOutput("--------------------------------------------------", "vivant");
+
+                    isProcessing = false;
+                    input.disabled = false;
+                    input.focus();
+                }
+            }, 200);
+        }
+
         // 手動モード起動アニメーション演出
         function startDevModeAnimation() {
             isProcessing = true;
@@ -321,6 +364,7 @@
                     secBadge.style.color = "#00aaff";
                     secBadge.style.borderColor = "rgba(0, 170, 255, 0.4)";
                     secBadge.style.background = "#021220";
+                    windowFrame.style.borderColor = "rgba(0, 170, 255, 0.4)";
                     
                     appendOutput("==================================================", "dev");
                     appendOutput("  【手動コード作成・実行モード（MANUAL DEV）】", "dev");
@@ -360,6 +404,7 @@
                     secBadge.style.color = "#00ffcc";
                     secBadge.style.borderColor = "rgba(0, 255, 204, 0.4)";
                     secBadge.style.background = "#022019";
+                    windowFrame.style.borderColor = "rgba(0, 255, 204, 0.35)";
                     appendOutput("[OK] RETURNED TO STANDARD SHELL.", "success");
 
                     isProcessing = false;
@@ -485,8 +530,7 @@
                 return;
             }
 
-            // 2文字や3文字の有効コマンドの判定を修正（ai や ls などの短縮コマンドを確実に網羅）
-            const validCommands = ['jp', 'jpl', 'hlp', 'aut', 'stp', 'man', 'pol', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
+            const validCommands = ['jp', 'jpl', 'hlp', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
 
             if (!validCommands.includes(cmd)) {
                 appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
@@ -496,17 +540,17 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v11.1 修正決定版)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v12.0 VIVANT版)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  man : 手動開発  |  pol : 警察連携");
-                    appendOutput("  lok : ロック      |  geo : 位置情報  |  dec : 暗号総当り");
-                    appendOutput("  dos : DDoS攻撃    |  err : エラー    |  scn : スキャン");
-                    appendOutput("  gen : 鍵生成      |  mtr : マトリクス|  brk : クラッシュ");
-                    appendOutput("  sat : 衛星接続    |  bck : バックドア|  ai  : AIコアハック");
-                    appendOutput("  inf : IP確認      |  pwd : 階層表示  |  ls  : ファイル一覧");
-                    appendOutput("  dlc : Data DL     |  who : ログイン者|  cpu : CPU確認");
-                    appendOutput("  cls : 画面消去    |  rst : 再起動");
+                    appendOutput("  viv : VIVANTモード|  lok : ロック    |  geo : 位置情報");
+                    appendOutput("  dec : 暗号総当り  |  dos : DDoS攻撃  |  err : エラー");
+                    appendOutput("  scn : スキャン    |  gen : 鍵生成    |  mtr : マトリクス");
+                    appendOutput("  brk : クラッシュ  |  sat : 衛星接続  |  bck : バックドア");
+                    appendOutput("  ai  : AIコアハック|  inf : IP確認    |  pwd : 階層表示");
+                    appendOutput("  ls  : ファイル一覧|  dlc : Data DL   |  who : ログイン者");
+                    appendOutput("  cpu : CPU確認     |  cls : 画面消去  |  rst : 再起動");
                     appendOutput("  (ヒント: 秘密コードを表示するには 'jpl' を入力)");
                     break;
 
@@ -518,7 +562,11 @@
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, viv, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
+                    break;
+
+                case 'viv':
+                    startVivantModeAnimation();
                     break;
 
                 case 'ai':
@@ -548,7 +596,8 @@
                     secBadge.style.color = "#ff3366";
                     secBadge.style.borderColor = "rgba(255, 51, 102, 0.4)";
                     secBadge.style.background = "#200205";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (***) TO UNLOCK.", "warning");
+                    windowFrame.style.borderColor = "rgba(255, 51, 102, 0.4)";
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
                     break;
 
                 case 'geo':
@@ -676,6 +725,7 @@
                         secBadge.style.color = "#00ffcc";
                         secBadge.style.borderColor = "rgba(0, 255, 204, 0.4)";
                         secBadge.style.background = "#022019";
+                        windowFrame.style.borderColor = "rgba(0, 255, 204, 0.35)";
                         isProcessing = false;
                         input.disabled = false;
                         input.focus();

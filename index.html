@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - v11.0 PERFECT ULTIMATE EDITION</title>
+    <title>CYBER TERMINAL - v11.1 FIXED ULTIMATE EDITION</title>
     <style>
         :root {
             --bg-color: #010409;
@@ -178,7 +178,7 @@
 
         <div id="terminal">
             <span class="system">=======================================================</span>
-            <span class="system">  CYBER TERMINAL v11.0 [PERFECT ULTIMATE EDITION]</span>
+            <span class="system">  CYBER TERMINAL v11.1 [FIXED ULTIMATE EDITION]</span>
             <span class="system">=======================================================</span>
             Type <span class="success">jp</span> for command list, or <span class="success">lok</span> to lock system (Password: 1007).
         </div>
@@ -485,7 +485,10 @@
                 return;
             }
 
-            if (cmd !== 'jp' && cmd !== 'jpl' && cmd.length !== 3) {
+            // 2文字や3文字の有効コマンドの判定を修正（ai や ls などの短縮コマンドを確実に網羅）
+            const validCommands = ['jp', 'jpl', 'hlp', 'aut', 'stp', 'man', 'pol', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
+
+            if (!validCommands.includes(cmd)) {
                 appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
                 return;
             }
@@ -493,7 +496,7 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v11.0 完璧決定版)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v11.1 修正決定版)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  man : 手動開発  |  pol : 警察連携");
@@ -515,7 +518,13 @@
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
+                    break;
+
+                case 'ai':
+                    runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled. Model fully compliant.", () => {
+                        appendOutput("STATUS: Autonomous hacking mode active. Neural link stable.", "success");
+                    });
                     break;
 
                 case 'pol':
@@ -621,12 +630,6 @@
                     });
                     break;
 
-                case 'ai':
-                    runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled. Model fully compliant.", () => {
-                        appendOutput("STATUS: Autonomous hacking mode active.", "success");
-                    });
-                    break;
-
                 case 'inf':
                     appendOutput("TARGET: 192.168.1.105 (CYBER-CORE-01)");
                     appendOutput("GATEWAY: 10.0.0.1 | MASK: 255.255.255.0");
@@ -677,10 +680,6 @@
                         input.disabled = false;
                         input.focus();
                     }, 1200);
-                    break;
-
-                default:
-                    appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
                     break;
             }
         }

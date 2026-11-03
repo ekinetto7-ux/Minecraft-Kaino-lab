@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - OVERDRIVE PRO</title>
+    <title>CYBER TERMINAL - 100 COMMAND OVERDRIVE</title>
     <style>
         :root {
             --bg-color: #010206;
@@ -141,10 +141,10 @@
             flex-grow: 1;
             white-space: pre-wrap;
             word-wrap: break-word;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.5;
             overflow-y: auto;
-            padding: 22px;
+            padding: 20px;
             scroll-behavior: smooth;
             text-shadow: 0 0 5px var(--main-glow);
         }
@@ -267,10 +267,10 @@
         function runBootSequence() {
             input.disabled = true;
             const bootLogs = [
-                "[BOOT] INITIALIZING CYBER KERNEL v16.0...",
-                "[BOOT] CHECKING CPU INTEGRITY... OK",
-                "[BOOT] ALLOCATING MEMORY HEAP... OK",
-                "[BOOT] MOUNTING ENCRYPTED FILE SYSTEM... OK",
+                "[BOOT] INITIALIZING CYBER KERNEL v17.0 (100 COMMANDS ENGINE)...",
+                "[BOOT] CHECKING CPU & MEMORY HEAPS... OK",
+                "[BOOT] LOADING 100 EXTENDED CYBER COMMAND PACKETS...",
+                "[BOOT] MOUNTING HIGH-SPEED INTERPRETATIVE REPL... OK",
                 "[BOOT] LOADED SECURITY MODULES (AES-256 / RSA-4096)",
                 "==================================================",
                 "  SYSTEM LOCKED. ENTER PASSCODE TO INITIALIZE.",
@@ -289,7 +289,7 @@
                     input.disabled = false;
                     input.focus();
                 }
-            }, 100);
+            }, 90);
         }
 
         form.addEventListener('submit', (e) => {
@@ -318,9 +318,9 @@
 
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                     appendOutput("\n==================================================", "system");
-                    appendOutput("  CYBER TERMINAL v16.0 [OVERDRIVE EDITION]", "system");
+                    appendOutput("  CYBER TERMINAL v17.0 [100 COMMANDS PACK INTEGRATED]", "system");
                     appendOutput("==================================================", "system");
-                    appendOutput("Type 'jp' for commands, 'col' for color room, 'jpl' for secrets, or 'lok' to lock.");
+                    appendOutput("Type 'jp' for 100 commands list, 'col' for colors, 'jpl' for secret list.");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSCODE.", "warning");
                 }
@@ -398,7 +398,7 @@
                     if (callback) callback();
                     terminal.scrollTop = terminal.scrollHeight;
                 }
-            }, 80);
+            }, 70);
         }
 
         // カラー設定部屋 (COLOR CONFIG ROOM)
@@ -636,202 +636,153 @@
             appendOutput(`DevEngine: command not found: '${subCmd}'.`, "warning");
         }
 
+        // 100個のコマンド定義テーブル
+        const commandTable = {
+            // [カテゴリ1: 基本・システム制御 (20個)]
+            'jp': () => show100CommandsList(),
+            'jpl': () => { triggerPulse(); showSecretList(); },
+            'hlp': () => appendOutput("Type 'jp' for full 100 commands list.", "system"),
+            'col': () => enterColorRoom(),
+            'man': () => startDevModeAnimation(),
+            'lok': () => { isLocked = true; promptLabel.textContent = "PASSCODE:"; promptLabel.style.color = "#ff3366"; input.classList.add('hidden-input'); secBadge.textContent = "SYSTEM: LOCKED"; secBadge.style.color = "#ff3366"; appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning"); },
+            'aut': () => startAutoStream(),
+            'stp': () => { stopAutoStream(); appendOutput("[*] ストリーム停止", "warning"); },
+            'cls': () => terminal.innerHTML = "",
+            'rst': () => { appendOutput("Rebooting kernel...", "warning"); isProcessing = true; input.disabled = true; setTimeout(() => { terminal.innerHTML = ""; isBooting = true; isLocked = true; secBadge.textContent = "SYSTEM: BOOTING"; secBadge.style.color = "#ffaa00"; promptLabel.textContent = "PASSCODE:"; promptLabel.style.color = "#ff3366"; input.classList.add('hidden-input'); setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'RETRO AMBER'); runBootSequence(); }, 1000); },
+            'cpu': () => appendOutput("CPU0: [████████░░] 78.4% | Core Temp: 42°C", "system"),
+            'mem': () => appendOutput("RAM USAGE: 12.4GB / 32.0GB (38.7% FREE)", "system"),
+            'sys': () => appendOutput("OS: CyberOS 6.4.2-generic x86_64", "system"),
+            'who': () => appendOutput("root pts/0 2026-11-03 18:02 (REMOTE)", "success"),
+            'pwd': () => appendOutput("/var/root/mainframe/secure_core", "system"),
+            'ls': () => appendOutput("total 128KB\n-rw-r--r-- config.sys\n-rwxr-xr-x payload.elf\n-rw-r--r-- keys.db", "success"),
+            'cat': () => appendOutput("CONFIDENTIAL: ACCESS RESTRICTED TO LEVEL 5 OPERATORS", "warning"),
+            'top': () => appendOutput("PID 1092 (kernel_task) - CPU 12.1% - MEM 450MB", "dev"),
+            'ps': () => appendOutput("  PID TTY          TIME CMD\n 1092 pts/0    00:00:01 bash\n 3302 pts/0    00:00:00 node", "dev"),
+            'df': () => appendOutput("Filesystem 1K-blocks Used Available Use%\n/dev/nvme0 50000000 1200000 48800000 3%", "dev"),
+
+            // [カテゴリ2: ネットワーク・ハッキング (20個)]
+            'net': () => appendOutput("INTERFACE: eth0 [192.168.1.105/24] STATUS: UP", "success"),
+            'ping': () => appendOutput("64 bytes from 8.8.8.8: icmp_seq=1 ttl=118 time=12.4 ms", "success"),
+            'scan': () => runSimulatedTask("Scanning subnets", "3 open ports detected.", () => appendOutput("PORT 80, 443, 22 OPEN", "warning")),
+            'port': () => appendOutput("LISTENING PORTS: 22 (SSH), 80 (HTTP), 443 (HTTPS)", "dev"),
+            'nmap': () => runSimulatedTask("NMAP Stealth Scan", "Target 10.0.0.1 scanned.", () => appendOutput("HOST ALIVE: Vulnerable OS detected", "warning")),
+            'trace': () => appendOutput("1 192.168.1.1 (1.2ms) -> 2 10.200.0.1 (5.4ms) -> 3 172.217.25.14 (14.1ms)", "dev"),
+            'dns': () => appendOutput("DNS RESOLVER: 1.1.1.1 (Cloudflare Cyber DNS)", "system"),
+            'ip': () => appendOutput("PUBLIC IP: 185.220.101.5 [ENCRYPTED VIA TOR]", "police"),
+            'mac': () => appendOutput("MAC ADDRESS: 00:1A:2B:3C:4D:5E (SPOOFED)", "dev"),
+            'dhcp': () => appendOutput("DHCP LEASE RENEWED: IP 192.168.1.105", "system"),
+            'vpn': () => appendOutput("VPN TUNNEL: ENCRYPTED (AES-256-GCM / PROTOCOL: WireGuard)", "success"),
+            'proxy': () => appendOutput("PROXY NODE: TOKYO-JP-NODE-09 ACTIVE", "success"),
+            'wifi': () => appendOutput("WIFI SSID: Cyber_Net_5G (-42dBm Excellent)", "system"),
+            'pack': () => appendOutput("PACKET CAPTURE: 4096 packets captured (0 errors)", "dev"),
+            'sniff': () => runSimulatedTask("Sniffing network traffic", "Unencrypted credentials captured.", () => appendOutput("USER: admin PASS: ********", "warning")),
+            'dos': () => runSimulatedTask("Launching DoS pulse", "Target server overwhelmed.", () => appendOutput("[STATUS] TARGET OFFLINE (HTTP 503)", "warning")),
+            'ddos': () => runSimulatedTask("Orchestrating Botnet DDoS", "5,000 bots attacking target.", () => appendOutput("TARGET CRASHED", "warning")),
+            'bot': () => appendOutput("BOTNET STATUS: 5,420 SLAVES READY", "vivant"),
+            'mitm': () => runSimulatedTask("Injecting MITM ARP Spoof", "Traffic redirected.", () => appendOutput("INTERCEPTING DATA...", "police")),
+            'spoo': () => appendOutput("[OK] MAC & IP ADDRESS SPOOFING ACTIVE", "success"),
+
+            // [カテゴリ3: セキュリティ・暗号解密 (20個)]
+            'sec': () => appendOutput("SECURITY LEVEL: MAXIMAL (OVERDRIVE PROTOCOL)", "police"),
+            'enc': () => runSimulatedTask("Encrypting payload", "AES-256 Payload ready.", () => appendOutput("PAYLOAD: 0x99A0B1C...", "dev")),
+            'dec': () => runSimulatedTask("Brute-forcing hash encryption", "Hash cracked.", () => appendOutput("DECRYPTED KEY: #root_Access_9981#", "success")),
+            'hash': () => appendOutput("SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "system"),
+            'crack': () => runSimulatedTask("Dictionary Attack", "Password cracked.", () => appendOutput("PASS: admin1234", "warning")),
+            'rsa': () => appendOutput("RSA KEY PAIR: 4096-bit BitLength Validated", "system"),
+            'aes': () => appendOutput("AES-256 BLOCK CIPHER MODE: CBC ACTIVE", "system"),
+            'md5': () => appendOutput("MD5 HASH: 5d41402abc4b2a76b9719d911017c592", "dev"),
+            'sha': () => appendOutput("SHA-512 VERIFIED: INTEGRITY OK", "success"),
+            'key': () => appendOutput("MASTER ENCRYPTION KEY INJECTED INTO MEMORY", "secret"),
+            'gen': () => { const c="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; let k=""; for(let i=0;i<32;i++) k+=c.charAt(Math.floor(Math.random()*c.length)); appendOutput(`[KEY] ${k}`, "success"); },
+            'auth': () => appendOutput("AUTH ENGINE: TWO-FACTOR KEY SYNCED", "success"),
+            'pass': () => appendOutput("PASSWORD VAULT: 142 ENTRIES ENCRYPTED", "system"),
+            'leak': () => appendOutput("ZERO-DAY EXPLOIT SCAN: NO LEAKS DETECTED", "success"),
+            'fire': () => appendOutput("FIREWALL: 1,209 MALICIOUS PACKETS BLOCKED TODAY", "police"),
+            'wall': () => appendOutput("WALL MESSAGE SENT TO ALL LOGGED OPERATORS", "system"),
+            'root': () => appendOutput("PRIVILEGE LEVEL: ROOT (UID 0)", "police"),
+            'sudo': () => appendOutput("[sudo] permission granted for user root", "success"),
+            'pwn': () => appendOutput("TARGET SYSTEM PWNED! ROOT SHELL SPANWED.", "vivant"),
+            'expl': () => runSimulatedTask("Executing Buffer Overflow Exploit", "Memory breached.", () => appendOutput("SHELLCODE EXECUTED", "warning")),
+
+            // [カテゴリ4: データベース・サイバーログ (20個)]
+            'db': () => appendOutput("DATABASE: PostgreSQL 14.1 (Connected)", "system"),
+            'sql': () => appendOutput("SQL QUERY EXECUTED: SELECT * FROM users WHERE admin=1;", "dev"),
+            'drop': () => appendOutput("[DANGER] DROP TABLE SIMULATION - BLOCKED BY SAFETY", "warning"),
+            'dump': () => runSimulatedTask("Dumping SQL Database", "Export complete.", () => appendOutput("SAVED TO /tmp/db_dump.sql", "success")),
+            'fetch': () => appendOutput("FETCHING DATA PACKETS FROM NODE #09...", "dev"),
+            'query': () => appendOutput("QUERY LATENCY: 0.4ms (CACHE HIT)", "system"),
+            'log': () => appendOutput("SYSTEM LOGS: 0 ERRORS / 12 WARNINGS", "system"),
+            'audit': () => appendOutput("AUDIT TRAIL: ALL TRANSACTIONS SIGNED WITH DIGITAL CERT", "success"),
+            'trace2': () => appendOutput("STACK TRACE: No exceptions found in runtime", "dev"),
+            'clean': () => appendOutput("LOG WIPE ENGINES RUNNING... SYSTEM CLEANED", "success"),
+            'wipe': () => runSimulatedTask("Wiping track logs", "All logs erased.", () => appendOutput("CLEARED FOOTPRINTS", "police")),
+            'back': () => runSimulatedTask("Injecting persistent backdoor", "Backdoor installed.", () => appendOutput("PORT 4444 LISTENING...", "success")),
+            'door': () => appendOutput("BACKDOOR ENGINE: ACTIVE (HIDDEN PROCESS #991)", "secret"),
+            'pay': () => appendOutput("PAYLOAD BUILDER: Reverse TCP Shell Ready", "dev"),
+            'load': () => appendOutput("SYSTEM LOAD AVERAGE: 0.15, 0.20, 0.18", "system"),
+            'shell': () => appendOutput("INTERACTIVE SHELL: ZSH 5.8 ACTIVE", "system"),
+            'term': () => appendOutput("TERMINAL TYPE: xterm-256color", "system"),
+            'exec': () => appendOutput("EXECUTING BINARY PROCESS...", "dev"),
+            'run': () => appendOutput("BACKGROUND TASK STARTED [PID 9921]", "dev"),
+            'task': () => appendOutput("ACTIVE TASKS: 48 background processes running", "system"),
+
+            // [カテゴリ5: 特殊演出・エンタメ・シークレット (20個)]
+            'viv': () => runSimulatedTask("Launching VIVANT Operations Override", "Vivant mode activated.", () => appendOutput("ALERT: TARGET DATABASE BALKA DIVISION COMPROMISED.", "vivant")),
+            'vvt': () => startVivantSecretAnimation(),
+            'pol': () => runSimulatedTask("Connecting National Police Cyber Agency", "Link verified.", () => appendOutput("[POLICE INTERFACE] Connected to Cyber Response Center.", "police")),
+            'ai': () => runSimulatedTask("Overriding Neural Network Core", "AI Safeguards disabled.", () => appendOutput("STATUS: Autonomous cyber mode active.", "success")),
+            'geo': () => runSimulatedTask("Triangulating target coordinates", "Target node located.", () => appendOutput("GEO-LOCATION: [35.6895° N, 139.6917° E] (TOKYO, JP)", "success")),
+            'sat': () => runSimulatedTask("Connecting to Satellite Uplink", "Uplink established.", () => appendOutput("COORDINATES LOCKED: US-SAT-7", "success")),
+            'mtr': () => { appendOutput("[!] INITIALIZING MATRIX STREAM...", "matrix"); for(let i=0;i<5;i++){ let l=""; for(let j=0;j<40;j++) l+=Math.floor(Math.random()*2); appendOutput(l, "matrix"); } },
+            'matrix_on': () => { appendOutput("[SECRET] OVERRIDING VISUALS...", "matrix"); document.body.style.backgroundColor = "#001100"; setTimeout(() => { document.body.style.backgroundColor = "#010206"; }, 2000); },
+            'err': () => { appendOutput("[!] CRITICAL ERROR: MEMORY LEAK IN SECTOR 4", "warning"); appendOutput("[!] KERNEL PANIC: UNABLE TO MOUNT ROOT FS", "warning"); },
+            'brk': () => appendOutput("[!] CRITICAL OVERRIDE ACTIVATED", "warning"),
+            'dlc': () => runSimulatedTask("Downloading database", "Complete.", () => appendOutput("SHA256 [OK]", "success")),
+            'hack': () => runSimulatedTask("Bypassing Mainframe Firewall", "Access Granted.", () => appendOutput("MAINFRAME BROKEN!", "vivant")),
+            'warp': () => { triggerPulse(); appendOutput("[WARP] QUANTUM DISPLACEMENT SIMULATED", "secret"); },
+            'core': () => appendOutput("CORE SYSTEM TEMPERATURE: 32°C (STABLE)", "system"),
+            'over': () => { setThemeColor('#ff007f', 'rgba(255, 0, 127, 0.6)', 'OVERDRIVE PINK'); appendOutput("OVERDRIVE POWER BOOST: 200%", "secret"); },
+            'zero': () => appendOutput("ZERO-DAY VULNERABILITY INJECTED", "warning"),
+            'lock2': () => appendOutput("SECONDARY SECURITY LOCK ACTIVE", "police"),
+            'scan2': () => runSimulatedTask("Deep Hardware Scan", "Hardware OK.", () => appendOutput("NO FAULTS FOUND", "success")),
+            'beam': () => { triggerPulse(); appendOutput("CYBER SATELLITE BEAM FIRED!", "secret"); },
+            'end': () => appendOutput("TERMINAL SESSION ACTIVE. Type 'jp' for menu.", "system")
+        };
+
+        function show100CommandsList() {
+            appendOutput("==================================================", "system");
+            appendOutput("  【100コマンド搭載 CYBER TERMINAL (v17.0)】", "system");
+            appendOutput("==================================================", "system");
+            appendOutput("  [1. 基本・システム制御 (20個)]", "police");
+            appendOutput("  jp jpl hlp col man lok aut stp cls rst cpu mem sys who pwd ls cat top ps df");
+            appendOutput("  [2. ネットワーク・ハッキング (20個)]", "dev");
+            appendOutput("  net ping scan port nmap trace dns ip mac dhcp vpn proxy wifi pack sniff dos ddos bot mitm spoo");
+            appendOutput("  [3. セキュリティ・暗号解読 (20個)]", "system");
+            appendOutput("  sec enc dec hash crack rsa aes md5 sha key gen auth pass leak fire wall root sudo pwn expl");
+            appendOutput("  [4. データベース・サイバーログ (20個)]", "success");
+            appendOutput("  db sql drop dump fetch query log audit trace2 clean wipe back door pay load shell term exec run task");
+            appendOutput("  [5. 特殊演出・シークレット (20個)]", "secret");
+            appendOutput("  viv vvt pol ai geo sat mtr matrix_on err brk dlc hack warp core over zero lock2 scan2 beam end");
+            appendOutput("==================================================", "system");
+            appendOutput(" ※ 好きなコマンドを直接打つと即座に起動します！", "dim");
+        }
+
+        function showSecretList() {
+            appendOutput("==================================================", "secret");
+            appendOutput("  【TOP SECRET: シークレットコマンド一覧】", "secret");
+            appendOutput("==================================================", "secret");
+            appendOutput("  col       : カラー設定ルーム起動（ゴールド/シルバー等）", "secret");
+            appendOutput("  vvt       : VIVANTバルカ極秘アカウント侵入ログ", "secret");
+            appendOutput("  matrix_on : 画面全体のビジュアル緊急オーバーライド", "secret");
+            appendOutput("  warp      : クァンタム時空跳躍パルス", "secret");
+            appendOutput("  over      : オーバードライブピンクへの緊急変色", "secret");
+        }
+
         function processCommand(cmd) {
-            if (cmd === 'col') { enterColorRoom(); return; }
-            if (cmd === 'matrix_on') {
-                appendOutput("[SECRET] OVERRIDING VISUALS...", "matrix");
-                document.body.style.backgroundColor = "#001100";
-                setTimeout(() => { document.body.style.backgroundColor = "#010206"; }, 2000);
-                return;
-            }
-            if (cmd === 'vvt') { startVivantSecretAnimation(); return; }
-
-            const validCommands = ['jp', 'jpl', 'hlp', 'col', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
-
-            if (!validCommands.includes(cmd)) {
-                appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
-                return;
-            }
-
-            switch(cmd) {
-                case 'jp':
-                    appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v16.0 OVERDRIVE)】", "system");
-                    appendOutput("==================================================", "system");
-                    appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  col : カラー設定");
-                    appendOutput("  aut : 監視ログ流し|  stp : ログ停止  |  man : 手動開発");
-                    appendOutput("  pol : 警察連携    |  viv : VIVANT    |  lok : ロック");
-                    appendOutput("  geo : 位置情報    |  dec : 暗号総当り|  dos : DDoS攻撃");
-                    appendOutput("  err : エラー      |  scn : スキャン  |  gen : 鍵生成");
-                    appendOutput("  mtr : マトリクス  |  brk : クラッシュ|  sat : 衛星接続");
-                    appendOutput("  bck : バックドア  |  ai  : AIコア    |  inf : IP確認");
-                    appendOutput("  pwd : 階層表示    |  ls  : ファイル  |  dlc : Data DL");
-                    appendOutput("  who : ログイン者  |  cpu : CPU確認   |  cls : 画面消去");
-                    appendOutput("  rst : 再起動");
-                    appendOutput("  (ヒント: 隠しコードを表示するには 'jpl' を入力)");
-                    break;
-
-                case 'jpl':
-                    triggerPulse();
-                    appendOutput("==================================================", "secret");
-                    appendOutput("  【TOP SECRET: シークレットコマンドリスト】", "secret");
-                    appendOutput("==================================================", "secret");
-                    appendOutput("  col       : カラー設定ルーム起動（ゴールド/シルバー等）", "secret");
-                    appendOutput("  vvt       : VIVANTバルカ極秘アカウント侵入ログ", "secret");
-                    appendOutput("  matrix_on : 画面全体のビジュアル緊急オーバーライド", "secret");
-                    break;
-
-                case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, col, aut, stp, man, pol, viv, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
-                    break;
-
-                case 'viv':
-                    runSimulatedTask("Launching VIVANT Operations Override", "Vivant mode activated.", () => {
-                        appendOutput("ALERT: TARGET DATABASE BALKA DIVISION COMPROMISED.", "vivant");
-                    });
-                    break;
-
-                case 'ai':
-                    runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled.", () => {
-                        appendOutput("STATUS: Autonomous hacking mode active.", "success");
-                    });
-                    break;
-
-                case 'pol':
-                    runSimulatedTask("Establishing VPN tunnel to National Police Cyber Agency", "Link verified.", () => {
-                        appendOutput("[POLICE INTERFACE] Connected to Cyber Incident Response Center.", "police");
-                    });
-                    break;
-
-                case 'man':
-                    startDevModeAnimation();
-                    break;
-
-                case 'lok':
-                    isLocked = true;
-                    promptLabel.textContent = "PASSCODE:";
-                    promptLabel.style.color = "#ff3366";
-                    input.classList.add('hidden-input');
-                    secBadge.textContent = "SYSTEM: LOCKED";
-                    secBadge.style.color = "#ff3366";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (***) TO UNLOCK.", "warning");
-                    break;
-
-                case 'geo':
-                    runSimulatedTask("Triangulating target geolocation coordinates", "Target node located.", () => {
-                        appendOutput("GEO-LOCATION: [35.6895° N, 139.6917° E] (TOKYO, JP)", "success");
-                    });
-                    break;
-
-                case 'dec':
-                    runSimulatedTask("Brute-forcing hash encryption", "Hash cracked.", () => {
-                        appendOutput("DECRYPTED KEY: #root_Access_9981#", "success");
-                    });
-                    break;
-
-                case 'dos':
-                    runSimulatedTask("Launching DDoS attack", "Target server overwhelmed.", () => {
-                        appendOutput("[STATUS] TARGET OFFLINE (HTTP 503)", "warning");
-                    });
-                    break;
-
-                case 'err':
-                    appendOutput("[!] CRITICAL ERROR: MEMORY LEAK IN SECTOR 4", "warning");
-                    appendOutput("[!] KERNEL PANIC: UNABLE TO MOUNT ROOT FS", "warning");
-                    break;
-
-                case 'aut': startAutoStream(); break;
-                case 'stp':
-                    stopAutoStream();
-                    appendOutput("[*] ストリームを停止しました。", "warning");
-                    break;
-
-                case 'scn':
-                    runSimulatedTask("Scanning subnets", "3 open ports detected.", () => {
-                        appendOutput("PORT 21 (FTP): VULNERABLE", "warning");
-                    });
-                    break;
-
-                case 'gen':
-                    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-                    let key = "";
-                    for(let i=0; i<32; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
-                    appendOutput(`[GEN] Generated Key: ${key}`, "success");
-                    break;
-
-                case 'mtr':
-                    appendOutput("[!] INITIALIZING MATRIX STREAM...", "matrix");
-                    for(let i=0; i<6; i++) {
-                        let line = "";
-                        for(let j=0; j<45; j++) line += Math.floor(Math.random() * 2);
-                        appendOutput(line, "matrix");
-                    }
-                    break;
-
-                case 'brk':
-                    appendOutput("[!] CRITICAL OVERRIDE ACTIVATED", "warning");
-                    break;
-
-                case 'sat':
-                    runSimulatedTask("Connecting to Military Satellite", "Uplink established.", () => {
-                        appendOutput("COORDINATES LOCKED: US-SAT-7", "success");
-                    });
-                    break;
-
-                case 'bck':
-                    runSimulatedTask("Injecting backdoor", "Backdoor installed.", () => {
-                        appendOutput("PORT 4444 LISTENING...", "success");
-                    });
-                    break;
-
-                case 'inf':
-                    appendOutput("TARGET: 192.168.1.105 (CYBER-CORE-01)");
-                    break;
-
-                case 'pwd':
-                    appendOutput("/var/root/secure/kernel/sys_core");
-                    break;
-
-                case 'ls':
-                case 'dir':
-                    appendOutput("total 64\n-rw-r--r-- config.conf\n-rw-r--r-- payload.bin\n-rwxr-xr-x override.sh", "success");
-                    break;
-
-                case 'dlc':
-                    runSimulatedTask("Downloading database", "Complete.", () => {
-                        appendOutput("SHA256 [OK]", "success");
-                    });
-                    break;
-
-                case 'who':
-                    appendOutput("root pts/0 2026-11-03 (REMOTE)");
-                    break;
-
-                case 'cpu':
-                    appendOutput("CPU USAGE: [████████░░] 78.4%");
-                    break;
-
-                case 'cls':
-                    terminal.innerHTML = "";
-                    break;
-
-                case 'rst':
-                    appendOutput("Rebooting kernel...", "warning");
-                    isProcessing = true;
-                    input.disabled = true;
-                    setTimeout(() => {
-                        terminal.innerHTML = "";
-                        isBooting = true;
-                        isLocked = true;
-                        secBadge.textContent = "SYSTEM: BOOTING";
-                        secBadge.style.color = "#ffaa00";
-                        promptLabel.textContent = "PASSCODE:";
-                        promptLabel.style.color = "#ff3366";
-                        input.classList.add('hidden-input');
-                        setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'RETRO AMBER');
-                        runBootSequence();
-                    }, 1000);
-                    break;
+            if (commandTable[cmd]) {
+                commandTable[cmd]();
+            } else {
+                appendOutput(`bash: ${cmd}: command not found. Type 'jp' for 100 commands list.`, "warning");
             }
         }
     </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - OVERDRIVE PRO DISASTER EDITION</title>
+    <title>CYBER TERMINAL - OVERDRIVE PRO</title>
     <style>
         :root {
             --bg-color: #010206;
@@ -205,7 +205,7 @@
         .dim { color: rgba(255, 255, 255, 0.25); }
 
         .flash-effect {
-            box-shadow: 0 0 80px var(--accent-red), inset 0 0 40px var(--accent-red) !important;
+            box-shadow: 0 0 80px var(--accent-purple), inset 0 0 40px var(--accent-purple) !important;
         }
     </style>
 </head>
@@ -267,9 +267,10 @@
         function runBootSequence() {
             input.disabled = true;
             const bootLogs = [
-                "[BOOT] INITIALIZING CYBER KERNEL v15.1...",
-                "[BOOT] CHECKING DISASTER MONITORING SOCKETS...",
-                "[BOOT] CONNECTING TO JAPAN METEOROLOGICAL AGENCY API... OK",
+                "[BOOT] INITIALIZING CYBER KERNEL v16.0...",
+                "[BOOT] CHECKING CPU INTEGRITY... OK",
+                "[BOOT] ALLOCATING MEMORY HEAP... OK",
+                "[BOOT] MOUNTING ENCRYPTED FILE SYSTEM... OK",
                 "[BOOT] LOADED SECURITY MODULES (AES-256 / RSA-4096)",
                 "==================================================",
                 "  SYSTEM LOCKED. ENTER PASSCODE TO INITIALIZE.",
@@ -279,7 +280,7 @@
             let index = 0;
             const timer = setInterval(() => {
                 if (index < bootLogs.length) {
-                    appendOutput(bootLogs[index], index >= 4 ? "system" : "dim");
+                    appendOutput(bootLogs[index], index >= 5 ? "system" : "dim");
                     index++;
                 } else {
                     clearInterval(timer);
@@ -317,9 +318,9 @@
 
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
                     appendOutput("\n==================================================", "system");
-                    appendOutput("  CYBER TERMINAL v15.1 [DISASTER READY EDITION]", "system");
+                    appendOutput("  CYBER TERMINAL v16.0 [OVERDRIVE EDITION]", "system");
                     appendOutput("==================================================", "system");
-                    appendOutput("Type 'jp' for commands, 'eq' for earthquake, 'tsunami' for alerts, 'col' for colors.");
+                    appendOutput("Type 'jp' for commands, 'col' for color room, 'jpl' for secrets, or 'lok' to lock.");
                 } else {
                     appendOutput("[X] ACCESS DENIED. WRONG PASSCODE.", "warning");
                 }
@@ -346,7 +347,7 @@
             }
 
             appendOutput(`root@cyber:~# ${rawText}`);
-            processCommand(text);
+            processCommand(text.toLowerCase());
             terminal.scrollTop = terminal.scrollHeight;
         });
 
@@ -374,20 +375,6 @@
             }
         }
 
-        function triggerEmergencyAlert(title, message) {
-            triggerPulse();
-            setThemeColor('#ff1144', 'rgba(255, 17, 68, 0.8)', 'EMERGENCY RED');
-            secBadge.textContent = "SYSTEM: EMERGENCY ALERT";
-            secBadge.style.color = "#ff1144";
-
-            appendOutput("==================================================", "warning");
-            appendOutput(`  🚨 緊急災害警戒アラート [${title}]`, "warning");
-            appendOutput("==================================================", "warning");
-            appendOutput(`  ${message}`, "warning");
-            appendOutput("  命を守る行動を最優先してください。安全な場所へ避難してください。", "police");
-            appendOutput("==================================================", "warning");
-        }
-
         function runSimulatedTask(title, successMsg, callback) {
             isProcessing = true;
             input.disabled = true;
@@ -412,85 +399,6 @@
                     terminal.scrollTop = terminal.scrollHeight;
                 }
             }, 80);
-        }
-
-        // リアルタイム地震データ (eq)
-        async function fetchRealtimeEarthquakeData() {
-            isProcessing = true;
-            input.disabled = true;
-
-            appendOutput("[*] ESTABLISHING DIRECT SOCKET TO JMA (JAPAN METEOROLOGICAL AGENCY)...", "system");
-
-            try {
-                const response = await fetch('https://www.jma.go.jp/bosai/quake/data/list.json');
-                if (!response.ok) throw new Error("HTTP failed");
-                const quakeList = await response.json();
-
-                appendOutput("[OK] PACKET RECEIVED. DECODING SEISMIC DATA...", "success");
-                appendOutput("==================================================", "police");
-                appendOutput("  【気象庁 リアルタイム地震観測データ】", "police");
-                appendOutput("==================================================", "police");
-
-                const maxCount = Math.min(quakeList.length, 5);
-                let highIntDetected = false;
-
-                for (let i = 0; i < maxCount; i++) {
-                    const eq = quakeList[i];
-                    const time = eq.ctt ? eq.ctt : "不明";
-                    const loc = eq.anm ? eq.anm : "震源解析中";
-                    const maxInt = eq.max ? eq.max : "-";
-                    const mag = eq.mag ? eq.mag : "不明";
-
-                    if (maxInt.includes('5') || maxInt.includes('6') || maxInt.includes('7')) {
-                        highIntDetected = true;
-                    }
-
-                    appendOutput(`[#${i+1}] 発生日時: ${time}`, "system");
-                    appendOutput(`     震源地  : ${loc}`, "success");
-                    appendOutput(`     最大震度: 震度${maxInt}  |  マグニチュード: M${mag}`);
-                    appendOutput("--------------------------------------------------", "dim");
-                }
-
-                if (highIntDetected) {
-                    triggerEmergencyAlert("大規模地震検知", "直近のデータに強震観測ログが含まれています。");
-                }
-            } catch (err) {
-                appendOutput("[X] JMA DIRECT LINK OFFLINE. (FALLBACK BACKUP LOG DISPLAYED)", "warning");
-                appendOutput("--------------------------------------------------", "dim");
-                appendOutput("[RECENT RECORD] 震源地: 千葉県北東部 | 最大震度: 3 | M4.2", "system");
-            } finally {
-                isProcessing = false;
-                input.disabled = false;
-                input.focus();
-            }
-        }
-
-        // 津波・緊急情報確認 (tsunami / alert)
-        async function fetchTsunamiAndAlerts() {
-            isProcessing = true;
-            input.disabled = true;
-
-            appendOutput("[*] SCANNING PACIFIC TSUNAMI WARNING SYSTEM & JMA FEEDS...", "system");
-
-            try {
-                const response = await fetch('https://www.jma.go.jp/bosai/common/send/data/tsconfig.json');
-                const feed = await response.json();
-
-                appendOutput("[OK] EMERGENCY FEEDS ANALYZED.", "success");
-                appendOutput("==================================================", "system");
-                appendOutput("  【津波警報・注意報 リアルタイム状況】", "system");
-                appendOutput("==================================================", "system");
-                appendOutput("  津波警報・大津波警報 : 発令なし（正常状況）", "success");
-                appendOutput("  津波注意報           : 発令なし（沿岸部安全）", "success");
-                appendOutput("  常時監視ノード       : JMA-PACIFIC-NODE-01 (ACTIVE)", "dim");
-            } catch (err) {
-                appendOutput("[OK] DISASTER MONITORING NETWORK ACTIVE.", "success");
-                appendOutput("  津波・気象警報データベース: 異常検出なし（安全状態）", "system");
-            } finally {
-                isProcessing = false;
-                input.disabled = false;
-                input.focus();
-            }
         }
 
         // カラー設定部屋 (COLOR CONFIG ROOM)
@@ -728,12 +636,7 @@
             appendOutput(`DevEngine: command not found: '${subCmd}'.`, "warning");
         }
 
-        function processCommand(rawInput) {
-            const parts = rawInput.split(' ');
-            const cmd = parts[0].toLowerCase();
-
-            if (cmd === 'eq') { fetchRealtimeEarthquakeData(); return; }
-            if (cmd === 'tsunami' || cmd === 'alert') { fetchTsunamiAndAlerts(); return; }
+        function processCommand(cmd) {
             if (cmd === 'col') { enterColorRoom(); return; }
             if (cmd === 'matrix_on') {
                 appendOutput("[SECRET] OVERRIDING VISUALS...", "matrix");
@@ -743,7 +646,7 @@
             }
             if (cmd === 'vvt') { startVivantSecretAnimation(); return; }
 
-            const validCommands = ['jp', 'jpl', 'hlp', 'eq', 'tsunami', 'alert', 'evac', 'dial', 'col', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
+            const validCommands = ['jp', 'jpl', 'hlp', 'col', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
 
             if (!validCommands.includes(cmd)) {
                 appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
@@ -753,43 +656,19 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システム＆防災コマンド一覧 (v15.1)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v16.0 OVERDRIVE)】", "system");
                     appendOutput("==================================================", "system");
-                    appendOutput("  [防災・リアルタイム災害機能]", "police");
-                    appendOutput("  eq      : 気象庁リアルタイム地震データ (JMA LIVE)");
-                    appendOutput("  tsunami : 津波警報・災害アラート確認");
-                    appendOutput("  evac    : 避難持ち出し品チェックリスト表示");
-                    appendOutput("  dial    : 災害用伝言ダイヤル(171)等緊急連絡先");
-                    appendOutput("  --------------------------------------------------", "dim");
-                    appendOutput("  [システム＆エンタメ機能]", "system");
-                    appendOutput("  col : カラー設定部屋 | man : 手動開発  | pol : 警察連携");
-                    appendOutput("  viv : VIVANTモード   | lok : ロック    | aut : 監視ログ流し");
-                    appendOutput("  cls : 画面消去       | rst : 再起動");
-                    appendOutput("  (隠しコードを表示するには 'jpl' を入力)");
-                    break;
-
-                case 'evac':
-                    appendOutput("==================================================", "police");
-                    appendOutput("  【防災・非常時持ち出し品チェックリスト】", "police");
-                    appendOutput("==================================================", "police");
-                    appendOutput("  [1] 飲料水（1人1日3L目安）", "success");
-                    appendOutput("  [2] 非常食（乾パン・缶詰・レトルト）", "success");
-                    appendOutput("  [3] 懐中電灯・予備電池", "success");
-                    appendOutput("  [4] モバイルバッテリー・充電ケーブル", "success");
-                    appendOutput("  [5] 現金（公衆電話用10円・100円玉）", "success");
-                    appendOutput("  [6] 救急用品（常備薬・絆創膏）", "success");
-                    appendOutput("==================================================", "police");
-                    break;
-
-                case 'dial':
-                    appendOutput("==================================================", "system");
-                    appendOutput("  【緊急ダイヤル＆災害連絡先ガイド】", "system");
-                    appendOutput("==================================================", "system");
-                    appendOutput("  災害用伝言ダイヤル : 171", "police");
-                    appendOutput("  警察（事件・事故） : 110", "police");
-                    appendOutput("  消防・救急         : 119", "police");
-                    appendOutput("  海上保安庁（海難） : 118", "police");
-                    appendOutput("==================================================", "system");
+                    appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  col : カラー設定");
+                    appendOutput("  aut : 監視ログ流し|  stp : ログ停止  |  man : 手動開発");
+                    appendOutput("  pol : 警察連携    |  viv : VIVANT    |  lok : ロック");
+                    appendOutput("  geo : 位置情報    |  dec : 暗号総当り|  dos : DDoS攻撃");
+                    appendOutput("  err : エラー      |  scn : スキャン  |  gen : 鍵生成");
+                    appendOutput("  mtr : マトリクス  |  brk : クラッシュ|  sat : 衛星接続");
+                    appendOutput("  bck : バックドア  |  ai  : AIコア    |  inf : IP確認");
+                    appendOutput("  pwd : 階層表示    |  ls  : ファイル  |  dlc : Data DL");
+                    appendOutput("  who : ログイン者  |  cpu : CPU確認   |  cls : 画面消去");
+                    appendOutput("  rst : 再起動");
+                    appendOutput("  (ヒント: 隠しコードを表示するには 'jpl' を入力)");
                     break;
 
                 case 'jpl':
@@ -797,14 +676,13 @@
                     appendOutput("==================================================", "secret");
                     appendOutput("  【TOP SECRET: シークレットコマンドリスト】", "secret");
                     appendOutput("==================================================", "secret");
-                    appendOutput("  eq        : 気象庁直結リアルタイム地震速報フェッチ", "secret");
-                    appendOutput("  tsunami   : 津波警報データベース直結スキャン", "secret");
-                    appendOutput("  col       : カラー設定ルーム起動", "secret");
+                    appendOutput("  col       : カラー設定ルーム起動（ゴールド/シルバー等）", "secret");
                     appendOutput("  vvt       : VIVANTバルカ極秘アカウント侵入ログ", "secret");
+                    appendOutput("  matrix_on : 画面全体のビジュアル緊急オーバーライド", "secret");
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, eq, tsunami, evac, dial, col, aut, stp, man, pol, viv, lok, cls, rst", "system");
+                    appendOutput("Commands: jp, jpl, hlp, col, aut, stp, man, pol, viv, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
                     break;
 
                 case 'viv':
@@ -813,9 +691,15 @@
                     });
                     break;
 
+                case 'ai':
+                    runSimulatedTask("Overriding Neural Network Core (NEO-AI v4)", "AI Safeguards disabled.", () => {
+                        appendOutput("STATUS: Autonomous hacking mode active.", "success");
+                    });
+                    break;
+
                 case 'pol':
-                    runSimulatedTask("Connecting National Police Cyber Agency", "Link verified.", () => {
-                        appendOutput("[POLICE INTERFACE] Connected to Incident Response Center.", "police");
+                    runSimulatedTask("Establishing VPN tunnel to National Police Cyber Agency", "Link verified.", () => {
+                        appendOutput("[POLICE INTERFACE] Connected to Cyber Incident Response Center.", "police");
                     });
                     break;
 
@@ -830,13 +714,101 @@
                     input.classList.add('hidden-input');
                     secBadge.textContent = "SYSTEM: LOCKED";
                     secBadge.style.color = "#ff3366";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (***) TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
+                    break;
+
+                case 'geo':
+                    runSimulatedTask("Triangulating target geolocation coordinates", "Target node located.", () => {
+                        appendOutput("GEO-LOCATION: [35.6895° N, 139.6917° E] (TOKYO, JP)", "success");
+                    });
+                    break;
+
+                case 'dec':
+                    runSimulatedTask("Brute-forcing hash encryption", "Hash cracked.", () => {
+                        appendOutput("DECRYPTED KEY: #root_Access_9981#", "success");
+                    });
+                    break;
+
+                case 'dos':
+                    runSimulatedTask("Launching DDoS attack", "Target server overwhelmed.", () => {
+                        appendOutput("[STATUS] TARGET OFFLINE (HTTP 503)", "warning");
+                    });
+                    break;
+
+                case 'err':
+                    appendOutput("[!] CRITICAL ERROR: MEMORY LEAK IN SECTOR 4", "warning");
+                    appendOutput("[!] KERNEL PANIC: UNABLE TO MOUNT ROOT FS", "warning");
                     break;
 
                 case 'aut': startAutoStream(); break;
                 case 'stp':
                     stopAutoStream();
                     appendOutput("[*] ストリームを停止しました。", "warning");
+                    break;
+
+                case 'scn':
+                    runSimulatedTask("Scanning subnets", "3 open ports detected.", () => {
+                        appendOutput("PORT 21 (FTP): VULNERABLE", "warning");
+                    });
+                    break;
+
+                case 'gen':
+                    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+                    let key = "";
+                    for(let i=0; i<32; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+                    appendOutput(`[GEN] Generated Key: ${key}`, "success");
+                    break;
+
+                case 'mtr':
+                    appendOutput("[!] INITIALIZING MATRIX STREAM...", "matrix");
+                    for(let i=0; i<6; i++) {
+                        let line = "";
+                        for(let j=0; j<45; j++) line += Math.floor(Math.random() * 2);
+                        appendOutput(line, "matrix");
+                    }
+                    break;
+
+                case 'brk':
+                    appendOutput("[!] CRITICAL OVERRIDE ACTIVATED", "warning");
+                    break;
+
+                case 'sat':
+                    runSimulatedTask("Connecting to Military Satellite", "Uplink established.", () => {
+                        appendOutput("COORDINATES LOCKED: US-SAT-7", "success");
+                    });
+                    break;
+
+                case 'bck':
+                    runSimulatedTask("Injecting backdoor", "Backdoor installed.", () => {
+                        appendOutput("PORT 4444 LISTENING...", "success");
+                    });
+                    break;
+
+                case 'inf':
+                    appendOutput("TARGET: 192.168.1.105 (CYBER-CORE-01)");
+                    break;
+
+                case 'pwd':
+                    appendOutput("/var/root/secure/kernel/sys_core");
+                    break;
+
+                case 'ls':
+                case 'dir':
+                    appendOutput("total 64\n-rw-r--r-- config.conf\n-rw-r--r-- payload.bin\n-rwxr-xr-x override.sh", "success");
+                    break;
+
+                case 'dlc':
+                    runSimulatedTask("Downloading database", "Complete.", () => {
+                        appendOutput("SHA256 [OK]", "success");
+                    });
+                    break;
+
+                case 'who':
+                    appendOutput("root pts/0 2026-11-03 (REMOTE)");
+                    break;
+
+                case 'cpu':
+                    appendOutput("CPU USAGE: [████████░░] 78.4%");
                     break;
 
                 case 'cls':
@@ -859,10 +831,6 @@
                         setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'RETRO AMBER');
                         runBootSequence();
                     }, 1000);
-                    break;
-
-                default:
-                    appendOutput(`Executed dummy standard action: ${cmd}`, "dim");
                     break;
             }
         }

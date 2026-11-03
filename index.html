@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - OVERDRIVE SMOOTH EDITION</title>
+    <title>CYBER TERMINAL - OVERDRIVE PRO</title>
     <style>
         :root {
             --bg-color: #010206;
@@ -70,7 +70,7 @@
             background-size: 100% 3px, 6px 100%;
         }
 
-        /* ホログラム風の枠線と立体感（揺れ・振動なし） */
+        /* ホログラム風の枠線と立体感 */
         #window-frame {
             position: relative;
             z-index: 1;
@@ -212,7 +212,7 @@
         .secret { color: var(--accent-purple); font-weight: bold; text-shadow: 0 0 10px var(--accent-purple); }
         .dim { color: rgba(255, 255, 255, 0.25); }
 
-        /* 画面を揺らさず、枠線が一瞬フワッと発光するスマートな演出 */
+        /* 揺れずに枠線が一瞬フワッと発光するスマートな演出 */
         .flash-effect {
             box-shadow: 0 0 80px var(--accent-purple), inset 0 0 40px var(--accent-purple) !important;
         }
@@ -231,21 +231,16 @@
                     <div class="btn btn-yellow"></div>
                     <div class="btn btn-green"></div>
                 </div>
-                <div class="window-title" id="shell-title">root@cyber-mainframe:~</div>
+                <div class="window-title" id="shell-title">root@cyber-boot:~</div>
             </div>
-            <div class="header-status" id="sec-badge">SYSTEM: OVERDRIVE</div>
+            <div class="header-status" id="sec-badge">SYSTEM: BOOTING</div>
         </div>
 
-        <div id="terminal">
-            <span class="system">==================================================================</span>
-            <span class="system">  CYBER TERMINAL v13.1 [SMOOTH OVERDRIVE EDITION]</span>
-            <span class="system">==================================================================</span>
-            Type <span class="success">jp</span> for commands, <span class="secret">jpl</span> for secrets, or <span class="success">lok</span> to lock.
-        </div>
+        <div id="terminal"></div>
 
         <form id="command-form">
-            <span class="prompt" id="prompt-label">root@cyber:~#</span>
-            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false">
+            <span class="prompt" id="prompt-label">PASSCODE:</span>
+            <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false" class="hidden-input">
         </form>
     </div>
 
@@ -259,22 +254,58 @@
         const windowFrame = document.getElementById('window-frame');
         
         let autoStreamInterval = null;
-        let isProcessing = false;
-        let isLocked = false;
+        let isProcessing = true;
+        let isBooting = true;
+        let isLocked = true;
         let isDevMode = false;
+        let isColorMode = false;
         const devVariables = {};
 
+        // デフォルトカラー設定（アンバー初期起動）
+        document.documentElement.style.setProperty('--main-color', '#ffaa00');
+        document.documentElement.style.setProperty('--main-glow', 'rgba(255, 170, 0, 0.6)');
+        document.documentElement.style.setProperty('--border-color', 'rgba(255, 170, 0, 0.5)');
+
         document.addEventListener('click', () => { 
-            if (!isProcessing) input.focus(); 
+            if (!isProcessing || isLocked) input.focus(); 
         });
 
         window.onload = () => { 
-            input.focus(); 
+            runBootSequence();
         };
+
+        // 起動準備（BOOT）アニメーション
+        function runBootSequence() {
+            input.disabled = true;
+            const bootLogs = [
+                "[BOOT] INITIALIZING CYBER KERNEL v14.0...",
+                "[BOOT] CHECKING CPU INTEGRITY... OK",
+                "[BOOT] ALLOCATING MEMORY HEAP... OK",
+                "[BOOT] MOUNTING ENCRYPTED FILE SYSTEM... OK",
+                "[BOOT] LOADED SECURITY MODULES (AES-256 / RSA-4096)",
+                "==================================================",
+                "  SYSTEM LOCKED. ENTER PASSCODE TO INITIALIZE.",
+                "=================================================="
+            ];
+
+            let index = 0;
+            const timer = setInterval(() => {
+                if (index < bootLogs.length) {
+                    appendOutput(bootLogs[index], index >= 5 ? "system" : "dim");
+                    index++;
+                } else {
+                    clearInterval(timer);
+                    isBooting = false;
+                    isProcessing = false;
+                    input.disabled = false;
+                    input.focus();
+                }
+            }, 120);
+        }
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (isProcessing) return;
+            if (isProcessing && !isLocked) return;
 
             const rawText = input.value;
             const text = rawText.trim();
@@ -282,19 +313,37 @@
             
             input.value = '';
 
-            // ロック中のパスワード判定 (1007)
+            // ロック中（起動時＆lokコマンド共通）のパスワード判定 (911)
             if (isLocked) {
                 appendOutput(`PASSCODE: *********`);
-                if (text === '1007') {
+                if (text === '911') {
                     isLocked = false;
-                    promptLabel.textContent = isDevMode ? "DEV-MODE> " : "root@cyber:~#";
-                    promptLabel.style.color = isDevMode ? "#00aaff" : "#ff007f";
+                    // デフォルトテーマ（シアン）に復帰
+                    setThemeColor('#00ffcc', 'rgba(0, 255, 204, 0.6)', 'CYBER CYAN');
+                    
+                    promptLabel.textContent = "root@cyber:~#";
+                    promptLabel.style.color = "#ff007f";
                     input.classList.remove('hidden-input');
-                    secBadge.textContent = isDevMode ? "MODE: MANUAL DEV" : "SYSTEM: OVERDRIVE";
+                    shellTitle.textContent = "root@cyber-mainframe:~";
+                    secBadge.textContent = "SYSTEM: OVERDRIVE";
+                    secBadge.style.color = "#00ffcc";
+
                     appendOutput("[OK] ACCESS GRANTED. SYSTEM UNLOCKED.", "success");
+                    appendOutput("\n==================================================", "system");
+                    appendOutput("  CYBER TERMINAL v14.0 [OVERDRIVE EDITION]", "system");
+                    appendOutput("==================================================", "system");
+                    appendOutput("Type 'jp' for commands, 'col' for color room, 'jpl' for secrets, or 'lok' to lock.");
                 } else {
-                    appendOutput("[X] ACCESS DENIED. WRONG PASSWORD.", "warning");
+                    appendOutput("[X] ACCESS DENIED. WRONG PASSCODE.", "warning");
                 }
+                terminal.scrollTop = terminal.scrollHeight;
+                return;
+            }
+
+            // カラー設定モード（COLOR CONFIG ROOM）の処理
+            if (isColorMode) {
+                appendOutput(`COLOR-CONFIG> ${rawText}`);
+                processColorCommand(text.toLowerCase());
                 terminal.scrollTop = terminal.scrollHeight;
                 return;
             }
@@ -325,7 +374,6 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        // 揺れずに枠線が一瞬紫色に光るスマートなパルス演出
         function triggerPulse() {
             windowFrame.classList.add('flash-effect');
             setTimeout(() => {
@@ -337,7 +385,9 @@
             document.documentElement.style.setProperty('--main-color', colorHex);
             document.documentElement.style.setProperty('--main-glow', colorGlow);
             document.documentElement.style.setProperty('--border-color', colorGlow);
-            appendOutput(`[THEME] OVERRIDDEN TO ${themeName} MATRIX.`, "success");
+            if (!isBooting && !isLocked) {
+                appendOutput(`[THEME] OVERRIDDEN TO ${themeName}.`, "success");
+            }
         }
 
         function runSimulatedTask(title, successMsg, callback) {
@@ -364,6 +414,66 @@
                     terminal.scrollTop = terminal.scrollHeight;
                 }
             }, 80);
+        }
+
+        // カラー設定部屋（COLOR CONFIG ROOM）処理
+        function enterColorRoom() {
+            isColorMode = true;
+            promptLabel.textContent = "COLOR-CONFIG> ";
+            promptLabel.style.color = "#ffcc00";
+            secBadge.textContent = "MODE: COLOR CONFIG";
+            secBadge.style.color = "#ffcc00";
+
+            appendOutput("==================================================", "system");
+            appendOutput("  【カラー設定モード (COLOR CONFIG ROOM)】", "system");
+            appendOutput("==================================================", "system");
+            appendOutput("  [基本サイバー色]", "dev");
+            appendOutput("  cyan : シアン(標準)  | red : レッド       | blu : ブルー");
+            appendOutput("  grn  : グリーン      | amb : アンバー     | pur : パープル");
+            appendOutput("  [スペシャルネオン色]", "secret");
+            appendOutput("  gld  : ゴールド      | slv : シルバー     | pnk : ピンク");
+            appendOutput("  ppr  : パープルネオン| sky : スカイブルー | yel : イエロー");
+            appendOutput("  --------------------------------------------------", "dim");
+            appendOutput("  list : 色一覧を再表示 | exit : 通常モードに戻る");
+            appendOutput("==================================================", "system");
+        }
+
+        function processColorCommand(cmd) {
+            if (cmd === 'exit') {
+                isColorMode = false;
+                promptLabel.textContent = "root@cyber:~#";
+                promptLabel.style.color = "#ff007f";
+                secBadge.textContent = "SYSTEM: OVERDRIVE";
+                secBadge.style.color = "var(--main-color)";
+                appendOutput("[OK] EXITED COLOR CONFIG ROOM.", "success");
+                return;
+            }
+
+            if (cmd === 'list') {
+                enterColorRoom();
+                return;
+            }
+
+            const colorMap = {
+                'cyan': ['#00ffcc', 'rgba(0, 255, 204, 0.6)', 'CYBER CYAN'],
+                'red':  ['#ff1144', 'rgba(255, 17, 68, 0.6)', 'DEEP RED'],
+                'blu':  ['#00aaff', 'rgba(0, 170, 255, 0.6)', 'COBALT BLUE'],
+                'grn':  ['#00ff66', 'rgba(0, 255, 102, 0.6)', 'MATRIX GREEN'],
+                'amb':  ['#ffaa00', 'rgba(255, 170, 0, 0.6)', 'RETRO AMBER'],
+                'pur':  ['#b026ff', 'rgba(176, 38, 255, 0.6)', 'NEON PURPLE'],
+                'gld':  ['#ffd700', 'rgba(255, 215, 0, 0.6)', 'NEON GOLD'],
+                'slv':  ['#e0e0e0', 'rgba(224, 224, 224, 0.6)', 'SILVER WHITE'],
+                'pnk':  ['#ff007f', 'rgba(255, 0, 127, 0.6)', 'VIVID PINK'],
+                'ppr':  ['#d147fe', 'rgba(209, 71, 254, 0.6)', 'BRIGHT PURPLE'],
+                'sky':  ['#00e5ff', 'rgba(0, 229, 255, 0.6)', 'SKY BLUE'],
+                'yel':  ['#ffee00', 'rgba(255, 238, 0, 0.6)', 'BRIGHT YELLOW']
+            };
+
+            if (colorMap[cmd]) {
+                setThemeColor(colorMap[cmd][0], colorMap[cmd][1], colorMap[cmd][2]);
+            } else {
+                appendOutput(`ColorEngine: unknown color code: '${cmd}'. Type 'list'.`, "warning");
+            }
         }
 
         // VIVANT極秘ファイル閲覧演出 (vvt)
@@ -396,7 +506,7 @@
             }, 180);
         }
 
-        // 手動モード起動アニメーション演出
+        // 手動モード起動演出
         function startDevModeAnimation() {
             isProcessing = true;
             input.disabled = true;
@@ -435,7 +545,6 @@
             }, 150);
         }
 
-        // 手動モード終了アニメーション演出
         function exitDevModeAnimation() {
             isProcessing = true;
             input.disabled = true;
@@ -458,6 +567,7 @@
                     promptLabel.style.color = "#ff007f";
                     shellTitle.textContent = "root@cyber-mainframe:~";
                     secBadge.textContent = "SYSTEM: OVERDRIVE";
+                    secBadge.style.color = "var(--main-color)";
                     appendOutput("[OK] RETURNED TO STANDARD SHELL.", "success");
 
                     isProcessing = false;
@@ -576,21 +686,17 @@
         }
 
         function processCommand(cmd) {
-            // シークレット＆カラー切り替えコマンド
+            // シークレット＆カラー部屋コマンド
+            if (cmd === 'col') { enterColorRoom(); return; }
             if (cmd === 'matrix_on') {
                 appendOutput("[SECRET] OVERRIDING MAINFRAME MATRIX VISUALS...", "matrix");
                 document.body.style.backgroundColor = "#001100";
                 setTimeout(() => { document.body.style.backgroundColor = "#010206"; }, 2000);
                 return;
             }
-
-            if (cmd === 'red') { setThemeColor('#ff1144', 'rgba(255, 17, 68, 0.6)', 'RED'); return; }
-            if (cmd === 'blu') { setThemeColor('#00aaff', 'rgba(0, 170, 255, 0.6)', 'CYBER BLUE'); return; }
-            if (cmd === 'grn') { setThemeColor('#00ff66', 'rgba(0, 255, 102, 0.6)', 'MATRIX GREEN'); return; }
-            if (cmd === 'amb') { setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'AMBER RETRO'); return; }
             if (cmd === 'vvt') { startVivantSecretAnimation(); return; }
 
-            const validCommands = ['jp', 'jpl', 'hlp', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
+            const validCommands = ['jp', 'jpl', 'hlp', 'col', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
 
             if (!validCommands.includes(cmd)) {
                 appendOutput(`bash: ${cmd}: command not found. Type 'jp'.`, "warning");
@@ -600,17 +706,18 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v13.1 OVERDRIVE)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v14.0 OVERDRIVE)】", "system");
                     appendOutput("==================================================", "system");
-                    appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
-                    appendOutput("  stp : ログ停止    |  man : 手動開発  |  pol : 警察連携");
-                    appendOutput("  viv : VIVANTモード|  lok : ロック    |  geo : 位置情報");
-                    appendOutput("  dec : 暗号総当り  |  dos : DDoS攻撃  |  err : エラー");
-                    appendOutput("  scn : スキャン    |  gen : 鍵生成    |  mtr : マトリクス");
-                    appendOutput("  brk : クラッシュ  |  sat : 衛星接続  |  bck : バックドア");
-                    appendOutput("  ai  : AIコアハック|  inf : IP確認    |  pwd : 階層表示");
-                    appendOutput("  ls  : ファイル一覧|  dlc : Data DL   |  who : ログイン者");
-                    appendOutput("  cpu : CPU確認     |  cls : 画面消去  |  rst : 再起動");
+                    appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  col : カラー設定");
+                    appendOutput("  aut : 監視ログ流し|  stp : ログ停止  |  man : 手動開発");
+                    appendOutput("  pol : 警察連携    |  viv : VIVANT    |  lok : ロック");
+                    appendOutput("  geo : 位置情報    |  dec : 暗号総当り|  dos : DDoS攻撃");
+                    appendOutput("  err : エラー      |  scn : スキャン  |  gen : 鍵生成");
+                    appendOutput("  mtr : マトリクス  |  brk : クラッシュ|  sat : 衛星接続");
+                    appendOutput("  bck : バックドア  |  ai  : AIコア    |  inf : IP確認");
+                    appendOutput("  pwd : 階層表示    |  ls  : ファイル  |  dlc : Data DL");
+                    appendOutput("  who : ログイン者  |  cpu : CPU確認   |  cls : 画面消去");
+                    appendOutput("  rst : 再起動");
                     appendOutput("  (ヒント: 隠しコードを表示するには 'jpl' を入力)");
                     break;
 
@@ -619,16 +726,13 @@
                     appendOutput("==================================================", "secret");
                     appendOutput("  【TOP SECRET: シークレットコマンドリスト】", "secret");
                     appendOutput("==================================================", "secret");
+                    appendOutput("  col       : カラー設定ルーム起動（ゴールド/シルバー等）", "secret");
                     appendOutput("  vvt       : VIVANTバルカ極秘アカウント侵入ログ", "secret");
-                    appendOutput("  red       : テーマカラーを「深紅（RED）」に変更", "secret");
-                    appendOutput("  blu       : テーマカラーを「サイバーブルー」に変更", "secret");
-                    appendOutput("  grn       : テーマカラーを「クラシックグリーン」に変更", "secret");
-                    appendOutput("  amb       : テーマカラーを「レトロオレンジ」に変更", "secret");
                     appendOutput("  matrix_on : 画面全体のビジュアル緊急オーバーライド", "secret");
                     break;
 
                 case 'hlp':
-                    appendOutput("Commands: jp, jpl, hlp, aut, stp, man, pol, viv, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
+                    appendOutput("Commands: jp, jpl, hlp, col, aut, stp, man, pol, viv, lok, geo, dec, dos, err, scn, gen, mtr, brk, sat, bck, ai, inf, pwd, ls, dir, dlc, who, cpu, cls, rst", "system");
                     break;
 
                 case 'viv':
@@ -660,11 +764,11 @@
                     input.classList.add('hidden-input');
                     secBadge.textContent = "SYSTEM: LOCKED";
                     secBadge.style.color = "#ff3366";
-                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (1007) TO UNLOCK.", "warning");
+                    appendOutput("[!] SYSTEM LOCKED. ENTER PASSCODE (911) TO UNLOCK.", "warning");
                     break;
 
                 case 'geo':
-                    runSimulatedTask("TrIangulating target geolocation coordinates", "Target node located.", () => {
+                    runSimulatedTask("Triangulating target geolocation coordinates", "Target node located.", () => {
                         appendOutput("GEO-LOCATION: [35.6895° N, 139.6917° E] (TOKYO, JP)", "success");
                     });
                     break;
@@ -766,11 +870,16 @@
                     isProcessing = true;
                     input.disabled = true;
                     setTimeout(() => {
-                        terminal.innerHTML = '<span class="system">=== SYSTEM RESTARTED ===</span>\nType <span class="success">jp</span> for commands.';
-                        secBadge.textContent = "SYSTEM: OVERDRIVE";
-                        isProcessing = false;
-                        input.disabled = false;
-                        input.focus();
+                        terminal.innerHTML = "";
+                        isBooting = true;
+                        isLocked = true;
+                        secBadge.textContent = "SYSTEM: BOOTING";
+                        secBadge.style.color = "#ffaa00";
+                        promptLabel.textContent = "PASSCODE:";
+                        promptLabel.style.color = "#ff3366";
+                        input.classList.add('hidden-input');
+                        setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'RETRO AMBER');
+                        runBootSequence();
                     }, 1000);
                     break;
             }

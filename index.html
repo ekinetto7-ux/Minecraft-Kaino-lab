@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TERMINAL - OVERDRIVE EDITION</title>
+    <title>CYBER TERMINAL - OVERDRIVE SMOOTH EDITION</title>
     <style>
         :root {
             --bg-color: #010206;
@@ -70,7 +70,7 @@
             background-size: 100% 3px, 6px 100%;
         }
 
-        /* ホログラム風の枠線と立体感 */
+        /* ホログラム風の枠線と立体感（揺れ・振動なし） */
         #window-frame {
             position: relative;
             z-index: 1;
@@ -154,7 +154,7 @@
             text-shadow: 0 0 5px var(--main-glow);
         }
 
-        /* カスタムネオンスクロールバー */
+        /* カスタムスクロールバー */
         #terminal::-webkit-scrollbar {
             width: 6px;
         }
@@ -212,18 +212,9 @@
         .secret { color: var(--accent-purple); font-weight: bold; text-shadow: 0 0 10px var(--accent-purple); }
         .dim { color: rgba(255, 255, 255, 0.25); }
 
-        /* 画面グリッチアニメーション */
-        .glitch-effect {
-            animation: glitch 0.2s cubic-bezier(.25, .46, .45, .94) both 3;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-4px, 4px) }
-            40% { transform: translate(-4px, -4px) }
-            60% { transform: translate(4px, 4px) }
-            80% { transform: translate(4px, -4px) }
-            100% { transform: translate(0) }
+        /* 画面を揺らさず、枠線が一瞬フワッと発光するスマートな演出 */
+        .flash-effect {
+            box-shadow: 0 0 80px var(--accent-purple), inset 0 0 40px var(--accent-purple) !important;
         }
     </style>
 </head>
@@ -247,7 +238,7 @@
 
         <div id="terminal">
             <span class="system">==================================================================</span>
-            <span class="system">  CYBER TERMINAL v13.0 [OVERDRIVE GLITCH EDITION]</span>
+            <span class="system">  CYBER TERMINAL v13.1 [SMOOTH OVERDRIVE EDITION]</span>
             <span class="system">==================================================================</span>
             Type <span class="success">jp</span> for commands, <span class="secret">jpl</span> for secrets, or <span class="success">lok</span> to lock.
         </div>
@@ -334,18 +325,18 @@
             terminal.scrollTop = terminal.scrollHeight;
         }
 
-        function triggerGlitch() {
-            windowFrame.classList.add('glitch-effect');
+        // 揺れずに枠線が一瞬紫色に光るスマートなパルス演出
+        function triggerPulse() {
+            windowFrame.classList.add('flash-effect');
             setTimeout(() => {
-                windowFrame.classList.remove('glitch-effect');
-            }, 600);
+                windowFrame.classList.remove('flash-effect');
+            }, 400);
         }
 
         function setThemeColor(colorHex, colorGlow, themeName) {
             document.documentElement.style.setProperty('--main-color', colorHex);
             document.documentElement.style.setProperty('--main-glow', colorGlow);
             document.documentElement.style.setProperty('--border-color', colorGlow);
-            triggerGlitch();
             appendOutput(`[THEME] OVERRIDDEN TO ${themeName} MATRIX.`, "success");
         }
 
@@ -379,7 +370,6 @@
         function startVivantSecretAnimation() {
             isProcessing = true;
             input.disabled = true;
-            triggerGlitch();
 
             secBadge.textContent = "CLASSIFIED: TENTH NODE";
             secBadge.style.color = "#ff1144";
@@ -598,7 +588,6 @@
             if (cmd === 'blu') { setThemeColor('#00aaff', 'rgba(0, 170, 255, 0.6)', 'CYBER BLUE'); return; }
             if (cmd === 'grn') { setThemeColor('#00ff66', 'rgba(0, 255, 102, 0.6)', 'MATRIX GREEN'); return; }
             if (cmd === 'amb') { setThemeColor('#ffaa00', 'rgba(255, 170, 0, 0.6)', 'AMBER RETRO'); return; }
-            if (cmd === 'glitch') { triggerGlitch(); appendOutput("[VISUAL] MANUAL GLITCH TRIGGERED.", "secret"); return; }
             if (cmd === 'vvt') { startVivantSecretAnimation(); return; }
 
             const validCommands = ['jp', 'jpl', 'hlp', 'aut', 'stp', 'man', 'pol', 'viv', 'lok', 'geo', 'dec', 'dos', 'err', 'scn', 'gen', 'mtr', 'brk', 'sat', 'bck', 'ai', 'inf', 'pwd', 'ls', 'dir', 'dlc', 'who', 'cpu', 'cls', 'rst'];
@@ -611,7 +600,7 @@
             switch(cmd) {
                 case 'jp':
                     appendOutput("==================================================", "system");
-                    appendOutput("  【日本語システムコマンド一覧 (v13.0 OVERDRIVE)】", "system");
+                    appendOutput("  【日本語システムコマンド一覧 (v13.1 OVERDRIVE)】", "system");
                     appendOutput("==================================================", "system");
                     appendOutput("  jp  : 日本語一覧  |  hlp : 英語一覧  |  aut : 監視ログ流し");
                     appendOutput("  stp : ログ停止    |  man : 手動開発  |  pol : 警察連携");
@@ -626,12 +615,11 @@
                     break;
 
                 case 'jpl':
-                    triggerGlitch();
+                    triggerPulse();
                     appendOutput("==================================================", "secret");
                     appendOutput("  【TOP SECRET: シークレットコマンドリスト】", "secret");
                     appendOutput("==================================================", "secret");
                     appendOutput("  vvt       : VIVANTバルカ極秘アカウント侵入ログ", "secret");
-                    appendOutput("  glitch    : 画面を手動で歪ませるノイズエフェクト", "secret");
                     appendOutput("  red       : テーマカラーを「深紅（RED）」に変更", "secret");
                     appendOutput("  blu       : テーマカラーを「サイバーブルー」に変更", "secret");
                     appendOutput("  grn       : テーマカラーを「クラシックグリーン」に変更", "secret");
@@ -644,7 +632,6 @@
                     break;
 
                 case 'viv':
-                    triggerGlitch();
                     runSimulatedTask("Launching VIVANT Operations Override", "Vivant mode activated.", () => {
                         appendOutput("ALERT: TARGET DATABASE BALKA DIVISION COMPROMISED.", "vivant");
                     });
@@ -728,7 +715,6 @@
                     break;
 
                 case 'brk':
-                    triggerGlitch();
                     appendOutput("[!] CRITICAL OVERRIDE ACTIVATED", "warning");
                     break;
 
@@ -776,7 +762,6 @@
                     break;
 
                 case 'rst':
-                    triggerGlitch();
                     appendOutput("Rebooting kernel...", "warning");
                     isProcessing = true;
                     input.disabled = true;

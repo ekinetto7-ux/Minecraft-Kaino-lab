@@ -36,12 +36,8 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.68);
   padding: 20px;
-}
-
-.mc-screen.hidden {
-  display: none !important;
 }
 
 .mc-title-box {
@@ -116,6 +112,11 @@ html, body {
 .mc-btn.primary {
   background: #3c8527;
   box-shadow: inset 2px 2px 0 #6bc349, inset -2px -2px 0 #245217;
+}
+
+.mc-btn.danger {
+  background: #9c2e2e;
+  box-shadow: inset 2px 2px 0 #d94e4e, inset -2px -2px 0 #591717;
 }
 
 .mc-header-title {
@@ -249,7 +250,7 @@ html, body {
   pointer-events: auto;
 }
 
-#coords, #mode-badge {
+#coords, #time-badge, #mode-badge {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   padding: 5px 9px;
@@ -399,7 +400,7 @@ html, body {
   border: 3px solid #000;
   box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #555555;
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
   padding: 12px;

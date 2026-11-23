@@ -22,13 +22,25 @@ html, body {
   inset: 0;
 }
 
-/* 中央の照準 */
+#damage-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(220, 0, 0, 0);
+  pointer-events: none;
+  z-index: 50;
+  transition: background 0.15s ease-out;
+}
+
+#damage-flash.active {
+  background: rgba(220, 0, 0, 0.45);
+}
+
 #crosshair {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 26px;
   font-weight: bold;
   text-shadow: 1px 1px 2px #000;
@@ -36,142 +48,461 @@ html, body {
   z-index: 10;
 }
 
-/* 左上HUD */
+/* 上部HUD */
 #hud-top {
   position: fixed;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   z-index: 20;
 }
 
-#coords {
-  background: rgba(0, 0, 0, 0.55);
+#coords, #mode-badge {
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
-  padding: 6px 10px;
+  padding: 5px 10px;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
   font-family: monospace;
 }
 
-#menu-btn {
-  background: rgba(40, 40, 40, 0.85);
+#mode-badge {
+  color: #7cfc00;
+  font-weight: bold;
+}
+
+#hud-top button {
+  background: rgba(45, 45, 45, 0.9);
   color: #fff;
   border: 2px solid #aaa;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
 }
 
-/* ポーズ・タイトル画面 */
-#overlay {
+/* 体力・満腹度バー */
+#survival-bars {
+  position: fixed;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 4px 12px;
+  border-radius: 6px;
+  z-index: 20;
+}
+
+#survival-bars.hidden {
+  display: none;
+}
+
+.bar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bar-label {
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.bar-icons {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+/* ホーム画面 */
+#home-screen {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(15, 25, 15, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
 }
 
-#overlay.hidden {
+#home-screen.hidden {
   display: none;
 }
 
-.menu-box {
-  background: #2b2b2b;
+.home-box {
+  background: #2a2a2a;
   border: 3px solid #555;
-  border-radius: 8px;
-  padding: 24px;
-  width: 90%;
-  max-width: 440px;
+  border-radius: 10px;
+  padding: 20px;
+  width: 94%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
   color: #fff;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
 }
 
-.menu-box h1 {
+.home-box h1 {
+  text-align: center;
   font-size: 28px;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
   color: #7cfc00;
   text-shadow: 2px 2px 0 #1b3b00;
 }
 
 .subtitle {
-  font-size: 13px;
+  text-align: center;
+  font-size: 12px;
   color: #ccc;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-.menu-box button {
-  background: #5a5a5a;
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px;
+  background: #444;
+  border: 2px solid #666;
+  color: #ddd;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #3b8526;
+  border-color: #63c74d;
   color: #fff;
-  border: 2px solid #888;
-  padding: 10px 14px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #ddd;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 8px;
+  background: #1e1e1e;
+  border: 2px solid #555;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.primary-btn {
+  width: 100%;
+  background: #3b8526;
+  border: 2px solid #63c74d;
+  color: #fff;
+  padding: 11px;
   font-size: 15px;
   font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.primary-btn:hover {
+  background: #489e30;
+}
+
+/* ワールド一覧アイテム */
+#world-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.world-card {
+  background: #383838;
+  border: 2px solid #555;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.world-info h4 {
+  font-size: 15px;
+  color: #fff;
+}
+
+.world-info p {
+  font-size: 11px;
+  color: #bbb;
+}
+
+.world-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.world-actions button {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-play-w {
+  background: #3b8526;
+  color: #fff;
+}
+
+.btn-del-w {
+  background: #a83232;
+  color: #fff;
+}
+
+#status-msg {
+  text-align: center;
+  font-size: 13px;
+  color: #ffd700;
+  margin-top: 8px;
+  min-height: 18px;
+}
+
+.controls-guide {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ddd;
+}
+
+/* インベントリ＆クラフトモーダル */
+#inventory-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+}
+
+#inventory-modal.hidden {
+  display: none;
+}
+
+.inv-box {
+  background: #2c2c2c;
+  border: 3px solid #666;
+  border-radius: 8px;
+  padding: 16px;
+  width: 95%;
+  max-width: 720px;
+  max-height: 88vh;
+  overflow-y: auto;
+  color: #fff;
+}
+
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #444;
+  padding-bottom: 8px;
+}
+
+.inv-header h2 {
+  font-size: 18px;
+  color: #7cfc00;
+}
+
+.inv-header button {
+  background: #a83232;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cat-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.cat-tabs.hidden {
+  display: none;
+}
+
+.cat-btn {
+  background: #444;
+  color: #eee;
+  border: 1px solid #666;
+  padding: 4px 8px;
+  font-size: 11px;
   border-radius: 4px;
   cursor: pointer;
 }
 
-.menu-box button:hover {
-  background: #6e6e6e;
-}
-
-.menu-box .primary-btn {
-  width: 100%;
+.cat-btn.active {
   background: #3b8526;
-  border-color: #63c74d;
-  font-size: 17px;
-  padding: 12px;
-  margin-bottom: 10px;
+  border-color: #7cfc00;
 }
 
-.menu-box .primary-btn:hover {
-  background: #489e30;
-}
-
-.menu-row {
+.inv-main {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 14px;
 }
 
-.menu-row button {
+.inv-section {
   flex: 1;
-  font-size: 13px;
+  min-width: 280px;
+  background: #222;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
 }
 
-#status-msg {
-  min-height: 20px;
+.inv-section.hidden {
+  display: none;
+}
+
+.inv-section h3 {
   font-size: 13px;
   color: #ffd700;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.controls-guide {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 10px;
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.inv-item {
+  background: #3a3a3a;
+  border: 2px solid #555;
+  border-radius: 5px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.inv-item:hover {
+  border-color: #7cfc00;
+}
+
+.inv-item canvas {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+}
+
+.inv-item-name {
+  font-size: 10px;
+  text-align: center;
+  margin-top: 3px;
+  line-height: 1.1;
+}
+
+.inv-item-count {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #7cfc00;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.craft-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.craft-row {
+  background: #363636;
+  border: 1px solid #555;
+  padding: 6px 8px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.craft-info {
+  font-size: 12px;
+}
+
+.craft-req {
+  font-size: 10px;
+  color: #bbb;
+}
+
+.craft-btn {
+  background: #3b8526;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
   border-radius: 4px;
   font-size: 12px;
-  line-height: 1.5;
-  text-align: left;
-  color: #ddd;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.craft-btn:disabled {
+  background: #555;
+  color: #888;
+  cursor: not-allowed;
 }
 
 /* ホットバー */
 #hotbar {
   position: fixed;
-  bottom: 14px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 4px;
-  background: rgba(20, 20, 20, 0.75);
+  background: rgba(20, 20, 20, 0.8);
   padding: 5px;
   border: 2px solid #555;
   border-radius: 6px;
@@ -179,10 +510,10 @@ html, body {
 }
 
 .slot {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border: 2px solid #666;
-  background: rgba(60, 60, 60, 0.7);
+  background: rgba(60, 60, 60, 0.75);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -193,13 +524,13 @@ html, body {
 
 .slot.active {
   border-color: #fff;
-  background: rgba(120, 120, 120, 0.85);
+  background: rgba(125, 125, 125, 0.9);
   transform: scale(1.06);
 }
 
 .slot canvas {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   image-rendering: pixelated;
 }
 
@@ -208,6 +539,15 @@ html, body {
   top: 1px;
   left: 3px;
   font-size: 10px;
+  color: #ccc;
+}
+
+.slot-count {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  font-size: 11px;
+  font-weight: bold;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
 }
@@ -221,25 +561,21 @@ html, body {
   #mobile-controls {
     display: block;
   }
-  #hotbar {
-    bottom: 8px;
-  }
   .slot {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
-  .slot canvas {
-    width: 22px;
-    height: 22px;
+  #survival-bars {
+    bottom: 58px;
   }
 }
 
 #joystick-zone {
   position: fixed;
   bottom: 65px;
-  left: 20px;
-  width: 110px;
-  height: 110px;
+  left: 16px;
+  width: 105px;
+  height: 105px;
   z-index: 15;
 }
 
@@ -253,8 +589,8 @@ html, body {
 }
 
 #joystick-stick {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.65);
   position: absolute;
@@ -266,24 +602,20 @@ html, body {
 #action-buttons {
   position: fixed;
   bottom: 65px;
-  right: 18px;
+  right: 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   z-index: 15;
 }
 
 #action-buttons button {
-  width: 64px;
-  height: 44px;
+  width: 72px;
+  height: 42px;
   border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.55);
-  background: rgba(30, 30, 30, 0.65);
+  background: rgba(30, 30, 30, 0.7);
   color: #fff;
   font-weight: bold;
-  font-size: 13px;
-}
-
-#action-buttons button:active {
-  background: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
 }

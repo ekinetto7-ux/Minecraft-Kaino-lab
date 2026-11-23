@@ -3,8 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>WebCraft 3D - Ultimate Edition</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>WebCraft 3D - Village & Forest Edition</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      image-rendering: pixelated;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1e1e1e;
+      font-family: "Courier New", "Hiragino Kaku Gothic ProN", "Meiryo", monospace;
+      touch-action: none;
+    }
+    .hidden { display: none !important; }
+    #game-container { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    .mc-screen {
+      position: fixed; inset: 0; z-index: 50;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.75); padding: 20px;
+    }
+    .mc-title-box { text-align: center; margin-bottom: 36px; }
+    .mc-logo {
+      font-size: clamp(38px, 7vw, 70px); font-weight: 900; letter-spacing: 4px; color: #dcdcdc;
+      text-shadow: 0 4px 0 #555, 0 8px 0 #222, 4px 10px 14px rgba(0, 0, 0, 0.85);
+    }
+    .mc-splash { color: #ffff55; font-size: clamp(13px, 2.2vw, 18px); font-weight: bold; text-shadow: 2px 2px 0 #3f3f00; transform: rotate(-10deg); margin-top: -6px; }
+    .mc-menu-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 380px; }
+    .mc-footer-note { position: fixed; bottom: 10px; left: 14px; color: #fff; font-size: 12px; text-shadow: 1px 1px 0 #000; }
+    .mc-btn {
+      background: #727272; color: #ffffff; border: 2px solid #000000;
+      box-shadow: inset 2px 2px 0 #aaaaaa, inset -2px -2px 0 #484848;
+      padding: 12px 16px; font-size: 15px; font-weight: bold; text-shadow: 2px 2px 0 #383838; cursor: pointer; text-align: center;
+    }
+    .mc-btn:hover:not(:disabled) { background: #7e88bf; color: #ffffa0; }
+    .mc-btn:disabled { background: #444444; color: #888888; box-shadow: none; cursor: not-allowed; }
+    .mc-btn.primary { background: #3c8527; }
+    .mc-btn.danger { background: #9c2e2e; }
+    .mc-header-title { color: #ffffff; font-size: 22px; text-shadow: 2px 2px 0 #000; margin-bottom: 14px; }
+    .mc-list-panel {
+      width: 100%; max-width: 520px; height: 260px; overflow-y: auto; background: rgba(0, 0, 0, 0.8);
+      border-top: 3px solid #111; border-bottom: 3px solid #111; padding: 8px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .world-item { padding: 10px 12px; border: 2px solid transparent; background: rgba(40, 40, 40, 0.7); color: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .world-item.selected { border-color: #ffffff; background: rgba(80, 80, 80, 0.9); }
+    .world-item-title { font-size: 16px; font-weight: bold; }
+    .world-item-meta { font-size: 12px; color: #aaaaaa; margin-top: 2px; }
+    .mc-form-panel { width: 100%; max-width: 420px; background: rgba(0, 0, 0, 0.8); border: 2px solid #555; padding: 16px; display: flex; flex-direction: column; gap: 10px; color: #fff; }
+    .mc-label { font-size: 13px; color: #cccccc; }
+    .mc-input { background: #000000; border: 2px solid #a0a0a0; color: #ffffff; padding: 10px; font-size: 15px; font-family: inherit; }
+    .mc-desc { font-size: 12px; color: #bbbbbb; }
+    .mc-bottom-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; width: 100%; max-width: 540px; }
+    .mc-bottom-bar .mc-btn { flex: 1 1 150px; font-size: 13px; padding: 10px; }
+    #gameplay-hud { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+    #crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.92); font-size: 24px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
+    #hud-top { position: fixed; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
+    #coords, #time-badge, #mode-badge { background: rgba(0, 0, 0, 0.6); color: #fff; padding: 5px 9px; font-size: 12px; border: 1px solid #555; }
+    .mc-mini-btn { background: #6e6e6e; color: #fff; border: 2px solid #000; padding: 4px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    #hotbar { position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; background: #8b8b8b; padding: 3px; border: 3px solid #222; pointer-events: auto; }
+    #held-item-name { position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 13px; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+    .mc-slot {
+      width: 44px; height: 44px; background: #8b8b8b;
+      border-top: 2px solid #373737; border-left: 2px solid #373737; border-right: 2px solid #ffffff; border-bottom: 2px solid #ffffff;
+      position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .mc-slot.active { outline: 3px solid #ffffff; z-index: 2; background: #a5a5a5; }
+    .mc-slot canvas { width: 28px; height: 28px; }
+    .slot-count { position: absolute; bottom: 1px; right: 3px; font-size: 11px; font-weight: bold; color: #fff; text-shadow: 1px 1px 0 #000; }
+    .mc-inv-window {
+      background: #c6c6c6; border: 3px solid #000; box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #555555;
+      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 12px; color: #222;
+    }
+    .mc-inv-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
+    .mc-close-btn { background: #8b8b8b; border: 2px solid #333; padding: 2px 8px; font-weight: bold; cursor: pointer; }
+    .mc-inv-section-title { font-size: 12px; font-weight: bold; color: #333; margin: 8px 0 4px; }
+    .mc-slot-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
+    .mc-slot-grid.catalog { max-height: 200px; overflow-y: auto; padding: 4px; background: #a0a0a0; border: 2px solid #555; }
+    .mc-recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px; max-height: 160px; overflow-y: auto; background: #a8a8a8; padding: 6px; border: 2px solid #555; }
+    .recipe-card { background: #8b8b8b; border: 2px solid #373737; padding: 6px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: #fff; text-shadow: 1px 1px 0 #000; }
+    .recipe-card.craftable { background: #4e8c3c; border-color: #a4f58c; }
+    .recipe-info { font-size: 11px; line-height: 1.3; }
+    #mobile-controls { display: none; pointer-events: auto; }
+    @media (pointer: coarse), (max-width: 820px) {
+      #mobile-controls { display: block; }
+      .mc-slot { width: 36px; height: 36px; }
+      .mc-slot canvas { width: 22px; height: 22px; }
+    }
+  </style>
   <script type="importmap">
     {
       "imports": {
@@ -20,13 +110,13 @@
   <div id="home-screen" class="mc-screen">
     <div class="mc-title-box">
       <div class="mc-logo">WEBCRAFT</div>
-      <div class="mc-splash">Ultimate Edition!</div>
+      <div class="mc-splash">Village & Forest Edition!</div>
     </div>
     <div class="mc-menu-buttons">
       <button id="btn-goto-worlds" class="mc-btn" type="button">シングルプレイ（ワールド一覧）</button>
       <button id="btn-goto-settings" class="mc-btn" type="button">設定...</button>
     </div>
-    <div class="mc-footer-note">WebCraft 3D v2.0</div>
+    <div class="mc-footer-note">WebCraft 3D v2.1</div>
   </div>
 
   <!-- ワールド選択画面 -->
@@ -46,14 +136,10 @@
     <h2 class="mc-header-title">ワールドの新規作成</h2>
     <div class="mc-form-panel">
       <label class="mc-label">ワールド名</label>
-      <input id="input-world-name" class="mc-input" type="text" value="無限の大世界" maxlength="24" />
-
+      <input id="input-world-name" class="mc-input" type="text" value="豊かな大森林と村" maxlength="24" />
       <label class="mc-label">ゲームモード</label>
       <button id="btn-toggle-mode" class="mc-btn" type="button">ゲームモード: サバイバル</button>
-      <p id="mode-desc" class="mc-desc">無限の海と深い地下、夜の敵襲を生き抜くサバイバルモード。</p>
-
-      <label class="mc-label">シード値（空欄でランダム）</label>
-      <input id="input-world-seed" class="mc-input" type="text" placeholder="例: 2026" maxlength="16" />
+      <p id="mode-desc" class="mc-desc">木と村がたくさんある豊かな世界でサバイバル！</p>
     </div>
     <div class="mc-bottom-bar">
       <button id="btn-create-start" class="mc-btn primary" type="button">新規作成してプレイ</button>
@@ -65,15 +151,7 @@
   <div id="settings-screen" class="mc-screen hidden">
     <h2 class="mc-header-title">設定</h2>
     <div class="mc-form-panel">
-      <button id="btn-toggle-sound" class="mc-btn" type="button">サウンド（足音・効果音）: ON</button>
-      <div class="mc-slider-row">
-        <span>視野角 (FOV): <strong id="fov-val">75</strong></span>
-        <input id="range-fov" type="range" min="55" max="100" value="75" />
-      </div>
-      <div class="mc-slider-row">
-        <span>マウス感度: <strong id="sens-val">1.0</strong></span>
-        <input id="range-sens" type="range" min="0.3" max="2.5" step="0.1" value="1.0" />
-      </div>
+      <button id="btn-toggle-sound" class="mc-btn" type="button">サウンド: ON</button>
     </div>
     <div class="mc-bottom-bar">
       <button id="btn-back-home2" class="mc-btn" type="button">完了</button>
@@ -87,61 +165,28 @@
       <div id="coords">XYZ: 0 / 0 / 0</div>
       <div id="time-badge">昼 ☀️</div>
       <div id="mode-badge">サバイバル</div>
-      <button id="btn-pause" class="mc-mini-btn" type="button">ポーズ</button>
       <button id="btn-open-inv" class="mc-mini-btn" type="button">持ち物 (E)</button>
-    </div>
-    <div id="damage-flash"></div>
-    <div id="status-bars">
-      <div id="health-bar" class="stat-row"></div>
-      <div id="hunger-bar" class="stat-row"></div>
     </div>
     <div id="hotbar"></div>
     <div id="held-item-name"></div>
-
-    <div id="mobile-controls">
-      <div id="joystick-zone">
-        <div id="joystick-base">
-          <div id="joystick-stick"></div>
-        </div>
-      </div>
-      <div id="action-buttons">
-        <button id="btn-break" type="button">掘る/攻撃</button>
-        <button id="btn-place" type="button">置く/使う</button>
-        <button id="btn-jump" type="button">JUMP</button>
-      </div>
-    </div>
   </div>
 
-  <!-- ポーズメニュー -->
-  <div id="pause-overlay" class="mc-screen hidden">
-    <div class="mc-modal-box">
-      <h2 class="mc-header-title">ゲームメニュー</h2>
-      <button id="btn-resume" class="mc-btn" type="button">ゲームに戻る</button>
-      <button id="btn-save-world" class="mc-btn" type="button">ワールドを保存</button>
-      <button id="btn-save-quit" class="mc-btn" type="button">保存してタイトルへ戻る</button>
-      <p id="pause-msg" class="mc-status-text"></p>
-    </div>
-  </div>
-
-  <!-- インベントリ / 作業台 / かまどウィンドウ -->
+  <!-- インベントリウィンドウ -->
   <div id="inventory-modal" class="mc-screen hidden">
     <div class="mc-inv-window">
       <div class="mc-inv-header">
         <span id="inv-title">インベントリ</span>
         <button id="btn-close-inv" class="mc-close-btn" type="button">✕</button>
       </div>
-      <!-- サバイバル用 -->
       <div id="survival-inv-body">
-        <div class="mc-inv-section-title" id="craft-section-label">作成メニュー</div>
+        <div class="mc-inv-section-title">作成メニュー</div>
         <div id="craft-recipe-list" class="mc-recipe-grid"></div>
         <div class="mc-inv-section-title">インベントリ</div>
         <div id="inv-storage-grid" class="mc-slot-grid"></div>
         <div class="mc-inv-section-title">ホットバー</div>
         <div id="inv-hotbar-grid" class="mc-slot-grid"></div>
       </div>
-      <!-- クリエイティブ用 -->
       <div id="creative-inv-body" class="hidden">
-        <div id="creative-tabs" class="mc-tabs"></div>
         <div id="creative-catalog-grid" class="mc-slot-grid catalog"></div>
         <div class="mc-inv-section-title">ホットバー</div>
         <div id="creative-hotbar-grid" class="mc-slot-grid"></div>
@@ -149,6 +194,502 @@
     </div>
   </div>
 
-  <script type="module" src="main.js"></script>
+  <script type="module">
+    import * as THREE from 'three';
+
+    const ITEMS = {
+      1:  { id: 1,  name: '草ブロック', type: 'block', dropId: 2 },
+      2:  { id: 2,  name: '土', type: 'block', dropId: 2 },
+      3:  { id: 3,  name: '石', type: 'block', dropId: 4 },
+      4:  { id: 4,  name: '丸石', type: 'block', dropId: 4 },
+      5:  { id: 5,  name: 'オークの木材', type: 'block', dropId: 5 },
+      6:  { id: 6,  name: 'オークの原木', type: 'block', dropId: 6 },
+      7:  { id: 7,  name: 'オークの葉', type: 'block', dropId: 201 },
+      8:  { id: 8,  name: 'ガラス', type: 'block', dropId: 0 },
+      9:  { id: 9,  name: '作業台', type: 'block', dropId: 9, interactive: 'crafting_table' },
+      10: { id: 10, name: '石炭鉱石', type: 'block', dropId: 301 },
+      11: { id: 11, name: '鉄鉱石', type: 'block', dropId: 302 },
+      14: { id: 14, name: '砂', type: 'block', dropId: 14 },
+      15: { id: 15, name: 'レンガ（村の壁）', type: 'block', dropId: 15 },
+      19: { id: 19, name: 'かまど', type: 'block', dropId: 19, interactive: 'furnace' },
+      20: { id: 20, name: 'ベッド', type: 'block', dropId: 20, interactive: 'bed' },
+      21: { id: 21, name: '松明', type: 'block', dropId: 21 },
+      22: { id: 22, name: '木製ドア', type: 'block', dropId: 22 },
+      101: { id: 101, name: '木のツルハシ', type: 'tool' },
+      109: { id: 109, name: 'バケツ', type: 'misc' },
+      301: { id: 301, name: '石炭', type: 'material' },
+      302: { id: 302, name: '鉄インゴット', type: 'material' },
+      307: { id: 307, name: '棒', type: 'material' }
+    };
+
+    const RECIPES = [
+      { outId: 5,   outCount: 4, req: [{ id: 6, count: 1 }] },
+      { outId: 307, outCount: 4, req: [{ id: 5, count: 2 }] },
+      { outId: 9,   outCount: 1, req: [{ id: 5, count: 4 }] },
+      { outId: 21,  outCount: 4, req: [{ id: 301, count: 1 }, { id: 307, count: 1 }] },
+      { outId: 109, outCount: 1, req: [{ id: 302, count: 3 }] }
+    ];
+
+    function createPixelCanvas(drawFn) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 16; canvas.height = 16;
+      const ctx = canvas.getContext('2d');
+      drawFn(ctx);
+      return canvas;
+    }
+    function canvasToTexture(canvas) {
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.NearestFilter;
+      return tex;
+    }
+    function fillNoise(ctx, colors, seed = 1) {
+      for (let y = 0; y < 16; y++) {
+        for (let x = 0; x < 16; x++) {
+          const h = Math.abs(Math.sin((x + seed) * 12.9898 + (y + seed) * 78.233) * 43758.5453);
+          ctx.fillStyle = colors[Math.floor((h % 1) * colors.length)];
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
+    }
+
+    const c = {};
+    c.dirt = createPixelCanvas(ctx => fillNoise(ctx, ['#6b4423', '#7a4e28'], 1));
+    c.grassTop = createPixelCanvas(ctx => fillNoise(ctx, ['#4ca638', '#56b840'], 2));
+    c.grassSide = createPixelCanvas(ctx => fillNoise(ctx, ['#6b4423', '#4ca638'], 3));
+    c.stone = createPixelCanvas(ctx => fillNoise(ctx, ['#7d7d7d', '#8a8a8a'], 5));
+    c.planks = createPixelCanvas(ctx => fillNoise(ctx, ['#b8945f', '#a88450'], 7));
+    c.logSide = createPixelCanvas(ctx => fillNoise(ctx, ['#594025', '#4a341d'], 8));
+    c.logTop = createPixelCanvas(ctx => { ctx.fillStyle = '#594025'; ctx.fillRect(0,0,16,16); });
+    c.leaves = createPixelCanvas(ctx => fillNoise(ctx, ['#2d7a22', '#388e2b'], 9));
+    c.brick = createPixelCanvas(ctx => fillNoise(ctx, ['#9e473b', '#8a3d32'], 10)); // 村の家用のレンガ壁
+
+    const tex = {};
+    for (const [k, canvas] of Object.entries(c)) tex[k] = canvasToTexture(canvas);
+
+    const blockMaterials = {
+      1: [tex.grassSide, tex.grassSide, tex.grassTop, tex.dirt, tex.grassSide, tex.grassSide].map(m => new THREE.MeshLambertMaterial({ map: m })),
+      2: new THREE.MeshLambertMaterial({ map: tex.dirt }),
+      3: new THREE.MeshLambertMaterial({ map: tex.stone }),
+      4: new THREE.MeshLambertMaterial({ map: tex.stone }),
+      5: new THREE.MeshLambertMaterial({ map: tex.planks }),
+      6: new THREE.MeshLambertMaterial({ map: tex.logSide }),
+      7: new THREE.MeshLambertMaterial({ map: tex.leaves }),
+      8: new THREE.MeshLambertMaterial({ map: tex.planks }),
+      9: new THREE.MeshLambertMaterial({ map: tex.planks }),
+      10: new THREE.MeshLambertMaterial({ map: tex.stone }),
+      11: new THREE.MeshLambertMaterial({ map: tex.stone }),
+      15: new THREE.MeshLambertMaterial({ map: tex.brick }), // 村の家
+      19: new THREE.MeshLambertMaterial({ map: tex.stone }),
+      20: new THREE.MeshLambertMaterial({ map: tex.planks }),
+      21: new THREE.MeshLambertMaterial({ map: tex.planks }),
+      22: new THREE.MeshLambertMaterial({ map: tex.planks })
+    };
+
+    const icons = { 1: c.grassSide, 3: c.stone, 5: c.planks, 15: c.brick };
+
+    class SoundEngine {
+      constructor() { this.ctx = null; }
+      playTone(freq, dur = 0.08) {
+        try {
+          if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (this.ctx.state === 'suspended') this.ctx.resume();
+          const osc = this.ctx.createOscillator(), gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(); osc.stop(this.ctx.currentTime + dur);
+        } catch {}
+      }
+      playBreak() { this.playTone(140, 0.12); }
+      playPlace() { this.playTone(240, 0.07); }
+    }
+    const sound = new SoundEngine();
+
+    // --- WORLD (木多め ＆ 村多め生成) ---
+    class World {
+      constructor(scene) {
+        this.scene = scene;
+        this.chunkSize = 16;
+        this.chunks = new Map();
+        this.geometry = new THREE.BoxGeometry(1, 1, 1);
+      }
+      chunkKey(cx, cz) { return `${cx},${cz}`; }
+      
+      getBlock(x, y, z) {
+        if (y < 0 || y >= 64) return 0;
+        const cx = Math.floor(x / this.chunkSize), cz = Math.floor(z / this.chunkSize);
+        const chunk = this.chunks.get(this.chunkKey(cx, cz));
+        if (!chunk) return 0;
+        const lx = ((x % this.chunkSize) + this.chunkSize) % this.chunkSize;
+        const lz = ((z % this.chunkSize) + this.chunkSize) % this.chunkSize;
+        return chunk.blocks[lx][y][lz] || 0;
+      }
+      
+      setBlock(x, y, z, id) {
+        if (y < 0 || y >= 64) return false;
+        const cx = Math.floor(x / this.chunkSize), cz = Math.floor(z / this.chunkSize);
+        let chunk = this.chunks.get(this.chunkKey(cx, cz));
+        if (!chunk) {
+          chunk = { blocks: Array.from({length: 16}, () => Array.from({length: 64}, () => new Uint8Array(16))), meshes: [] };
+          this.chunks.set(this.chunkKey(cx, cz), chunk);
+        }
+        const lx = ((x % this.chunkSize) + this.chunkSize) % this.chunkSize;
+        const lz = ((z % this.chunkSize) + this.chunkSize) % this.chunkSize;
+        chunk.blocks[lx][y][lz] = id;
+        this.rebuildChunkMesh(cx, cz);
+        return true;
+      }
+
+      pseudoRand(n) { return Math.abs(Math.sin(n * 12.9898 + 78.233) * 43758.5453) % 1; }
+
+      generateChunk(cx, cz, seed) {
+        const key = this.chunkKey(cx, cz);
+        if (this.chunks.has(key)) return;
+        const chunk = { blocks: Array.from({length: 16}, () => Array.from({length: 64}, () => new Uint8Array(16))), meshes: [] };
+        
+        for (let lx = 0; lx < 16; lx++) {
+          for (let lz = 0; lz < 16; lz++) {
+            const x = cx * 16 + lx, z = cz * 16 + lz;
+            const surfaceY = Math.max(8, Math.floor(22 + Math.sin((x+seed)*0.04)*4 + Math.cos((z+seed)*0.04)*4));
+            
+            for (let y = 0; y <= surfaceY; y++) {
+              let id = 3; // 石
+              if (y === surfaceY) id = 1; // 草
+              else if (y >= surfaceY - 2) id = 2; // 土
+              chunk.blocks[lx][y][lz] = id;
+            }
+
+            // 🌲 【木を多めに生成】（確率を高めに設定）
+            const treeRoll = this.pseudoRand(x * 311 + z * 717 + seed);
+            if (lx >= 2 && lx <= 13 && lz >= 2 && lz <= 13 && treeRoll < 0.08) {
+              const sy = surfaceY + 1;
+              // 幹（高さ4）
+              for (let ty = 0; ty < 4; ty++) {
+                if (sy + ty < 64) chunk.blocks[lx][sy + ty][lz] = 6;
+              }
+              // 葉っぱ
+              for (let fx = -2; fx <= 2; fx++) {
+                for (let fz = -2; fz <= 2; fz++) {
+                  for (let fy = 2; fy <= 4; fy++) {
+                    const nx = lx + fx, nz = lz + fz, ny = sy + fy;
+                    if (nx >= 0 && nx < 16 && nz >= 0 && nz < 16 && ny < 64) {
+                      if (chunk.blocks[nx][ny][nz] === 0) chunk.blocks[nx][ny][nz] = 7;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // 🏠 【村を高頻度で生成】（チャンクごとに一定確率で小さな村の家を建てる）
+        const villageCheck = this.pseudoRand(cx * 997 + cz * 431 + seed);
+        if (villageCheck < 0.35) { // 35%の確率でこのチャンクに村の家が出現！
+          const baseLx = 4, baseLz = 4;
+          let groundY = 22;
+          for (let y = 35; y >= 0; y--) {
+            if (chunk.blocks[baseLx][y][baseLz] !== 0) { groundY = y + 1; break; }
+          }
+          // 小さな家（5x5、高さ3のレンガ小屋）
+          for (let h = 0; h < 3; h++) {
+            for (let hx = 0; hx < 5; hx++) {
+              for (let hz = 0; hz < 5; hz++) {
+                const nx = baseLx + hx, nz = baseLz + hz, ny = groundY + h;
+                if (nx < 16 && nz < 16 && ny < 64) {
+                  // 壁を作る（中身は空洞）
+                  if (h === 0 || hx === 0 || hx === 4 || hz === 0 || hz === 4) {
+                    // 入口ドアの隙間を開ける
+                    if (!(h === 0 && hx === 2 && hz === 0)) {
+                      chunk.blocks[nx][ny][nz] = 15; // レンガ壁
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        this.chunks.set(key, chunk);
+        this.rebuildChunkMesh(cx, cz);
+      }
+
+      rebuildChunkMesh(cx, cz) {
+        const chunk = this.chunks.get(this.chunkKey(cx, cz));
+        if (!chunk) return;
+        if (chunk.meshes) chunk.meshes.forEach(m => this.scene.remove(m));
+        chunk.meshes = [];
+        for (let lx = 0; lx < 16; lx++) {
+          for (let y = 0; y < 64; y++) {
+            for (let lz = 0; lz < 16; lz++) {
+              const id = chunk.blocks[lx][y][lz];
+              if (id === 0) continue;
+              const x = cx * 16 + lx, z = cz * 16 + lz;
+              const mesh = new THREE.Mesh(this.geometry, blockMaterials[id] || blockMaterials[3]);
+              mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
+              this.scene.add(mesh);
+              chunk.meshes.push(mesh);
+            }
+          }
+        }
+      }
+
+      clear() {
+        for (const chunk of this.chunks.values()) {
+          if (chunk.meshes) chunk.meshes.forEach(m => this.scene.remove(m));
+        }
+        this.chunks.clear();
+      }
+
+      updateAroundPlayer(px, pz, seed) {
+        const pcx = Math.floor(px / 16), pcz = Math.floor(pz / 16);
+        for (let cx = pcx - 2; cx <= pcx + 2; cx++) {
+          for (let cz = pcz - 2; cz <= pcz + 2; cz++) {
+            this.generateChunk(cx, cz, seed);
+          }
+        }
+      }
+
+      getSpawnPoint() { return new THREE.Vector3(8, 28, 8); }
+    }
+
+    // --- PLAYER ---
+    class Player {
+      constructor(camera, world) {
+        this.camera = camera;
+        this.world = world;
+        this.position = new THREE.Vector3(8, 28, 8);
+        this.velocity = new THREE.Vector3();
+        this.yaw = 0; this.pitch = 0;
+        this.height = 1.65; this.eyeHeight = 1.5; this.radius = 0.28;
+        this.onGround = false;
+        this.inventory = new Array(36).fill(null);
+        this.selectedSlot = 0;
+        this.keys = {};
+
+        window.addEventListener('keydown', e => { this.keys[e.code] = true; });
+        window.addEventListener('keyup', e => { this.keys[e.code] = false; });
+        document.addEventListener('mousemove', e => {
+          if (document.pointerLockElement) {
+            this.yaw -= e.movementX * 0.0022;
+            this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch - e.movementY * 0.0022));
+          }
+        });
+      }
+      setupMode() {
+        this.inventory = new Array(36).fill(null);
+        [1, 3, 5, 15, 21].forEach((id, i) => { this.inventory[i] = { id, count: 64 }; });
+      }
+      getHeldItem() { return this.inventory[this.selectedSlot]; }
+      spawn() { this.position.copy(this.world.getSpawnPoint()); this.velocity.set(0,0,0); }
+      collidesAt(pos) {
+        const minX = Math.floor(pos.x - this.radius), maxX = Math.floor(pos.x + this.radius);
+        const minY = Math.floor(pos.y), maxY = Math.floor(pos.y + this.height);
+        const minZ = Math.floor(pos.z - this.radius), maxZ = Math.floor(pos.z + this.radius);
+        for (let x = minX; x <= maxX; x++) {
+          for (let y = minY; y <= maxY; y++) {
+            for (let z = minZ; z <= maxZ; z++) {
+              if (this.world.getBlock(x, y, z) !== 0) return true;
+            }
+          }
+        }
+        return false;
+      }
+      update(dt) {
+        let f = 0, s = 0;
+        if (this.keys['KeyW']) f += 1;
+        if (this.keys['KeyS']) f -= 1;
+        if (this.keys['KeyD']) s += 1;
+        if (this.keys['KeyA']) s -= 1;
+        if (this.keys['Space'] && this.onGround) { this.velocity.y = 7.6; this.onGround = false; }
+
+        const sin = Math.sin(this.yaw), cos = Math.cos(this.yaw);
+        let mx = -sin * f + cos * s, mz = -cos * f - sin * s;
+        const len = Math.hypot(mx, mz);
+        if (len > 1) { mx /= len; mz /= len; }
+
+        const nx = this.position.clone(); nx.x += mx * 5.3 * dt;
+        if (!this.collidesAt(nx)) this.position.x = nx.x;
+        const nz = this.position.clone(); nz.z += mz * 5.3 * dt;
+        if (!this.collidesAt(nz)) this.position.z = nz.z;
+
+        this.velocity.y -= 20 * dt;
+        const ny = this.position.clone(); ny.y += this.velocity.y * dt;
+        if (this.collidesAt(ny)) {
+          if (this.velocity.y < 0) this.onGround = true;
+          this.velocity.y = 0;
+        } else {
+          this.position.y = ny.y; this.onGround = false;
+        }
+
+        this.camera.position.set(this.position.x, this.position.y + this.eyeHeight, this.position.z);
+        this.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+      }
+    }
+
+    // --- MAIN ---
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 24, 64);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 120);
+    const renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight.position.set(40, 70, 30);
+    scene.add(dirLight);
+
+    const world = new World(scene);
+    const player = new Player(camera, world);
+
+    let gameState = 'HOME';
+    let gameTime = 0;
+    let selectedWorldListId = null;
+
+    function loadSavedWorlds() {
+      try { return JSON.parse(localStorage.getItem('webcraft_saved_worlds_v4')) || []; } catch { return []; }
+    }
+    function saveWorldsList(list) { localStorage.setItem('webcraft_saved_worlds_v4', JSON.stringify(list)); }
+
+    function showScreen(screenEl) {
+      ['home-screen', 'world-select-screen', 'world-create-screen', 'settings-screen', 'gameplay-hud', 'inventory-modal']
+        .forEach(id => document.getElementById(id).classList.add('hidden'));
+      if (screenEl) screenEl.classList.remove('hidden');
+    }
+
+    function renderWorldList() {
+      const listEl = document.getElementById('world-list');
+      const worlds = loadSavedWorlds();
+      listEl.innerHTML = '';
+      if (worlds.length === 0) {
+        listEl.innerHTML = '<div style="color:#aaa;text-align:center;padding:40px;">ワールドがありません</div>';
+        document.getElementById('btn-play-selected').disabled = true;
+        document.getElementById('btn-delete-world').disabled = true;
+        return;
+      }
+      worlds.forEach(w => {
+        const div = document.createElement('div');
+        div.className = 'world-item' + (w.id === selectedWorldListId ? ' selected' : '');
+        div.innerHTML = `<div><div class="world-item-title">${w.name}</div><div class="world-item-meta">大自然サバイバル</div></div>`;
+        div.addEventListener('click', () => {
+          selectedWorldListId = w.id;
+          document.getElementById('btn-play-selected').disabled = false;
+          document.getElementById('btn-delete-world').disabled = false;
+          renderWorldList();
+        });
+        listEl.appendChild(div);
+      });
+    }
+
+    function startWorldSession(w) {
+      world.clear();
+      world.updateAroundPlayer(8, 8, w.seed);
+      player.setupMode();
+      player.spawn();
+      renderHotbar();
+      gameState = 'PLAYING';
+      showScreen(document.getElementById('gameplay-hud'));
+      try { renderer.domElement.requestPointerLock(); } catch {}
+    }
+
+    document.getElementById('btn-goto-worlds').addEventListener('click', () => { renderWorldList(); showScreen(document.getElementById('world-select-screen')); });
+    document.getElementById('btn-goto-settings').addEventListener('click', () => showScreen(document.getElementById('settings-screen')));
+    document.getElementById('btn-back-home1').addEventListener('click', () => showScreen(document.getElementById('home-screen')));
+    document.getElementById('btn-back-home2').addEventListener('click', () => showScreen(document.getElementById('home-screen')));
+    document.getElementById('btn-goto-create').addEventListener('click', () => showScreen(document.getElementById('world-create-screen')));
+    document.getElementById('btn-back-worlds').addEventListener('click', () => { renderWorldList(); showScreen(document.getElementById('world-select-screen')); });
+
+    document.getElementById('btn-create-start').addEventListener('click', () => {
+      const name = document.getElementById('input-world-name').value.trim() || '大自然の世界';
+      const seed = Math.floor(Math.random() * 99999);
+      const w = { id: 'w_' + Date.now(), name, seed };
+      const list = loadSavedWorlds(); list.unshift(w); saveWorldsList(list);
+      startWorldSession(w);
+    });
+
+    document.getElementById('btn-play-selected').addEventListener('click', () => {
+      const w = loadSavedWorlds().find(item => item.id === selectedWorldListId);
+      if (w) startWorldSession(w);
+    });
+
+    document.getElementById('btn-delete-world').addEventListener('click', () => {
+      saveWorldsList(loadSavedWorlds().filter(w => w.id !== selectedWorldListId));
+      selectedWorldListId = null; renderWorldList();
+    });
+
+    function renderHotbar() {
+      const hb = document.getElementById('hotbar'); hb.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const slotData = player.inventory[i];
+        const el = document.createElement('div');
+        el.className = 'mc-slot' + (i === player.selectedSlot ? ' active' : '');
+        if (slotData && ITEMS[slotData.id]) {
+          const c = document.createElement('canvas'); c.width = 16; c.height = 16;
+          c.getContext('2d').drawImage(icons[slotData.id] || icons[1], 0, 0);
+          el.appendChild(c);
+          if (slotData.count > 1) {
+            const cnt = document.createElement('span'); cnt.className = 'slot-count'; cnt.textContent = slotData.count; el.appendChild(cnt);
+          }
+        }
+        el.addEventListener('click', () => { player.selectedSlot = i; renderHotbar(); });
+        hb.appendChild(el);
+      }
+      const held = player.getHeldItem();
+      document.getElementById('held-item-name').textContent = held ? ITEMS[held.id].name : '';
+    }
+
+    document.getElementById('btn-open-inv').addEventListener('click', () => {
+      gameState = 'INVENTORY';
+      if (document.pointerLockElement) document.exitPointerLock();
+      showScreen(document.getElementById('inventory-modal'));
+    });
+    document.getElementById('btn-close-inv').addEventListener('click', () => {
+      gameState = 'PLAYING';
+      showScreen(document.getElementById('gameplay-hud'));
+      try { renderer.domElement.requestPointerLock(); } catch {}
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyE') {
+        if (gameState === 'PLAYING') {
+          gameState = 'INVENTORY';
+          if (document.pointerLockElement) document.exitPointerLock();
+          showScreen(document.getElementById('inventory-modal'));
+        } else if (gameState === 'INVENTORY') {
+          gameState = 'PLAYING';
+          showScreen(document.getElementById('gameplay-hud'));
+          try { renderer.domElement.requestPointerLock(); } catch {}
+        }
+      }
+      if (gameState === 'PLAYING' && e.code.startsWith('Digit')) {
+        const num = parseInt(e.code.replace('Digit', ''), 10);
+        if (num >= 1 && num <= 9) { player.selectedSlot = num - 1; renderHotbar(); }
+      }
+    });
+
+    let lastTime = performance.now();
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      if (gameState === 'PLAYING') {
+        player.update(dt);
+        world.updateAroundPlayer(player.position.x, player.position.z, 12345);
+        
+        gameTime = (gameTime + dt * 20) % 24000;
+        const isNight = gameTime >= 12000;
+        document.getElementById('time-badge').textContent = isNight ? '夜 🌙 (危険)' : '昼 ☀️ (安全)';
+        document.getElementById('coords').textContent = `XYZ: ${Math.floor(player.position.x)} / ${Math.floor(player.position.y)} / ${Math.floor(player.position.z)}`;
+      }
+      renderer.render(scene, camera);
+    }
+    animate(lastTime);
+  </script>
 </body>
 </html>

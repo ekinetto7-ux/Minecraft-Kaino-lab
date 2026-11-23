@@ -20,20 +20,13 @@ export class SoundEngine {
     if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
     gain.gain.setValueAtTime(volume, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + duration);
   }
-  playStep(blockSound = 'grass') {
-    if (blockSound === 'stone') this.playTone(190, 0.05, 'square', 0.06);
-    else if (blockSound === 'wood') this.playTone(150, 0.06, 'triangle', 0.08);
-    else this.playTone(110, 0.05, 'sine', 0.07);
-  }
+  playStep() { this.playTone(110, 0.05, 'sine', 0.07); }
   playBreak() { this.playTone(140, 0.12, 'sawtooth', 0.14); }
   playPlace() { this.playTone(240, 0.07, 'triangle', 0.12); }
   playHit()   { this.playTone(95, 0.15, 'square', 0.18); }
@@ -48,22 +41,16 @@ export class Player {
     this.crackTextures = crackTextures;
     this.sound = sound;
 
-    this.position = new THREE.Vector3(29, 14, 29);
+    this.position = new THREE.Vector3(8, 28, 8);
     this.velocity = new THREE.Vector3(0, 0, 0);
-    this.yaw = 0;
-    this.pitch = 0;
+    this.yaw = 0; this.pitch = 0;
     this.sensitivity = 1.0;
 
-    this.height = 1.65;
-    this.eyeHeight = 1.5;
-    this.radius = 0.28;
+    this.height = 1.65; this.eyeHeight = 1.5; this.radius = 0.28;
     this.onGround = false;
-    this.stepDistance = 0;
 
     this.mode = 'survival';
-    this.health = 20;
-    this.hunger = 20;
-    this.hungerTimer = 0;
+    this.health = 20; this.hunger = 20; this.hungerTimer = 0;
 
     this.inventory = new Array(36).fill(null);
     this.selectedSlot = 0;
@@ -91,7 +78,7 @@ export class Player {
     this.onInventoryChange = null;
     this.onStatsChange = null;
     this.onDamage = null;
-    this.onOpenCraftingTable = null;
+    this.onOpenInteractive = null;
     this.onAttackMob = null;
 
     this.initControls();
@@ -99,11 +86,10 @@ export class Player {
 
   setupMode(mode) {
     this.mode = mode;
-    this.health = 20;
-    this.hunger = 20;
+    this.health = 20; this.hunger = 20;
     this.inventory = new Array(36).fill(null);
     if (mode === 'creative') {
-      [1, 2, 3, 4, 5, 6, 8, 9, 154].forEach((id, i) => {
+      [1, 2, 3, 4, 5, 6, 8, 9, 19, 20, 21, 22, 109, 110, 154].forEach((id, i) => {
         this.inventory[i] = { id, count: 64 };
       });
     }
@@ -116,24 +102,17 @@ export class Player {
   addItem(id, count = 1) {
     if (!id || !ITEMS[id]) return false;
     const def = ITEMS[id];
-    const stackable = def.type !== 'tool' && def.type !== 'weapon' && def.type !== 'armor';
-
-    if (stackable) {
-      for (let i = 0; i < 36; i++) {
-        const slot = this.inventory[i];
-        if (slot && slot.id === id && slot.count < 64) {
-          const add = Math.min(64 - slot.count, count);
-          slot.count += add;
-          count -= add;
-          if (count <= 0) { this.notifyInventory(); return true; }
-        }
+    for (let i = 0; i < 36; i++) {
+      const slot = this.inventory[i];
+      if (slot && slot.id === id && slot.count < 64) {
+        slot.count += count;
+        this.notifyInventory(); return true;
       }
     }
     for (let i = 0; i < 36; i++) {
       if (!this.inventory[i]) {
-        this.inventory[i] = { id, count: stackable ? count : 1, durability: def.maxDurability || undefined };
-        this.notifyInventory();
-        return true;
+        this.inventory[i] = { id, count, durability: def.maxDurability || undefined };
+        this.notifyInventory(); return true;
       }
     }
     return false;
@@ -141,22 +120,10 @@ export class Player {
 
   consumeHeldItem(amount = 1) {
     if (this.mode === 'creative') return;
-    const slot = this.inventory[this.selectedSlot];
+    const slot = this.getHeldItem();
     if (!slot) return;
     slot.count -= amount;
     if (slot.count <= 0) this.inventory[this.selectedSlot] = null;
-    this.notifyInventory();
-  }
-
-  damageHeldTool(amount = 1) {
-    if (this.mode === 'creative') return;
-    const slot = this.inventory[this.selectedSlot];
-    if (!slot || slot.durability === undefined) return;
-    slot.durability -= amount;
-    if (slot.durability <= 0) {
-      this.inventory[this.selectedSlot] = null;
-      this.sound.playBreak();
-    }
     this.notifyInventory();
   }
 
@@ -165,23 +132,8 @@ export class Player {
     this.health = Math.max(0, this.health - amount);
     this.sound.playHit();
     if (this.onDamage) this.onDamage();
-    if (this.health <= 0) {
-      this.health = 20; this.hunger = 20; this.spawn();
-    }
+    if (this.health <= 0) { this.health = 20; this.hunger = 20; this.spawn(); }
     this.notifyStats();
-  }
-
-  eatHeldFood() {
-    const slot = this.getHeldItem();
-    if (!slot) return false;
-    const def = ITEMS[slot.id];
-    if (!def || def.type !== 'food') return false;
-    this.hunger = Math.min(20, this.hunger + (def.hunger || 0));
-    this.health = Math.min(20, this.health + (def.heal || 0));
-    this.sound.playEat();
-    this.consumeHeldItem(1);
-    this.notifyStats();
-    return true;
   }
 
   notifyInventory() { if (this.onInventoryChange) this.onInventoryChange(); }
@@ -220,46 +172,15 @@ export class Player {
 
     window.addEventListener('mouseup', (e) => {
       if (e.button === 0) {
-        this.isMining = false;
-        this.miningProgress = 0;
-        this.crackMesh.visible = false;
+        this.isMining = false; this.miningProgress = 0; this.crackMesh.visible = false;
       }
     });
 
-    this.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    let lookTouchId = null, lastX = 0, lastY = 0;
-    this.domElement.addEventListener('touchstart', (e) => {
-      for (const t of e.changedTouches) {
-        if (t.clientX > window.innerWidth * 0.35 && lookTouchId === null) {
-          lookTouchId = t.identifier; lastX = t.clientX; lastY = t.clientY;
-        }
-      }
-    }, { passive: true });
-
-    this.domElement.addEventListener('touchmove', (e) => {
-      for (const t of e.changedTouches) {
-        if (t.identifier === lookTouchId) {
-          this.yaw -= (t.clientX - lastX) * 0.005 * this.sensitivity;
-          this.pitch -= (t.clientY - lastY) * 0.005 * this.sensitivity;
-          this.pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, this.pitch));
-          lastX = t.clientX; lastY = t.clientY;
-        }
-      }
-    }, { passive: true });
-
-    const endTouch = (e) => {
-      for (const t of e.changedTouches) if (t.identifier === lookTouchId) lookTouchId = null;
-    };
-    this.domElement.addEventListener('touchend', endTouch);
-    this.domElement.addEventListener('touchcancel', endTouch);
+    this.domElement.addEventListener('contextmenu', e => e.preventDefault());
   }
 
   jump() {
-    if (this.onGround) {
-      this.velocity.y = 7.6;
-      this.onGround = false;
-    }
+    if (this.onGround) { this.velocity.y = 7.6; this.onGround = false; }
   }
 
   getTargetHit() {
@@ -271,67 +192,64 @@ export class Player {
   rightClickAction() {
     const hit = this.getTargetHit();
     if (hit) {
-      const { x, y, z } = hit.object.userData;
-      if (this.world.getBlock(x, y, z) === 9 && this.onOpenCraftingTable) {
-        this.onOpenCraftingTable();
+      const { x, y, z } = hit.object.userData || {};
+      const blockId = this.world.getBlock(x, y, z);
+      const def = ITEMS[blockId];
+      if (def && def.interactive && this.onOpenInteractive) {
+        this.onOpenInteractive(def.interactive);
         return;
       }
     }
+
     const held = this.getHeldItem();
-    if (held && ITEMS[held.id]?.type === 'food') {
-      this.eatHeldFood();
-      return;
-    }
-    if (!hit || !hit.face || !held) return;
+    if (!held || !hit || !hit.face) return;
     const def = ITEMS[held.id];
-    if (!def || def.type !== 'block') return;
+
+    // バケツでの水汲み
+    if (held.id === 109) {
+      const { x, y, z } = hit.object.userData;
+      if (this.world.getBlock(x, y, z) === 17) {
+        this.inventory[this.selectedSlot] = { id: 110, count: 1 };
+        this.notifyInventory();
+        return;
+      }
+    }
+
+    if (!def || (def.type !== 'block' && !def.placesBlock)) return;
 
     const { x, y, z } = hit.object.userData;
     const nx = x + Math.round(hit.face.normal.x);
     const ny = y + Math.round(hit.face.normal.y);
     const nz = z + Math.round(hit.face.normal.z);
 
-    if (this.intersectsPlayer(nx, ny, nz)) return;
-    if (this.world.setBlock(nx, ny, nz, held.id)) {
+    const placeId = def.placesBlock || held.id;
+    if (this.world.setBlock(nx, ny, nz, placeId)) {
       this.sound.playPlace();
       this.consumeHeldItem(1);
+      if (held.id === 110) { // 水を置いたら空バケツに戻す
+        this.addItem(109, 1);
+      }
     }
   }
 
   updateMining(dt) {
     if (!this.isMining) {
-      this.miningProgress = 0;
-      this.crackMesh.visible = false;
-      return;
+      this.miningProgress = 0; this.crackMesh.visible = false; return;
     }
     const hit = this.getTargetHit();
-    if (!hit) {
-      this.miningProgress = 0;
-      this.crackMesh.visible = false;
-      return;
-    }
-    const { x, y, z } = hit.object.userData;
+    if (!hit) { this.miningProgress = 0; this.crackMesh.visible = false; return; }
+    const { x, y, z } = hit.object.userData || {};
     const key = `${x},${y},${z}`;
-    if (this.miningTarget !== key) {
-      this.miningTarget = key;
-      this.miningProgress = 0;
-    }
+    if (this.miningTarget !== key) { this.miningTarget = key; this.miningProgress = 0; }
+
     const blockId = this.world.getBlock(x, y, z);
     const blockDef = ITEMS[blockId] || { hardness: 1 };
 
     if (this.mode === 'creative') {
-      this.completeBreakBlock(x, y, z, blockDef);
-      return;
+      this.completeBreakBlock(x, y, z, blockDef); return;
     }
 
-    let speed = 1.0;
-    const held = this.getHeldItem();
-    const heldDef = held ? ITEMS[held.id] : null;
-    if (heldDef && heldDef.type === 'tool' && heldDef.toolType === blockDef.tool) {
-      speed = heldDef.speed || 2.0;
-    }
-
-    this.miningProgress += (speed / blockDef.hardness) * dt;
+    this.miningProgress += (2.0 / blockDef.hardness) * dt;
     const stage = Math.min(9, Math.floor(this.miningProgress * 10));
     this.crackMaterial.map = this.crackTextures[stage];
     this.crackMaterial.needsUpdate = true;
@@ -346,32 +264,15 @@ export class Player {
     this.sound.playBreak();
     this.miningProgress = 0;
     this.crackMesh.visible = false;
-
-    if (this.mode === 'survival') {
-      this.damageHeldTool(1);
-      if (blockDef.dropId) {
-        if (Math.random() <= (blockDef.dropChance ?? 1.0)) {
-          this.addItem(blockDef.dropId, 1);
-        }
-      }
+    if (this.mode === 'survival' && blockDef.dropId) {
+      this.addItem(blockDef.dropId, 1);
     }
   }
 
-  intersectsPlayer(bx, by, bz) {
-    return (
-      this.position.x + this.radius > bx && this.position.x - this.radius < bx + 1 &&
-      this.position.y + this.height > by && this.position.y < by + 1 &&
-      this.position.z + this.radius > bz && this.position.z - this.radius < bz + 1
-    );
-  }
-
   collidesAt(pos) {
-    const minX = Math.floor(pos.x - this.radius);
-    const maxX = Math.floor(pos.x + this.radius);
-    const minY = Math.floor(pos.y);
-    const maxY = Math.floor(pos.y + this.height);
-    const minZ = Math.floor(pos.z - this.radius);
-    const maxZ = Math.floor(pos.z + this.radius);
+    const minX = Math.floor(pos.x - this.radius), maxX = Math.floor(pos.x + this.radius);
+    const minY = Math.floor(pos.y), maxY = Math.floor(pos.y + this.height);
+    const minZ = Math.floor(pos.z - this.radius), maxZ = Math.floor(pos.z + this.radius);
 
     for (let x = minX; x <= maxX; x++) {
       for (let y = minY; y <= maxY; y++) {
@@ -390,8 +291,7 @@ export class Player {
     if (this.keys['KeyD'] || this.keys['ArrowRight']) strafe += 1;
     if (this.keys['KeyA'] || this.keys['ArrowLeft']) strafe -= 1;
 
-    forward -= this.joyInput.z;
-    strafe += this.joyInput.x;
+    forward -= this.joyInput.z; strafe += this.joyInput.x;
     if (this.keys['Space']) this.jump();
 
     const speed = 5.3;
@@ -401,45 +301,18 @@ export class Player {
     const len = Math.hypot(moveX, moveZ);
     if (len > 1) { moveX /= len; moveZ /= len; }
 
-    const prevX = this.position.x, prevZ = this.position.z;
-    const nextX = this.position.clone();
-    nextX.x += moveX * speed * dt;
+    const nextX = this.position.clone(); nextX.x += moveX * speed * dt;
     if (!this.collidesAt(nextX)) this.position.x = nextX.x;
-
-    const nextZ = this.position.clone();
-    nextZ.z += moveZ * speed * dt;
+    const nextZ = this.position.clone(); nextZ.z += moveZ * speed * dt;
     if (!this.collidesAt(nextZ)) this.position.z = nextZ.z;
 
-    const movedDist = Math.hypot(this.position.x - prevX, this.position.z - prevZ);
-    if (this.onGround && movedDist > 0.001) {
-      this.stepDistance += movedDist;
-      if (this.stepDistance >= 2.1) {
-        this.stepDistance = 0;
-        const underId = this.world.getBlock(Math.floor(this.position.x), Math.floor(this.position.y - 0.2), Math.floor(this.position.z));
-        this.sound.playStep(ITEMS[underId]?.sound || 'grass');
-      }
-    }
-
     this.velocity.y -= 20 * dt;
-    const nextY = this.position.clone();
-    nextY.y += this.velocity.y * dt;
+    const nextY = this.position.clone(); nextY.y += this.velocity.y * dt;
     if (this.collidesAt(nextY)) {
       if (this.velocity.y < 0) this.onGround = true;
       this.velocity.y = 0;
     } else {
-      this.position.y = nextY.y;
-      this.onGround = false;
-    }
-
-    if (this.position.y < -15) this.spawn();
-
-    if (this.mode === 'survival') {
-      this.hungerTimer += dt;
-      if (this.hungerTimer >= 18) {
-        this.hungerTimer = 0;
-        if (this.hunger > 0) { this.hunger--; this.notifyStats(); }
-        else this.takeDamage(1);
-      }
+      this.position.y = nextY.y; this.onGround = false;
     }
 
     this.updateMining(dt);
@@ -449,7 +322,7 @@ export class Player {
 
     const hit = this.getTargetHit();
     if (hit) {
-      const { x, y, z } = hit.object.userData;
+      const { x, y, z } = hit.object.userData || {};
       this.highlightBox.position.set(x + 0.5, y + 0.5, z + 0.5);
       this.highlightBox.visible = true;
     } else {

@@ -14,10 +14,9 @@
   </script>
 </head>
 <body>
-  <!-- 3Dキャンバス -->
   <div id="game-container"></div>
 
-  <!-- ========== 独立したホーム画面（タイトル） ========== -->
+  <!-- ホーム画面 -->
   <div id="home-screen" class="mc-screen">
     <div class="mc-title-box">
       <div class="mc-logo">WEBCRAFT</div>
@@ -27,22 +26,22 @@
       <button id="btn-goto-worlds" class="mc-btn" type="button">シングルプレイ（ワールド一覧）</button>
       <button id="btn-goto-settings" class="mc-btn" type="button">設定...</button>
     </div>
-    <div class="mc-footer-note">WebCraft 3D 1.21 / ブラウザ版サンドボックス</div>
+    <div class="mc-footer-note">WebCraft 3D 1.21</div>
   </div>
 
-  <!-- ========== ワールド一覧画面 ========== -->
+  <!-- ワールド選択画面 -->
   <div id="world-select-screen" class="mc-screen hidden">
     <h2 class="mc-header-title">ワールドの選択</h2>
     <div id="world-list" class="mc-list-panel"></div>
     <div class="mc-bottom-bar">
-      <button id="btn-play-selected" class="mc-btn" type="button" disabled>選択したワールドで遊ぶ</button>
+      <button id="btn-play-selected" class="mc-btn primary" type="button" disabled>選択したワールドで遊ぶ</button>
       <button id="btn-goto-create" class="mc-btn" type="button">ワールド新規作成</button>
       <button id="btn-delete-world" class="mc-btn danger" type="button" disabled>削除</button>
       <button id="btn-back-home1" class="mc-btn" type="button">キャンセル</button>
     </div>
   </div>
 
-  <!-- ========== ワールド新規作成画面 ========== -->
+  <!-- ワールド新規作成画面 -->
   <div id="world-create-screen" class="mc-screen hidden">
     <h2 class="mc-header-title">ワールドの新規作成</h2>
     <div class="mc-form-panel">
@@ -57,12 +56,12 @@
       <input id="input-world-seed" class="mc-input" type="text" placeholder="例: 12345" maxlength="16" />
     </div>
     <div class="mc-bottom-bar">
-      <button id="btn-create-start" class="mc-btn primary" type="button">ワールド新規作成してプレイ</button>
+      <button id="btn-create-start" class="mc-btn primary" type="button">新規作成してプレイ</button>
       <button id="btn-back-worlds" class="mc-btn" type="button">キャンセル</button>
     </div>
   </div>
 
-  <!-- ========== 設定画面 ========== -->
+  <!-- 設定画面 -->
   <div id="settings-screen" class="mc-screen hidden">
     <h2 class="mc-header-title">設定</h2>
     <div class="mc-form-panel">
@@ -81,31 +80,23 @@
     </div>
   </div>
 
-  <!-- ========== ゲームプレイ中HUD ========== -->
+  <!-- ゲームプレイ中HUD -->
   <div id="gameplay-hud" class="hidden">
     <div id="crosshair">+</div>
-
     <div id="hud-top">
       <div id="coords">XYZ: 0 / 0 / 0</div>
       <div id="mode-badge">サバイバル</div>
-      <button id="btn-pause" class="mc-mini-btn" type="button">ポーズ (Esc)</button>
+      <button id="btn-pause" class="mc-mini-btn" type="button">ポーズ</button>
       <button id="btn-open-inv" class="mc-mini-btn" type="button">持ち物 (E)</button>
     </div>
-
-    <!-- ダメージ赤フラッシュ -->
     <div id="damage-flash"></div>
-
-    <!-- サバイバルステータス（体力・満腹度） -->
     <div id="status-bars">
       <div id="health-bar" class="stat-row"></div>
       <div id="hunger-bar" class="stat-row"></div>
     </div>
-
-    <!-- 画面下ホットバー -->
     <div id="hotbar"></div>
     <div id="held-item-name"></div>
 
-    <!-- スマホ用タッチコントロール -->
     <div id="mobile-controls">
       <div id="joystick-zone">
         <div id="joystick-base">
@@ -120,8 +111,8 @@
     </div>
   </div>
 
-  <!-- ========== ポーズメニュー ========== -->
-  <div id="pause-overlay" class="mc-modal hidden">
+  <!-- ポーズメニュー -->
+  <div id="pause-overlay" class="mc-screen hidden">
     <div class="mc-modal-box">
       <h2 class="mc-header-title">ゲームメニュー</h2>
       <button id="btn-resume" class="mc-btn" type="button">ゲームに戻る</button>
@@ -131,30 +122,25 @@
     </div>
   </div>
 
-  <!-- ========== インベントリ / 作業台 / クリエイティブメニュー (Eキー) ========== -->
-  <div id="inventory-modal" class="mc-modal hidden">
+  <!-- インベントリ / 作業台 / クリエイティブメニュー -->
+  <div id="inventory-modal" class="mc-screen hidden">
     <div class="mc-inv-window">
       <div class="mc-inv-header">
-        <span id="inv-title">インベントリ（手元クラフト）</span>
+        <span id="inv-title">インベントリ</span>
         <button id="btn-close-inv" class="mc-close-btn" type="button">✕</button>
       </div>
-
-      <!-- サバイバル用：クラフト＆持ち物 -->
       <div id="survival-inv-body">
-        <div class="mc-inv-section-title" id="craft-section-label">作成メニュー（手元：限定的）</div>
+        <div class="mc-inv-section-title" id="craft-section-label">作成メニュー</div>
         <div id="craft-recipe-list" class="mc-recipe-grid"></div>
-
-        <div class="mc-inv-section-title">インベントリ（クリックでホットバーと入替 / 右クリックで装備・食事）</div>
+        <div class="mc-inv-section-title">インベントリ</div>
         <div id="inv-storage-grid" class="mc-slot-grid"></div>
-        <div class="mc-inv-section-title">ホットバー（1〜9）</div>
+        <div class="mc-inv-section-title">ホットバー</div>
         <div id="inv-hotbar-grid" class="mc-slot-grid"></div>
       </div>
-
-      <!-- クリエイティブ用：全アイテム一覧 -->
       <div id="creative-inv-body" class="hidden">
         <div id="creative-tabs" class="mc-tabs"></div>
         <div id="creative-catalog-grid" class="mc-slot-grid catalog"></div>
-        <div class="mc-inv-section-title">ホットバー（上のアイテムをクリックしてセット）</div>
+        <div class="mc-inv-section-title">ホットバー</div>
         <div id="creative-hotbar-grid" class="mc-slot-grid"></div>
       </div>
     </div>

@@ -1,25 +1,20 @@
 import * as THREE from 'three';
 import { ITEMS } from './textures.js';
 
-// シンプルなWeb Audio API効果音・足音エンジン
 export class SoundEngine {
   constructor() {
     this.enabled = true;
     this.ctx = null;
   }
-
   ensureContext() {
     if (!this.enabled) return null;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
   }
-
   playTone(freq, duration = 0.08, type = 'triangle', volume = 0.12) {
     const ctx = this.ensureContext();
     if (!ctx) return;
@@ -27,7 +22,6 @@ export class SoundEngine {
     const gain = ctx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 0.5), ctx.currentTime + duration);
     gain.gain.setValueAtTime(volume, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.connect(gain);
@@ -35,13 +29,11 @@ export class SoundEngine {
     osc.start();
     osc.stop(ctx.currentTime + duration);
   }
-
   playStep(blockSound = 'grass') {
-    if (blockSound === 'stone') this.playTone(190 + Math.random() * 40, 0.05, 'square', 0.06);
-    else if (blockSound === 'wood') this.playTone(150 + Math.random() * 30, 0.06, 'triangle', 0.08);
-    else this.playTone(110 + Math.random() * 25, 0.05, 'sine', 0.07);
+    if (blockSound === 'stone') this.playTone(190, 0.05, 'square', 0.06);
+    else if (blockSound === 'wood') this.playTone(150, 0.06, 'triangle', 0.08);
+    else this.playTone(110, 0.05, 'sine', 0.07);
   }
-
   playBreak() { this.playTone(140, 0.12, 'sawtooth', 0.14); }
   playPlace() { this.playTone(240, 0.07, 'triangle', 0.12); }
   playHit()   { this.playTone(95, 0.15, 'square', 0.18); }
@@ -68,47 +60,34 @@ export class Player {
     this.onGround = false;
     this.stepDistance = 0;
 
-    // サバイバルステータス
-    this.mode = 'survival'; // 'survival' | 'creative'
+    this.mode = 'survival';
     this.health = 20;
-    this.maxHealth = 20;
     this.hunger = 20;
-    this.maxHunger = 20;
     this.hungerTimer = 0;
 
-    // 36スロットインベントリ (0..8がホットバー、9..35がストレージ)
-    // 各要素は null または { id, count, durability? }
     this.inventory = new Array(36).fill(null);
     this.selectedSlot = 0;
 
-    // ブロック破壊進行状態（ヒビ割れ）
     this.isMining = false;
-    this.miningTarget = null; // "x,y,z"
+    this.miningTarget = null;
     this.miningProgress = 0;
 
     this.keys = {};
     this.joyInput = { x: 0, z: 0 };
     this.isLocked = false;
-
     this.raycaster = new THREE.Raycaster();
     this.raycaster.far = 6;
 
-    // ターゲット枠＆ヒビ割れオーバーレイメッシュ
     const boxGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.005, 1.005, 1.005));
     this.highlightBox = new THREE.LineSegments(boxGeo, new THREE.LineBasicMaterial({ color: 0x000000 }));
     this.highlightBox.visible = false;
     this.world.scene.add(this.highlightBox);
 
-    this.crackMaterial = new THREE.MeshBasicMaterial({
-      map: this.crackTextures[0],
-      transparent: true,
-      depthWrite: false
-    });
+    this.crackMaterial = new THREE.MeshBasicMaterial({ map: this.crackTextures[0], transparent: true, depthWrite: false });
     this.crackMesh = new THREE.Mesh(new THREE.BoxGeometry(1.01, 1.01, 1.01), this.crackMaterial);
     this.crackMesh.visible = false;
     this.world.scene.add(this.crackMesh);
 
-    // 外部コールバック
     this.onInventoryChange = null;
     this.onStatsChange = null;
     this.onDamage = null;
@@ -123,23 +102,16 @@ export class Player {
     this.health = 20;
     this.hunger = 20;
     this.inventory = new Array(36).fill(null);
-
     if (mode === 'creative') {
-      // クリエイティブは初期ホットバーに主要ブロック・道具を配置（減らない）
-      const defaults = [1, 2, 3, 4, 5, 6, 8, 9, 154];
-      defaults.forEach((id, i) => {
+      [1, 2, 3, 4, 5, 6, 8, 9, 154].forEach((id, i) => {
         this.inventory[i] = { id, count: 64 };
       });
     }
-    // サバイバルは「初期装備0」からスタート！
-
     this.notifyInventory();
     this.notifyStats();
   }
 
-  getHeldItem() {
-    return this.inventory[this.selectedSlot];
-  }
+  getHeldItem() { return this.inventory[this.selectedSlot]; }
 
   addItem(id, count = 1) {
     if (!id || !ITEMS[id]) return false;
@@ -153,21 +125,13 @@ export class Player {
           const add = Math.min(64 - slot.count, count);
           slot.count += add;
           count -= add;
-          if (count <= 0) {
-            this.notifyInventory();
-            return true;
-          }
+          if (count <= 0) { this.notifyInventory(); return true; }
         }
       }
     }
-
     for (let i = 0; i < 36; i++) {
       if (!this.inventory[i]) {
-        this.inventory[i] = {
-          id,
-          count: stackable ? count : 1,
-          durability: def.maxDurability || undefined
-        };
+        this.inventory[i] = { id, count: stackable ? count : 1, durability: def.maxDurability || undefined };
         this.notifyInventory();
         return true;
       }
@@ -180,9 +144,7 @@ export class Player {
     const slot = this.inventory[this.selectedSlot];
     if (!slot) return;
     slot.count -= amount;
-    if (slot.count <= 0) {
-      this.inventory[this.selectedSlot] = null;
-    }
+    if (slot.count <= 0) this.inventory[this.selectedSlot] = null;
     this.notifyInventory();
   }
 
@@ -204,10 +166,7 @@ export class Player {
     this.sound.playHit();
     if (this.onDamage) this.onDamage();
     if (this.health <= 0) {
-      // リスポーン
-      this.health = 20;
-      this.hunger = 20;
-      this.spawn();
+      this.health = 20; this.hunger = 20; this.spawn();
     }
     this.notifyStats();
   }
@@ -217,8 +176,6 @@ export class Player {
     if (!slot) return false;
     const def = ITEMS[slot.id];
     if (!def || def.type !== 'food') return false;
-    if (this.mode === 'survival' && this.hunger >= 20 && this.health >= 20 && def.hunger > 0) return false;
-
     this.hunger = Math.min(20, this.hunger + (def.hunger || 0));
     this.health = Math.min(20, this.health + (def.heal || 0));
     this.sound.playEat();
@@ -255,13 +212,10 @@ export class Player {
     this.domElement.addEventListener('mousedown', (e) => {
       if (!this.isLocked) return;
       if (e.button === 0) {
-        // まずモブへの攻撃判定
         if (this.onAttackMob && this.onAttackMob()) return;
         this.isMining = true;
       }
-      if (e.button === 2) {
-        this.rightClickAction();
-      }
+      if (e.button === 2) this.rightClickAction();
     });
 
     window.addEventListener('mouseup', (e) => {
@@ -274,14 +228,11 @@ export class Player {
 
     this.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // スマホ右画面視点操作
     let lookTouchId = null, lastX = 0, lastY = 0;
     this.domElement.addEventListener('touchstart', (e) => {
       for (const t of e.changedTouches) {
         if (t.clientX > window.innerWidth * 0.35 && lookTouchId === null) {
-          lookTouchId = t.identifier;
-          lastX = t.clientX;
-          lastY = t.clientY;
+          lookTouchId = t.identifier; lastX = t.clientX; lastY = t.clientY;
         }
       }
     }, { passive: true });
@@ -292,8 +243,7 @@ export class Player {
           this.yaw -= (t.clientX - lastX) * 0.005 * this.sensitivity;
           this.pitch -= (t.clientY - lastY) * 0.005 * this.sensitivity;
           this.pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, this.pitch));
-          lastX = t.clientX;
-          lastY = t.clientY;
+          lastX = t.clientX; lastY = t.clientY;
         }
       }
     }, { passive: true });
@@ -320,24 +270,18 @@ export class Player {
 
   rightClickAction() {
     const hit = this.getTargetHit();
-    // 作業台を右クリックしたら作業台メニューを開く
     if (hit) {
       const { x, y, z } = hit.object.userData;
-      const targetId = this.world.getBlock(x, y, z);
-      if (targetId === 9 && this.onOpenCraftingTable) {
+      if (this.world.getBlock(x, y, z) === 9 && this.onOpenCraftingTable) {
         this.onOpenCraftingTable();
         return;
       }
     }
-
-    // 食料を持っていたら食べる
     const held = this.getHeldItem();
     if (held && ITEMS[held.id]?.type === 'food') {
       this.eatHeldFood();
       return;
     }
-
-    // ブロック設置
     if (!hit || !hit.face || !held) return;
     const def = ITEMS[held.id];
     if (!def || def.type !== 'block') return;
@@ -348,7 +292,6 @@ export class Player {
     const nz = z + Math.round(hit.face.normal.z);
 
     if (this.intersectsPlayer(nx, ny, nz)) return;
-
     if (this.world.setBlock(nx, ny, nz, held.id)) {
       this.sound.playPlace();
       this.consumeHeldItem(1);
@@ -361,31 +304,26 @@ export class Player {
       this.crackMesh.visible = false;
       return;
     }
-
     const hit = this.getTargetHit();
     if (!hit) {
       this.miningProgress = 0;
       this.crackMesh.visible = false;
       return;
     }
-
     const { x, y, z } = hit.object.userData;
     const key = `${x},${y},${z}`;
     if (this.miningTarget !== key) {
       this.miningTarget = key;
       this.miningProgress = 0;
     }
-
     const blockId = this.world.getBlock(x, y, z);
     const blockDef = ITEMS[blockId] || { hardness: 1 };
 
-    // クリエイティブは即破壊
     if (this.mode === 'creative') {
       this.completeBreakBlock(x, y, z, blockDef);
       return;
     }
 
-    // 適正ツールによる採掘速度ボーナス
     let speed = 1.0;
     const held = this.getHeldItem();
     const heldDef = held ? ITEMS[held.id] : null;
@@ -394,17 +332,13 @@ export class Player {
     }
 
     this.miningProgress += (speed / blockDef.hardness) * dt;
-
-    // 徐々にヒビが入っていく表示
     const stage = Math.min(9, Math.floor(this.miningProgress * 10));
     this.crackMaterial.map = this.crackTextures[stage];
     this.crackMaterial.needsUpdate = true;
     this.crackMesh.position.set(x + 0.5, y + 0.5, z + 0.5);
     this.crackMesh.visible = true;
 
-    if (this.miningProgress >= 1.0) {
-      this.completeBreakBlock(x, y, z, blockDef);
-    }
+    if (this.miningProgress >= 1.0) this.completeBreakBlock(x, y, z, blockDef);
   }
 
   completeBreakBlock(x, y, z, blockDef) {
@@ -416,8 +350,7 @@ export class Player {
     if (this.mode === 'survival') {
       this.damageHeldTool(1);
       if (blockDef.dropId) {
-        const chance = blockDef.dropChance ?? 1.0;
-        if (Math.random() <= chance) {
+        if (Math.random() <= (blockDef.dropChance ?? 1.0)) {
           this.addItem(blockDef.dropId, 1);
         }
       }
@@ -459,20 +392,16 @@ export class Player {
 
     forward -= this.joyInput.z;
     strafe += this.joyInput.x;
-
     if (this.keys['Space']) this.jump();
 
     const speed = 5.3;
-    const sin = Math.sin(this.yaw);
-    const cos = Math.cos(this.yaw);
+    const sin = Math.sin(this.yaw), cos = Math.cos(this.yaw);
     let moveX = (-sin * forward + cos * strafe);
     let moveZ = (-cos * forward - sin * strafe);
     const len = Math.hypot(moveX, moveZ);
     if (len > 1) { moveX /= len; moveZ /= len; }
 
-    const prevX = this.position.x;
-    const prevZ = this.position.z;
-
+    const prevX = this.position.x, prevZ = this.position.z;
     const nextX = this.position.clone();
     nextX.x += moveX * speed * dt;
     if (!this.collidesAt(nextX)) this.position.x = nextX.x;
@@ -481,23 +410,16 @@ export class Player {
     nextZ.z += moveZ * speed * dt;
     if (!this.collidesAt(nextZ)) this.position.z = nextZ.z;
 
-    // 歩行時の足音再生
     const movedDist = Math.hypot(this.position.x - prevX, this.position.z - prevZ);
     if (this.onGround && movedDist > 0.001) {
       this.stepDistance += movedDist;
       if (this.stepDistance >= 2.1) {
         this.stepDistance = 0;
-        const underId = this.world.getBlock(
-          Math.floor(this.position.x),
-          Math.floor(this.position.y - 0.2),
-          Math.floor(this.position.z)
-        );
-        const snd = ITEMS[underId]?.sound || 'grass';
-        this.sound.playStep(snd);
+        const underId = this.world.getBlock(Math.floor(this.position.x), Math.floor(this.position.y - 0.2), Math.floor(this.position.z));
+        this.sound.playStep(ITEMS[underId]?.sound || 'grass');
       }
     }
 
-    // 重力
     this.velocity.y -= 20 * dt;
     const nextY = this.position.clone();
     nextY.y += this.velocity.y * dt;
@@ -511,28 +433,20 @@ export class Player {
 
     if (this.position.y < -15) this.spawn();
 
-    // サバイバル満腹度減少
     if (this.mode === 'survival') {
       this.hungerTimer += dt;
       if (this.hungerTimer >= 18) {
         this.hungerTimer = 0;
-        if (this.hunger > 0) {
-          this.hunger = Math.max(0, this.hunger - 1);
-          this.notifyStats();
-        } else {
-          this.takeDamage(1);
-        }
+        if (this.hunger > 0) { this.hunger--; this.notifyStats(); }
+        else this.takeDamage(1);
       }
     }
 
-    // 採掘（ヒビ割れ進行）
     this.updateMining(dt);
 
-    // カメラ更新
     this.camera.position.set(this.position.x, this.position.y + this.eyeHeight, this.position.z);
     this.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
 
-    // 照準ブロックハイライト
     const hit = this.getTargetHit();
     if (hit) {
       const { x, y, z } = hit.object.userData;

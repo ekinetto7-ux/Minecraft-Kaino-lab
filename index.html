@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>WebCraft 3D</title>
+  <title>WebCraft 3D - Survival & Creative</title>
   <link rel="stylesheet" href="style.css" />
   <script type="importmap">
     {
@@ -16,34 +16,127 @@
 <body>
   <div id="game-container"></div>
 
+  <!-- ダメージ時の画面赤フラッシュ -->
+  <div id="damage-flash"></div>
+
   <!-- クロスヘア -->
   <div id="crosshair">+</div>
 
-  <!-- 左上ステータス＆メニューボタン -->
+  <!-- 左上HUD -->
   <div id="hud-top">
     <div id="coords">X: 0 Y: 0 Z: 0</div>
-    <button id="menu-btn" type="button">メニュー</button>
+    <div id="mode-badge">サバイバル</div>
+    <button id="inv-btn" type="button">E: インベントリ</button>
+    <button id="menu-btn" type="button">ホーム / メニュー</button>
   </div>
 
-  <!-- メニュー画面（ポーズ・ワールド管理） -->
-  <div id="overlay">
-    <div class="menu-box">
+  <!-- ステータスバー（サバイバル時表示：体力＆満腹度） -->
+  <div id="survival-bars">
+    <div class="bar-group">
+      <span class="bar-label">♥ 体力</span>
+      <div id="hp-bar" class="bar-icons"></div>
+    </div>
+    <div class="bar-group">
+      <span class="bar-label">🍖 満腹度</span>
+      <div id="hunger-bar" class="bar-icons"></div>
+    </div>
+  </div>
+
+  <!-- ホーム画面＆ワールド管理 -->
+  <div id="home-screen">
+    <div class="home-box">
       <h1>WebCraft 3D</h1>
-      <p class="subtitle">基本ワールド・建築システム</p>
-      <button id="play-btn" class="primary-btn" type="button">ワールドに入る / 再開</button>
-      <div class="menu-row">
-        <button id="save-btn" type="button">ワールドを保存</button>
-        <button id="new-world-btn" type="button">新しいワールド生成</button>
+      <p class="subtitle">本格サバイバル＆クリエイティブ建築</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="worlds">ワールド一覧</button>
+        <button class="tab-btn" data-tab="create">新規ワールド作成</button>
+        <button class="tab-btn" data-tab="settings">設定</button>
       </div>
+
+      <!-- ワールド一覧タブ -->
+      <div id="tab-worlds" class="tab-content active">
+        <div id="world-list"></div>
+        <button id="quick-resume-btn" class="primary-btn" type="button" style="display:none;">プレイ中のワールドに戻る</button>
+      </div>
+
+      <!-- 新規作成タブ -->
+      <div id="tab-create" class="tab-content">
+        <div class="form-group">
+          <label>ワールド名</label>
+          <input type="text" id="new-world-name" value="新しい世界" maxlength="20" />
+        </div>
+        <div class="form-group">
+          <label>ゲームモード</label>
+          <select id="new-world-mode">
+            <option value="survival">サバイバル（初期アイテム0・体力/満腹度・敵あり）</option>
+            <option value="creative">クリエイティブ（全アイテム無限・ダメージなし）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ワールドの広さ</label>
+          <select id="new-world-size">
+            <option value="64">標準 (64×64・村あり)</option>
+            <option value="96">広大 (96×96・村あり)</option>
+          </select>
+        </div>
+        <button id="create-world-btn" class="primary-btn" type="button">ワールドを生成してプレイ</button>
+      </div>
+
+      <!-- 設定タブ -->
+      <div id="tab-settings" class="tab-content">
+        <div class="form-group">
+          <label>効果音・足音 (SE)</label>
+          <select id="setting-sound">
+            <option value="on">オン（足音・破壊音・ダメージ音）</option>
+            <option value="off">オフ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>描画距離（霧の遠さ）</label>
+          <select id="setting-fog">
+            <option value="55">普通</option>
+            <option value="85">遠い</option>
+            <option value="35">近い（軽量）</option>
+          </select>
+        </div>
+        <div class="controls-guide">
+          <strong>【操作方法】</strong><br />
+          WASD：移動 ／ Space：ジャンプ ／ マウス：視点<br />
+          左クリック長押し：ブロック破壊（徐々にヒビが入る）・攻撃<br />
+          右クリック：設置・食べる・作業台を開く<br />
+          Eキー：インベントリ / クラフト（クリエは全アイテム取得）<br />
+          1〜8キー or ホイール：スロット選択 ／ Esc：メニュー
+        </div>
+      </div>
+
       <p id="status-msg"></p>
-      <div class="controls-guide">
-        <strong>【PC操作】</strong><br />
-        WASD：移動 ／ Space：ジャンプ ／ マウス：視点<br />
-        左クリック：ブロック破壊 ／ 右クリック：ブロック設置<br />
-        1〜8キー or ホイール：ブロック選択 ／ Esc：メニュー<br /><br />
-        <strong>【スマホ操作】</strong><br />
-        左画面ドラッグ：移動 ／ 右画面ドラッグ：視点<br />
-        画面右下のボタン：破壊・設置・ジャンプ
+    </div>
+  </div>
+
+  <!-- Eキー：インベントリ＆クラフト＆クリエイティブメニュー -->
+  <div id="inventory-modal" class="hidden">
+    <div class="inv-box">
+      <div class="inv-header">
+        <h2 id="inv-title">インベントリ & 簡易クラフト</h2>
+        <button id="close-inv-btn" type="button">✕ 閉じる (E)</button>
+      </div>
+
+      <!-- クリエイティブ用カテゴリタブ -->
+      <div id="creative-cats" class="cat-tabs hidden"></div>
+
+      <div class="inv-main">
+        <!-- 左側：所持アイテム / クリエイティブ一覧 -->
+        <div class="inv-section">
+          <h3 id="grid-label">持ち物（クリックで選択スロットへ移動）</h3>
+          <div id="inv-grid" class="item-grid"></div>
+        </div>
+
+        <!-- 右側：クラフトレシピ一覧（サバイバル時） -->
+        <div id="craft-section" class="inv-section">
+          <h3 id="craft-label">簡易作成（作業台を作ると全レシピ解放）</h3>
+          <div id="craft-list" class="craft-list"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -59,8 +152,8 @@
       </div>
     </div>
     <div id="action-buttons">
-      <button id="btn-break" type="button">壊す</button>
-      <button id="btn-place" type="button">置く</button>
+      <button id="btn-break" type="button">壊す/攻撃</button>
+      <button id="btn-place" type="button">置く/使う</button>
       <button id="btn-jump" type="button">JUMP</button>
     </div>
   </div>

@@ -1,640 +1,607 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>WebCraft 3D - Mobile & Action Edition</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      image-rendering: pixelated;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #1e1e1e;
-      font-family: "Courier New", "Hiragino Kaku Gothic ProN", "Meiryo", monospace;
-      touch-action: none;
-    }
-    .hidden { display: none !important; }
-    #game-container { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; }
-    .mc-screen {
-      position: fixed; inset: 0; z-index: 50;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      background: rgba(0, 0, 0, 0.75); padding: 20px;
-    }
-    .mc-title-box { text-align: center; margin-bottom: 36px; }
-    .mc-logo {
-      font-size: clamp(38px, 7vw, 70px); font-weight: 900; letter-spacing: 4px; color: #dcdcdc;
-      text-shadow: 0 4px 0 #555, 0 8px 0 #222, 4px 10px 14px rgba(0, 0, 0, 0.85);
-    }
-    .mc-splash { color: #ffff55; font-size: clamp(13px, 2.2vw, 18px); font-weight: bold; text-shadow: 2px 2px 0 #3f3f00; transform: rotate(-10deg); margin-top: -6px; }
-    .mc-menu-buttons { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 380px; }
-    .mc-footer-note { position: fixed; bottom: 10px; left: 14px; color: #fff; font-size: 12px; text-shadow: 1px 1px 0 #000; }
-    .mc-btn {
-      background: #727272; color: #ffffff; border: 2px solid #000000;
-      box-shadow: inset 2px 2px 0 #aaaaaa, inset -2px -2px 0 #484848;
-      padding: 12px 16px; font-size: 15px; font-weight: bold; text-shadow: 2px 2px 0 #383838; cursor: pointer; text-align: center;
-    }
-    .mc-btn:hover:not(:disabled) { background: #7e88bf; color: #ffffa0; }
-    .mc-btn:disabled { background: #444444; color: #888888; box-shadow: none; cursor: not-allowed; }
-    .mc-btn.primary { background: #3c8527; }
-    .mc-btn.danger { background: #9c2e2e; }
-    .mc-header-title { color: #ffffff; font-size: 22px; text-shadow: 2px 2px 0 #000; margin-bottom: 14px; }
-    .mc-list-panel {
-      width: 100%; max-width: 520px; height: 260px; overflow-y: auto; background: rgba(0, 0, 0, 0.8);
-      border-top: 3px solid #111; border-bottom: 3px solid #111; padding: 8px; display: flex; flex-direction: column; gap: 6px;
-    }
-    .world-item { padding: 10px 12px; border: 2px solid transparent; background: rgba(40, 40, 40, 0.7); color: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .world-item.selected { border-color: #ffffff; background: rgba(80, 80, 80, 0.9); }
-    .world-item-title { font-size: 16px; font-weight: bold; }
-    .world-item-meta { font-size: 12px; color: #aaaaaa; margin-top: 2px; }
-    .mc-form-panel { width: 100%; max-width: 420px; background: rgba(0, 0, 0, 0.8); border: 2px solid #555; padding: 16px; display: flex; flex-direction: column; gap: 10px; color: #fff; }
-    .mc-label { font-size: 13px; color: #cccccc; }
-    .mc-input { background: #000000; border: 2px solid #a0a0a0; color: #ffffff; padding: 10px; font-size: 15px; font-family: inherit; }
-    .mc-desc { font-size: 12px; color: #bbbbbb; }
-    .mc-bottom-bar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; width: 100%; max-width: 540px; }
-    .mc-bottom-bar .mc-btn { flex: 1 1 150px; font-size: 13px; padding: 10px; }
-    
-    #gameplay-hud { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
-    #crosshair { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.92); font-size: 24px; font-weight: bold; text-shadow: 1px 1px 0 #000; pointer-events: none; }
-    #hud-top { position: fixed; top: 10px; left: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
-    #coords, #time-badge, #mode-badge { background: rgba(0, 0, 0, 0.6); color: #fff; padding: 5px 9px; font-size: 12px; border: 1px solid #555; }
-    .mc-mini-btn { background: #6e6e6e; color: #fff; border: 2px solid #000; padding: 4px 10px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    
-    #hotbar {
-      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-      display: flex; background: #8b8b8b; padding: 3px; border: 3px solid #222; pointer-events: auto; z-index: 30;
-    }
-    #held-item-name {
-      position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
-      color: #fff; font-size: 13px; text-shadow: 1px 1px 0 #000; pointer-events: none;
-    }
-    .mc-slot {
-      width: 44px; height: 44px; background: #8b8b8b;
-      border-top: 2px solid #373737; border-left: 2px solid #373737; border-right: 2px solid #ffffff; border-bottom: 2px solid #ffffff;
-      position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .mc-slot.active { outline: 3px solid #ffffff; z-index: 2; background: #a5a5a5; }
-    .mc-slot canvas { width: 28px; height: 28px; }
-    .slot-count { position: absolute; bottom: 1px; right: 3px; font-size: 11px; font-weight: bold; color: #fff; text-shadow: 1px 1px 0 #000; }
+    <meta charset="UTF-8">
+    <title>WebCraft 3D - Ultimate Edition</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
+            transform: translate(-50%, -50%); pointer-events: none; z-index: 10;
+        }
+        #crosshair::before, #crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,0.8); }
+        #crosshair::before { top: 9px; left: 0; width: 20px; height: 2px; }
+        #crosshair::after { top: 0; left: 9px; width: 2px; height: 20px; }
+        
+        #hud {
+            position: absolute; top: 10px; left: 10px; color: white;
+            background: rgba(0,0,0,0.6); padding: 10px 15px; border-radius: 6px; z-index: 10;
+            font-size: 14px; line-height: 1.5; pointer-events: none;
+        }
+        #hotbar {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 4px; background: rgba(0,0,0,0.7); padding: 6px; border-radius: 6px; z-index: 10;
+        }
+        .slot {
+            width: 48px; height: 48px; border: 2px solid #555; border-radius: 4px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-size: 10px; text-align: center; position: relative; cursor: pointer;
+            background: rgba(255,255,255,0.1);
+        }
+        .slot.active { border-color: #FFF; background: rgba(255,255,255,0.3); transform: scale(1.05); }
+        .slot-color { width: 24px; height: 24px; border-radius: 3px; margin-bottom: 2px; border: 1px solid rgba(0,0,0,0.4); }
+        .slot-count { position: absolute; bottom: 2px; right: 4px; font-weight: bold; font-size: 11px; text-shadow: 1px 1px 0 #000; }
 
-    /* --- スマホ用バーチャルパッド --- */
-    #mobile-controls {
-      position: fixed; inset: 0; pointer-events: none; z-index: 25; display: none;
-    }
-    @media (pointer: coarse), (max-width: 900px) {
-      #mobile-controls { display: block; }
-    }
-    #joystick-zone {
-      position: absolute; bottom: 70px; left: 20px; width: 120px; height: 120px;
-      background: rgba(255,255,255,0.15); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3);
-      pointer-events: auto; touch-action: none;
-    }
-    #joystick-thumb {
-      position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
-      background: rgba(255,255,255,0.7); border-radius: 50%; pointer-events: none;
-    }
-    #touch-buttons {
-      position: absolute; bottom: 70px; right: 20px; display: flex; gap: 10px; pointer-events: auto;
-    }
-    .touch-btn {
-      width: 65px; height: 65px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.6);
-      color: #fff; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px;
-    }
-    .touch-btn:active { background: rgba(255,255,255,0.4); }
-
-    .mc-inv-window {
-      background: #c6c6c6; border: 3px solid #000; box-shadow: inset 3px 3px 0 #ffffff, inset -3px -3px 0 #555555;
-      width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 12px; color: #222;
-    }
-    .mc-inv-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 15px; margin-bottom: 8px; }
-    .mc-close-btn { background: #8b8b8b; border: 2px solid #333; padding: 2px 8px; font-weight: bold; cursor: pointer; }
-    .mc-slot-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
-  </style>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
+        .modal {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(30, 30, 30, 0.95); border: 3px solid #777; border-radius: 8px;
+            padding: 20px; color: white; z-index: 20; width: 560px; max-height: 80vh; overflow-y: auto;
+        }
+        .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 10px; }
+        
+        #blocker {
+            position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            display: flex; align-items: center; justify-content: center; color: white; z-index: 30;
+            flex-direction: column; cursor: pointer; text-align: center; padding: 20px;
+        }
+        #mining-bar-container {
+            display: none; position: absolute; top: 55%; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 8px; background: rgba(0,0,0,0.7); border: 1px solid #fff; z-index: 10;
+        }
+        #mining-bar { width: 0%; height: 100%; background: #4CAF50; }
+        .btn { background: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn:hover { background: #45a049; }
+    </style>
 </head>
 <body>
-  <div id="game-container"></div>
+    <div id="blocker">
+        <h1>WebCraft 3D Ultimate</h1>
+        <p>画面をクリックしてプレイ開始！</p>
+        <p><b>WASD:</b> 移動 | <b>Space:</b> ジャンプ (クリエイティブ時2回押しで飛行) | <b>左クリック:</b> 破壊 | <b>右クリック:</b> 配置</p>
+        <p><b>1-9:</b> アイテム選択 | <b>E:</b> アイテム一覧 | <b>C:</b> クラフト画面 | <b>M:</b> モード切替 | <b>F5:</b> セーブ</p>
+        <button class="btn">ゲームを始める</button>
+    </div>
 
-  <!-- ホーム画面 -->
-  <div id="home-screen" class="mc-screen">
-    <div class="mc-title-box">
-      <div class="mc-logo">WEBCRAFT</div>
-      <div class="mc-splash">Mobile & Explosion Edition!</div>
-    </div>
-    <div class="mc-menu-buttons">
-      <button id="btn-goto-worlds" class="mc-btn" type="button">シングルプレイ</button>
-      <button id="btn-goto-create" class="mc-btn primary" type="button">すぐ遊ぶ（新規作成）</button>
-    </div>
-    <div class="mc-footer-note">WebCraft 3D v2.2 (Mobile Supported)</div>
-  </div>
+    <div id="crosshair"></div>
+    <div id="mining-bar-container"><div id="mining-bar"></div></div>
 
-  <!-- ワールド選択画面 -->
-  <div id="world-select-screen" class="mc-screen hidden">
-    <h2 class="mc-header-title">ワールドの選択</h2>
-    <div id="world-list" class="mc-list-panel"></div>
-    <div class="mc-bottom-bar">
-      <button id="btn-play-selected" class="mc-btn primary" type="button" disabled>このワールドで遊ぶ</button>
-      <button id="btn-goto-create2" class="mc-btn" type="button">新規作成</button>
-      <button id="btn-delete-world" class="mc-btn danger" type="button" disabled>削除</button>
-      <button id="btn-back-home1" class="mc-btn" type="button">戻る</button>
+    <div id="hud">
+        <div>モード: <strong id="mode-display" style="color:#4CAF50;">クリエイティブ</strong></div>
+        <div>選択中: <strong id="selected-item-name">草ブロック</strong></div>
+        <div id="health-display" style="display:none; color:#FF5252;">体力: ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</div>
+        <div>モブ数: <span id="mob-count">0</span>体</div>
     </div>
-  </div>
 
-  <!-- ワールド新規作成画面 -->
-  <div id="world-create-screen" class="mc-screen hidden">
-    <h2 class="mc-header-title">ワールドの新規作成</h2>
-    <div class="mc-form-panel">
-      <label class="mc-label">ワールド名</label>
-      <input id="input-world-name" class="mc-input" type="text" value="大爆破と冒険の世界" maxlength="24" />
-    </div>
-    <div class="mc-bottom-bar">
-      <button id="btn-create-start" class="mc-btn primary" type="button">ワールド作成・開始</button>
-      <button id="btn-back-home3" class="mc-btn" type="button">戻る</button>
-    </div>
-  </div>
-
-  <!-- ゲームプレイ中HUD -->
-  <div id="gameplay-hud" class="hidden">
-    <div id="crosshair">+</div>
-    <div id="hud-top">
-      <div id="coords">XYZ: 0 / 0 / 0</div>
-      <div id="time-badge">昼 ☀️</div>
-      <button id="btn-open-inv" class="mc-mini-btn" type="button">持ち物 (E)</button>
-    </div>
     <div id="hotbar"></div>
-    <div id="held-item-name"></div>
 
-    <!-- スマホ用タッチ操作パネル -->
-    <div id="mobile-controls">
-      <div id="joystick-zone">
-        <div id="joystick-thumb"></div>
-      </div>
-      <div id="touch-buttons">
-        <div id="btn-touch-jump" class="touch-btn">JUMP</div>
-        <div id="btn-touch-action" class="touch-btn">掘る/置く</div>
-      </div>
+    <div id="inventory-modal" class="modal">
+        <h3 style="margin-top:0;">全40種類アイテム・ブロック一覧 (クリックで選択スロットにセット)</h3>
+        <div id="inventory-grid" class="grid"></div>
+        <button class="btn" onclick="toggleModal('inventory-modal')">閉じる</button>
     </div>
-  </div>
 
-  <!-- インベントリ -->
-  <div id="inventory-modal" class="mc-screen hidden">
-    <div class="mc-inv-window">
-      <div class="mc-inv-header">
-        <span>インベントリ（TNTやブロックをタップして選択）</span>
-        <button id="btn-close-inv" class="mc-close-btn" type="button">✕</button>
-      </div>
-      <div id="inv-storage-grid" class="mc-slot-grid" style="margin-bottom:10px;"></div>
-      <div style="font-size:12px; font-weight:bold; margin-bottom:4px;">ホットバー</div>
-      <div id="inv-hotbar-grid" class="mc-slot-grid"></div>
+    <div id="crafting-modal" class="modal">
+        <h3 style="margin-top:0;">クラフト作業台 (素材からアイテムを作成)</h3>
+        <div id="crafting-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+        <button class="btn" style="margin-top:15px;" onclick="toggleModal('crafting-modal')">閉じる</button>
     </div>
-  </div>
 
-  <script type="module">
-    import * as THREE from 'three';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // --- 1. サウンドシステム (Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
 
-    // --- アイテム定義（TNT爆弾を追加！） ---
-    const ITEMS = {
-      1: { id: 1, name: '草ブロック', solid: true },
-      2: { id: 2, name: '土', solid: true },
-      3: { id: 3, name: '石', solid: true },
-      5: { id: 5, name: '木材', solid: true },
-      6: { id: 6, name: '原木', solid: true },
-      7: { id: 7, name: '葉っぱ', solid: true },
-      8: { id: 8, name: 'ガラス', solid: true },
-      15: { id: 15, name: 'レンガ', solid: true },
-      21: { id: 21, name: '松明', solid: true, light: true },
-      25: { id: 25, name: 'TNT爆弾 (置くと爆発!)', solid: true, isTnt: true }
-    };
-
-    function createPixelCanvas(color1, color2) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 16; canvas.height = 16;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = color1; ctx.fillRect(0, 0, 16, 16);
-      ctx.fillStyle = color2; ctx.fillRect(2, 2, 4, 4); ctx.fillRect(10, 10, 4, 4);
-      return canvas;
-    }
-
-    const textures = {
-      1: createPixelCanvas('#4ca638', '#6b4423'),
-      2: createPixelCanvas('#6b4423', '#5c3a1d'),
-      3: createPixelCanvas('#7d7d7d', '#6e6e6e'),
-      5: createPixelCanvas('#b8945f', '#a88450'),
-      6: createPixelCanvas('#594025', '#3b2815'),
-      7: createPixelCanvas('#2d7a22', '#236319'),
-      8: createPixelCanvas('rgba(200,240,255,0.4)', '#ffffff'),
-      15: createPixelCanvas('#9e473b', '#8a3d32'),
-      21: createPixelCanvas('#ffaa00', '#ff5500'),
-      25: createPixelCanvas('#cc0000', '#ffffff') // TNTの見た目
-    };
-
-    function makeMat(canvas) {
-      const tex = new THREE.CanvasTexture(canvas);
-      tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
-      return new THREE.MeshLambertMaterial({ map: tex });
-    }
-
-    const blockMaterials = {};
-    for (const id of Object.keys(ITEMS)) {
-      blockMaterials[id] = makeMat(textures[id]);
-    }
-
-    // --- WORLD ---
-    class World {
-      constructor(scene) {
-        this.scene = scene;
-        this.chunks = new Map();
-        this.boxGeo = new THREE.BoxGeometry(1, 1, 1);
-      }
-      getBlock(x, y, z) {
-        if (y < 0 || y >= 64) return 0;
-        const cx = Math.floor(x / 16), cz = Math.floor(z / 16);
-        const chunk = this.chunks.get(`${cx},${cz}`);
-        if (!chunk) return 0;
-        return chunk.blocks[((x%16)+16)%16][y][((z%16)+16)%16] || 0;
-      }
-      setBlock(x, y, z, id) {
-        if (y < 0 || y >= 64) return;
-        const cx = Math.floor(x / 16), cz = Math.floor(z / 16);
-        let chunk = this.chunks.get(`${cx},${cz}`);
-        if (!chunk) {
-          chunk = { blocks: Array.from({length:16},()=>Array.from({length:64},()=>new Uint8Array(16))), meshes: [] };
-          this.chunks.set(`${cx},${cz}`, chunk);
-        }
-        chunk.blocks[((x%16)+16)%16][y][((z%16)+16)%16] = id;
-        this.rebuildChunk(cx, cz);
-      }
-      generate(cx, cz, seed) {
-        const key = `${cx},${cz}`;
-        if (this.chunks.has(key)) return;
-        const chunk = { blocks: Array.from({length:16},()=>Array.from({length:64},()=>new Uint8Array(16))), meshes: [] };
-        for (let lx = 0; lx < 16; lx++) {
-          for (let lz = 0; lz < 16; lz++) {
-            const x = cx*16 + lx, z = cz*16 + lz;
-            const sy = Math.max(6, Math.floor(20 + Math.sin((x+seed)*0.05)*4 + Math.cos((z+seed)*0.05)*4));
-            for (let y = 0; y <= sy; y++) {
-              chunk.blocks[lx][y][lz] = (y === sy) ? 1 : (y >= sy - 2 ? 2 : 3);
+            if (type === 'break') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'place') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now); osc.stop(now + 0.08);
+            } else if (type === 'explosion') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(80, now);
+                osc.frequency.linearRampToValueAtTime(20, now + 0.5);
+                gain.gain.setValueAtTime(0.6, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
             }
-            // 木を生成
-            if (lx === 4 && lz === 4 && Math.abs(x)%3 === 0) {
-              for (let ty = 1; ty <= 4; ty++) chunk.blocks[lx][sy + ty][lz] = 6;
-              chunk.blocks[lx][sy+4][lz+1] = 7; chunk.blocks[lx][sy+4][lz-1] = 7;
-            }
-          }
         }
-        this.chunks.set(key, chunk);
-        this.rebuildChunk(cx, cz);
-      }
-      rebuildChunk(cx, cz) {
-        const chunk = this.chunks.get(`${cx},${cz}`);
-        if (!chunk) return;
-        if (chunk.meshes) chunk.meshes.forEach(m => this.scene.remove(m));
-        chunk.meshes = [];
-        for (let lx = 0; lx < 16; lx++) {
-          for (let y = 0; y < 64; y++) {
-            for (let lz = 0; lz < 16; lz++) {
-              const id = chunk.blocks[lx][y][lz];
-              if (id === 0) continue;
-              const mesh = new THREE.Mesh(this.boxGeo, blockMaterials[id] || blockMaterials[3]);
-              const x = cx*16 + lx, z = cz*16 + lz;
-              mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
-              mesh.userData = { x, y, z };
-              this.scene.add(mesh);
-              chunk.meshes.push(mesh);
-            }
-          }
-        }
-      }
-      clear() {
-        for (const chunk of this.chunks.values()) {
-          if (chunk.meshes) chunk.meshes.forEach(m => this.scene.remove(m));
-        }
-        this.chunks.clear();
-      }
-      getMeshArray() {
-        const arr = [];
-        for (const c of this.chunks.values()) if (c.meshes) arr.push(...c.meshes);
-        return arr;
-      }
-    }
 
-    // --- PLAYER ---
-    class Player {
-      constructor(camera, world) {
-        this.camera = camera; this.world = world;
-        this.position = new THREE.Vector3(8, 26, 8);
-        this.velocity = new THREE.Vector3();
-        this.yaw = 0; this.pitch = 0;
-        this.onGround = false;
-        this.inventory = new Array(36).fill(null);
-        this.selectedSlot = 0;
-        this.keys = {};
-        this.raycaster = new THREE.Raycaster(); this.raycaster.far = 6;
+        // --- 2. 40種類のアイテム・ブロック定義 ---
+        const ITEMS = [
+            { id: 1, name: "草ブロック", color: 0x558B2F, type: "block", hardness: 0.6 },
+            { id: 2, name: "土", color: 0x795548, type: "block", hardness: 0.5 },
+            { id: 3, name: "石", color: 0x9E9E9E, type: "block", hardness: 1.5 },
+            { id: 4, name: "丸石", color: 0x757575, type: "block", hardness: 2.0 },
+            { id: 5, name: "砂", color: 0xFFF59D, type: "block", hardness: 0.5 },
+            { id: 6, name: "砂利", color: 0xBDBDBD, type: "block", hardness: 0.6 },
+            { id: 7, name: "粘土", color: 0x90A4AE, type: "block", hardness: 0.6 },
+            { id: 8, name: "雪ブロック", color: 0xFFFFFF, type: "block", hardness: 0.4 },
+            { id: 9, name: "氷", color: 0x81D4FA, type: "block", hardness: 0.5, transparent: true },
+            { id: 10, name: "黒曜石", color: 0x311B92, type: "block", hardness: 5.0 },
+            { id: 11, name: "オークの原木", color: 0x5D4037, type: "block", hardness: 1.2 },
+            { id: 12, name: "オークの木材", color: 0xA1887F, type: "block", hardness: 1.0 },
+            { id: 13, name: "白樺の原木", color: 0xECEFF1, type: "block", hardness: 1.2 },
+            { id: 14, name: "白樺の木材", color: 0xFFE0B2, type: "block", hardness: 1.0 },
+            { id: 15, name: "葉ブロック", color: 0x388E3C, type: "block", hardness: 0.2, transparent: true },
+            { id: 16, name: "サボテン", color: 0x2E7D32, type: "block", hardness: 0.4 },
+            { id: 17, name: "カボチャ", color: 0xEF6C00, type: "block", hardness: 0.8 },
+            { id: 18, name: "スイカ", color: 0x8BC34A, type: "block", hardness: 0.8 },
+            { id: 19, name: "石炭鉱石", color: 0x424242, type: "block", hardness: 2.0 },
+            { id: 20, name: "鉄鉱石", color: 0xD7CCC8, type: "block", hardness: 2.5 },
+            { id: 21, name: "金鉱石", color: 0xFFD54F, type: "block", hardness: 2.5 },
+            { id: 22, name: "ダイヤ鉱石", color: 0x4DD0E1, type: "block", hardness: 3.0 },
+            { id: 23, name: "鉄ブロック", color: 0xE0E0E0, type: "block", hardness: 3.0 },
+            { id: 24, name: "金ブロック", color: 0xFFC107, type: "block", hardness: 3.0 },
+            { id: 25, name: "ダイヤブロック", color: 0x00BCD4, type: "block", hardness: 3.5 },
+            { id: 26, name: "ラピスブロック", color: 0x1E88E5, type: "block", hardness: 2.5 },
+            { id: 27, name: "レンガ", color: 0xB71C1C, type: "block", hardness: 2.0 },
+            { id: 28, name: "石レンガ", color: 0x616161, type: "block", hardness: 1.8 },
+            { id: 29, name: "ガラス", color: 0xE0F7FA, type: "block", hardness: 0.3, transparent: true },
+            { id: 30, name: "グロウストーン", color: 0xFFF176, type: "block", hardness: 0.5 },
+            { id: 31, name: "本棚", color: 0x8D6E63, type: "block", hardness: 1.0 },
+            { id: 32, name: "羊毛(白)", color: 0xFAFAFA, type: "block", hardness: 0.5 },
+            { id: 33, name: "羊毛(赤)", color: 0xE53935, type: "block", hardness: 0.5 },
+            { id: 34, name: "羊毛(青)", color: 0x1E88E5, type: "block", hardness: 0.5 },
+            { id: 35, name: "作業台", color: 0x6D4C41, type: "block", hardness: 1.2 },
+            { id: 36, name: "かまど", color: 0x546E7A, type: "block", hardness: 2.0 },
+            { id: 37, name: "TNT", color: 0xD32F2F, type: "block", hardness: 0.2, isTnt: true },
+            { id: 38, name: "木のツルハシ", color: 0xA1887F, type: "tool", miningSpeed: 2.0 },
+            { id: 39, name: "ダイヤのツルハシ", color: 0x00E5FF, type: "tool", miningSpeed: 6.0 },
+            { id: 40, name: "焼きリンゴ", color: 0xFF1744, type: "food", heal: 4 }
+        ];
 
-        window.addEventListener('keydown', e => { this.keys[e.code] = true; });
-        window.addEventListener('keyup', e => { this.keys[e.code] = false; });
-        document.addEventListener('mousemove', e => {
-          if (document.pointerLockElement) {
-            this.yaw -= e.movementX * 0.0022;
-            this.pitch = Math.max(-1.5, Math.min(1.5, this.pitch - e.movementY * 0.0022));
-          }
+        // クラフトレシピ定義
+        const RECIPES = [
+            { result: ITEMS[11], count: 4, req: { item: ITEMS[10], count: 1 }, name: "原木からオーク木材×4" },
+            { result: ITEMS[37], count: 1, req: { item: ITEMS[5], count: 4 }, name: "砂×4からTNT×1" },
+            { result: ITEMS[38], count: 1, req: { item: ITEMS[11], count: 2 }, name: "原木2個から木のツルハシ" },
+            { result: ITEMS[39], count: 1, req: { item: ITEMS[25], count: 1 }, name: "ダイヤブロックからダイヤのツルハシ" }
+        ];
+
+        // --- 3. ゲーム状態 & シーン設定 ---
+        let gameMode = "creative";
+        let selectedSlot = 0;
+        let hotbar = Array(9).fill(0).map((_, i) => ({ item: ITEMS[i % ITEMS.length], count: 64 }));
+        let isLocked = false;
+        let health = 10;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.Fog(0x87CEEB, 25, 90);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 6, 12);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        dirLight.position.set(30, 50, 30);
+        scene.add(dirLight);
+
+        const worldBlocks = new Map();
+        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        const materialsCache = new Map();
+
+        function getMaterial(item) {
+            if (!materialsCache.has(item.id)) {
+                materialsCache.set(item.id, new THREE.MeshLambertMaterial({
+                    color: item.color,
+                    transparent: !!item.transparent,
+                    opacity: item.transparent ? 0.8 : 1.0
+                }));
+            }
+            return materialsCache.get(item.id);
+        }
+
+        function addBlock(x, y, z, item) {
+            const key = `${x},${y},${z}`;
+            if (worldBlocks.has(key)) return;
+            const mesh = new THREE.Mesh(boxGeo, getMaterial(item));
+            mesh.position.set(x, y, z);
+            mesh.userData = { item: item, pos: { x, y, z } };
+            scene.add(mesh);
+            worldBlocks.set(key, mesh);
+        }
+
+        function removeBlock(x, y, z) {
+            const key = `${x},${y},${z}`;
+            if (!worldBlocks.has(key)) return null;
+            const mesh = worldBlocks.get(key);
+            scene.remove(mesh);
+            worldBlocks.delete(key);
+            playSound('break');
+            return mesh.userData.item;
+        }
+
+        // --- 4. マップ・ワールド生成 & セーブ読込 ---
+        function generateWorld() {
+            const saved = localStorage.getItem('webcraft_world');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    data.forEach(b => addBlock(b.x, b.y, b.z, ITEMS.find(i => i.id === b.id) || ITEMS[0]));
+                    return;
+                } catch (e) { console.error(e); }
+            }
+            // 初期地形生成
+            for (let x = -16; x <= 16; x++) {
+                for (let z = -16; z <= 16; z++) {
+                    const h = Math.floor(Math.sin(x * 0.2) * Math.cos(z * 0.2) * 2);
+                    addBlock(x, h, z, ITEMS[0]);
+                    addBlock(x, h - 1, z, ITEMS[1]);
+                    addBlock(x, h - 2, z, ITEMS[2]);
+                }
+            }
+        }
+        generateWorld();
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'F5') {
+                e.preventDefault();
+                saveWorld();
+            }
         });
-      }
-      setup() {
-        this.inventory = new Array(36).fill(null);
-        [1, 3, 5, 8, 15, 21, 25].forEach((id, i) => { this.inventory[i] = { id, count: 64 }; });
-      }
-      getHeld() { return this.inventory[this.selectedSlot]; }
-      spawn() { this.position.set(8, 26, 8); this.velocity.set(0,0,0); }
-      collides(pos) {
-        const minX = Math.floor(pos.x - 0.25), maxX = Math.floor(pos.x + 0.25);
-        const minY = Math.floor(pos.y), maxY = Math.floor(pos.y + 1.6);
-        const minZ = Math.floor(pos.z - 0.25), maxZ = Math.floor(pos.z + 0.25);
-        for (let x = minX; x <= maxX; x++) {
-          for (let y = minY; y <= maxY; y++) {
-            for (let z = minZ; z <= maxZ; z++) {
-              if (this.world.getBlock(x,y,z) !== 0) return true;
+
+        function saveWorld() {
+            const blocksArr = [];
+            worldBlocks.forEach((mesh, key) => {
+                blocksArr.push({ x: mesh.userData.pos.x, y: mesh.userData.pos.y, z: mesh.userData.pos.z, id: mesh.userData.item.id });
+            });
+            localStorage.setItem('webcraft_world', JSON.stringify(blocksArr));
+            alert('ワールドをブラウザにセーブしました！');
+        }
+
+        // --- 5. モブ（生物）システム ---
+        const mobs = [];
+
+        class Mob {
+            constructor(type, x, y, z) {
+                this.type = type; // 'pig' or 'zombie'
+                const group = new THREE.Group();
+
+                // 体
+                const bodyMat = new THREE.MeshLambertMaterial({ color: type === 'pig' ? 0xF48FB1 : 0x388E3C });
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 1.2), bodyMat);
+                body.position.y = 0.5;
+                group.add(body);
+
+                // 頭
+                const head = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.6), bodyMat);
+                head.position.set(0, 0.9, type === 'pig' ? 0.7 : 0.5);
+                group.add(head);
+
+                group.position.set(x, y, z);
+                scene.add(group);
+                this.mesh = group;
+                this.velocity = new THREE.Vector3((Math.random() - 0.5) * 2, 0, (Math.random() - 0.5) * 2).normalize().multiplyScalar(1.5);
+                this.changeDirTimer = 0;
             }
-          }
-        }
-        return false;
-      }
-      update(dt, moveDir) {
-        let f = (this.keys['KeyW']?1:0) + (this.keys['KeyS']?-1:0) + moveDir.z;
-        let s = (this.keys['KeyD']?1:0) + (this.keys['KeyA']?-1:0) + moveDir.x;
-        if ((this.keys['Space'] || moveDir.jump) && this.onGround) {
-          this.velocity.y = 7.6; this.onGround = false;
-        }
 
-        const sin = Math.sin(this.yaw), cos = Math.cos(this.yaw);
-        let mx = -sin * f + cos * s, mz = -cos * f - sin * s;
-        const len = Math.hypot(mx, mz);
-        if (len > 1) { mx /= len; mz /= len; }
+            update(delta, playerPos) {
+                this.changeDirTimer += delta;
+                if (this.changeDirTimer > 3) {
+                    this.changeDirTimer = 0;
+                    if (this.type === 'pig') {
+                        this.velocity.set((Math.random() - 0.5) * 2, 0, (Math.random() - 0.5) * 2).normalize().multiplyScalar(1.5);
+                    }
+                }
 
-        const nx = this.position.clone(); nx.x += mx * 5.3 * dt;
-        if (!this.collides(nx)) this.position.x = nx.x;
-        const nz = this.position.clone(); nz.z += mz * 5.3 * dt;
-        if (!this.collides(nz)) this.position.z = nz.z;
+                if (this.type === 'zombie') {
+                    // ゾンビはプレイヤーを追いかける
+                    const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position);
+                    dir.y = 0;
+                    if (dir.length() < 15 && dir.length() > 1.2) {
+                        dir.normalize().multiplyScalar(2.2);
+                        this.velocity.copy(dir);
+                    } else {
+                        this.velocity.set(0, 0, 0);
+                    }
+                }
 
-        this.velocity.y -= 20 * dt;
-        const ny = this.position.clone(); ny.y += this.velocity.y * dt;
-        if (this.collides(ny)) {
-          if (this.velocity.y < 0) this.onGround = true;
-          this.velocity.y = 0;
-        } else {
-          this.position.y = ny.y; this.onGround = false;
-        }
-
-        this.camera.position.set(this.position.x, this.position.y + 1.5, this.position.z);
-        this.camera.quaternion.setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
-      }
-    }
-
-    // --- MAIN APP ---
-    const container = document.getElementById('game-container');
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.Fog(0x87ceeb, 20, 60);
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-    const renderer = new THREE.WebGLRenderer({ antialias: false });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(30, 60, 30);
-    scene.add(dirLight);
-
-    const world = new World(scene);
-    const player = new Player(camera, world);
-
-    let gameState = 'HOME';
-    let touchMove = { x: 0, z: 0, jump: false };
-
-    // 画面遷移
-    function showScreen(id) {
-      ['home-screen', 'world-select-screen', 'world-create-screen', 'gameplay-hud', 'inventory-modal']
-        .forEach(s => document.getElementById(s).classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    // ワールド選択リスト
-    function renderWorlds() {
-      const list = document.getElementById('world-list');
-      const worlds = JSON.parse(localStorage.getItem('webcraft_v5') || '[]');
-      list.innerHTML = worlds.length === 0 ? '<div style="color:#aaa;text-align:center;padding:30px;">ワールドなし</div>' : '';
-      worlds.forEach(w => {
-        const div = document.createElement('div');
-        div.className = 'world-item';
-        div.innerHTML = `<div><strong>${w.name}</strong></div>`;
-        div.onclick = () => {
-          document.querySelectorAll('.world-item').forEach(i=>i.style.background='');
-          div.style.background = '#555'; window.selectedWorld = w;
-          document.getElementById('btn-play-selected').disabled = false;
-          document.getElementById('btn-delete-world').disabled = false;
-        };
-        list.appendChild(div);
-      });
-    }
-
-    function startWorld(w) {
-      world.clear();
-      world.generate(0, 0, w.seed);
-      world.generate(1, 0, w.seed);
-      world.generate(0, 1, w.seed);
-      world.generate(-1, 0, w.seed);
-      player.setup(); player.spawn();
-      renderHotbar();
-      gameState = 'PLAYING';
-      showScreen('gameplay-hud');
-      try { renderer.domElement.requestPointerLock(); } catch {}
-    }
-
-    document.getElementById('btn-goto-worlds').onclick = () => { renderWorlds(); showScreen('world-select-screen'); };
-    document.getElementById('btn-goto-create').onclick = () => startWorld({ name: 'さくっとワールド', seed: 123 });
-    document.getElementById('btn-goto-create2').onclick = () => showScreen('world-create-screen');
-    document.getElementById('btn-back-home1').onclick = () => showScreen('home-screen');
-    document.getElementById('btn-back-home3').onclick = () => showScreen('home-screen');
-    document.getElementById('btn-create-start').onclick = () => {
-      const name = document.getElementById('input-world-name').value || '大爆破の世界';
-      const w = { name, seed: Math.floor(Math.random()*9999) };
-      const list = JSON.parse(localStorage.getItem('webcraft_v5') || '[]');
-      list.unshift(w); localStorage.setItem('webcraft_v5', JSON.stringify(list));
-      startWorld(w);
-    };
-    document.getElementById('btn-play-selected').onclick = () => { if(window.selectedWorld) startWorld(window.selectedWorld); };
-    document.getElementById('btn-delete-world').onclick = () => {
-      if(!window.selectedWorld) return;
-      let list = JSON.parse(localStorage.getItem('webcraft_v5') || '[]');
-      list = list.filter(w => w.name !== window.selectedWorld.name);
-      localStorage.setItem('webcraft_v5', JSON.stringify(list));
-      renderWorlds();
-    };
-
-    // ホットバー描画
-    function renderHotbar() {
-      const hb = document.getElementById('hotbar'); hb.innerHTML = '';
-      for (let i = 0; i < 9; i++) {
-        const item = player.inventory[i];
-        const el = document.createElement('div');
-        el.className = 'mc-slot' + (i === player.selectedSlot ? ' active' : '');
-        if (item && ITEMS[item.id]) {
-          const c = document.createElement('canvas'); c.width = 16; c.height = 16;
-          c.getContext('2d').drawImage(textures[item.id], 0, 0);
-          el.appendChild(c);
-          if (item.count > 1) {
-            const cnt = document.createElement('span'); cnt.className = 'slot-count'; cnt.textContent = item.count; el.appendChild(cnt);
-          }
-        }
-        el.onclick = () => { player.selectedSlot = i; renderHotbar(); };
-        hb.appendChild(el);
-      }
-      const held = player.getHeld();
-      document.getElementById('held-item-name').textContent = held ? ITEMS[held.id].name : '';
-    }
-
-    // インベントリ開閉
-    document.getElementById('btn-open-inv').onclick = () => {
-      gameState = 'INV'; if (document.pointerLockElement) document.exitPointerLock();
-      showScreen('inventory-modal');
-      const grid = document.getElementById('inv-storage-grid'); grid.innerHTML = '';
-      Object.values(ITEMS).forEach((def, idx) => {
-        const slot = document.createElement('div'); slot.className = 'mc-slot';
-        const c = document.createElement('canvas'); c.width = 16; c.height = 16;
-        c.getContext('2d').drawImage(textures[def.id], 0, 0);
-        slot.appendChild(c);
-        slot.onclick = () => {
-          player.inventory[player.selectedSlot] = { id: def.id, count: 64 };
-          renderHotbar(); gameState = 'PLAYING'; showScreen('gameplay-hud');
-          try { renderer.domElement.requestPointerLock(); } catch {}
-        };
-        grid.appendChild(slot);
-      });
-      const hg = document.getElementById('inv-hotbar-grid'); hg.innerHTML = '';
-      for(let i=0; i<9; i++) hg.appendChild(document.createElement('div')).className = 'mc-slot';
-    };
-    document.getElementById('btn-close-inv').onclick = () => {
-      gameState = 'PLAYING'; showScreen('gameplay-hud');
-      try { renderer.domElement.requestPointerLock(); } catch {}
-    };
-
-    // --- クリック/タップでのブロック破壊・設置・TNT起爆 ---
-    window.addEventListener('mousedown', (e) => {
-      if (gameState !== 'PLAYING') return;
-      const ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2(0,0), camera);
-      const hits = ray.intersectObjects(world.getMeshArray());
-      if (hits.length === 0) return;
-      const hit = hits[0];
-      const { x, y, z } = hit.object.userData;
-
-      if (e.button === 0) {
-        // 破壊
-        world.setBlock(x, y, z, 0);
-      } else if (e.button === 2) {
-        // 設置 ＆ TNT爆発チェック
-        const normal = hit.face.normal;
-        const nx = x + Math.round(normal.x), ny = y + Math.round(normal.y), nz = z + Math.round(normal.z);
-        const held = player.getHeld();
-        if (!held) return;
-
-        if (ITEMS[held.id].isTnt) {
-          // 💥 TNT爆弾が置かれたら、周囲3マスを豪快に吹っ飛ばす！
-          world.setBlock(nx, ny, nz, 0);
-          for (let bx = -2; bx <= 2; bx++) {
-            for (let by = -2; by <= 2; by++) {
-              for (let bz = -2; bz <= 2; bz++) {
-                world.setBlock(nx + bx, ny + by, nz + bz, 0);
-              }
+                this.mesh.position.x += this.velocity.x * delta;
+                this.mesh.position.z += this.velocity.z * delta;
+                if (this.velocity.length() > 0.1) {
+                    this.mesh.rotation.y = Math.atan2(this.velocity.x, this.velocity.z);
+                }
             }
-          }
-        } else {
-          world.setBlock(nx, ny, nz, held.id);
         }
-      }
-    });
-    window.addEventListener('contextmenu', e => e.preventDefault());
 
-    // --- スマホ用バーチャルパッドの操作ロジック ---
-    const zone = document.getElementById('joystick-zone');
-    const thumb = document.getElementById('joystick-thumb');
-    let touchId = null;
-
-    zone.addEventListener('touchstart', e => {
-      e.preventDefault();
-      if (touchId === null) {
-        const t = e.changedTouches[0]; touchId = t.identifier;
-        updateStick(t);
-      }
-    });
-    zone.addEventListener('touchmove', e => {
-      e.preventDefault();
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        const t = e.changedTouches[i];
-        if (t.identifier === touchId) updateStick(t);
-      }
-    });
-    function endTouch(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchId) {
-          touchId = null; touchMove.x = 0; touchMove.z = 0;
-          thumb.style.transform = `translate(0px, 0px)`;
+        // 初期モブ配置
+        for (let i = 0; i < 4; i++) {
+            mobs.push(new Mob('pig', (Math.random() - 0.5) * 20, 2, (Math.random() - 0.5) * 20));
+            mobs.push(new Mob('zombie', (Math.random() - 0.5) * 20, 2, (Math.random() - 0.5) * 20));
         }
-      }
-    }
-    zone.addEventListener('touchend', endTouch);
-    zone.addEventListener('touchcancel', endTouch);
 
-    function updateStick(t) {
-      const rect = zone.getBoundingClientRect();
-      const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
-      let dx = t.clientX - cx, dy = t.clientY - cy;
-      const dist = Math.hypot(dx, dy), maxD = 40;
-      if (dist > maxD) { dx = (dx/dist)*maxD; dy = (dy/dist)*maxD; }
-      thumb.style.transform = `translate(${dx}px, ${dy}px)`;
-      touchMove.x = dx / maxD; touchMove.z = -dy / maxD;
-    }
+        // --- 6. プレイヤー操作・物理演算 ---
+        let velocity = new THREE.Vector3();
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let canJump = false, isFlying = false, lastSpaceTime = 0;
+        let pitch = 0, yaw = 0;
 
-    document.getElementById('btn-touch-jump').ontouchstart = () => { touchMove.jump = true; };
-    document.getElementById('btn-touch-jump').ontouchend = () => { touchMove.jump = false; };
-    document.getElementById('btn-touch-action').onclick = () => {
-      // スマホでボタンを押したら目の前のブロックを破壊
-      const ray = new THREE.Raycaster(); ray.setFromCamera(new THREE.Vector2(0,0), camera);
-      const hits = ray.intersectObjects(world.getMeshArray());
-      if (hits.length > 0) {
-        const { x, y, z } = hits[0].object.userData;
-        world.setBlock(x, y, z, 0);
-      }
-    };
+        const blocker = document.getElementById('blocker');
+        blocker.querySelector('.btn').addEventListener('click', () => {
+            document.body.requestPointerLock();
+        });
 
-    // --- メインループ ---
-    let lastTime = performance.now();
-    function animate(now) {
-      requestAnimationFrame(animate);
-      const dt = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
+        document.addEventListener('pointerlockchange', () => {
+            isLocked = document.pointerLockElement === document.body;
+            blocker.style.display = isLocked ? 'none' : 'flex';
+        });
 
-      if (gameState === 'PLAYING') {
-        player.update(dt, touchMove);
-        world.generate(Math.floor(player.position.x/16), Math.floor(player.position.z/16), 123);
-        document.getElementById('coords').textContent = `XYZ: ${Math.floor(player.position.x)} / ${Math.floor(player.position.y)} / ${Math.floor(player.position.z)}`;
-      }
-      renderer.render(scene, camera);
-    }
-    animate(lastTime);
-  </script>
+        document.addEventListener('mousemove', (e) => {
+            if (!isLocked) return;
+            yaw -= e.movementX * 0.002;
+            pitch -= e.movementY * 0.002;
+            pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, pitch));
+            camera.rotation.order = 'YXZ';
+            camera.rotation.y = yaw;
+            camera.rotation.x = pitch;
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'KeyE') { toggleModal('inventory-modal'); return; }
+            if (e.code === 'KeyC') { toggleModal('crafting-modal'); return; }
+            if (e.code === 'KeyM') { toggleGameMode(); return; }
+            if (!isLocked) return;
+
+            switch (e.code) {
+                case 'KeyW': moveForward = true; break;
+                case 'KeyS': moveBackward = true; break;
+                case 'KeyA': moveLeft = true; break;
+                case 'KeyD': moveRight = true; break;
+                case 'Space':
+                    const now = performance.now();
+                    if (gameMode === 'creative' && now - lastSpaceTime < 300) {
+                        isFlying = !isFlying; velocity.y = 0;
+                    } else if (isFlying) { velocity.y = 6; }
+                    else if (canJump) { velocity.y = 7.5; canJump = false; }
+                    lastSpaceTime = now;
+                    break;
+                case 'ShiftLeft': if (isFlying) velocity.y = -6; break;
+            }
+            if (e.key >= '1' && e.key <= '9') { selectedSlot = parseInt(e.key) - 1; updateUI(); }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            switch (e.code) {
+                case 'KeyW': moveForward = false; break;
+                case 'KeyS': moveBackward = false; break;
+                case 'KeyA': moveLeft = false; break;
+                case 'KeyD': moveRight = false; break;
+                case 'Space': case 'ShiftLeft': if (isFlying) velocity.y = 0; break;
+            }
+        });
+
+        function toggleGameMode() {
+            gameMode = gameMode === 'creative' ? 'survival' : 'creative';
+            if (gameMode === 'survival') isFlying = false;
+            const modeEl = document.getElementById('mode-display');
+            modeEl.textContent = gameMode === 'creative' ? 'クリエイティブ' : 'サバイバル';
+            modeEl.style.color = gameMode === 'creative' ? '#4CAF50' : '#FF9800';
+            document.getElementById('health-display').style.display = gameMode === 'survival' ? 'block' : 'none';
+            updateUI();
+        }
+
+        // --- 7. インベントリ・クラフト画面のUI処理 ---
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            const isOpen = modal.style.display === 'block';
+            modal.style.display = isOpen ? 'none' : 'block';
+            if (!isOpen) {
+                document.exitPointerLock();
+            } else {
+                document.body.requestPointerLock();
+            }
+        }
+
+        function updateUI() {
+            const hotbarEl = document.getElementById('hotbar');
+            hotbarEl.innerHTML = '';
+            hotbar.forEach((slot, idx) => {
+                const div = document.createElement('div');
+                div.className = 'slot' + (idx === selectedSlot ? ' active' : '');
+                const hexColor = '#' + slot.item.color.toString(16).padStart(6, '0');
+                div.innerHTML = `
+                    <div class="slot-color" style="background:${hexColor};"></div>
+                    <div style="font-size:9px; overflow:hidden; white-space:nowrap; width:44px;">${slot.item.name}</div>
+                    <div class="slot-count">${gameMode === 'creative' ? '∞' : slot.count}</div>
+                `;
+                div.onclick = () => { selectedSlot = idx; updateUI(); };
+                hotbarEl.appendChild(div);
+            });
+            document.getElementById('selected-item-name').textContent = hotbar[selectedSlot].item.name;
+            document.getElementById('mob-count').textContent = mobs.length;
+        }
+
+        function initModals() {
+            const invGrid = document.getElementById('inventory-grid');
+            ITEMS.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'slot';
+                div.style.width = '56px'; div.style.height = '56px';
+                div.innerHTML = `<div class="slot-color" style="background:#${item.color.toString(16).padStart(6,'0')}"></div><div style="font-size:9px;">${item.name}</div>`;
+                div.onclick = () => { hotbar[selectedSlot] = { item: item, count: 64 }; updateUI(); toggleModal('inventory-modal'); };
+                invGrid.appendChild(div);
+            });
+
+            const craftList = document.getElementById('crafting-list');
+            RECIPES.forEach(rec => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.textContent = `${rec.name} (必要: ${rec.req.count}個)`;
+                btn.onclick = () => {
+                    const slot = hotbar[selectedSlot];
+                    if (gameMode === 'survival' && slot.item.id !== rec.req.item.id || slot.count < rec.req.count) {
+                        alert('素材が足りません！');
+                        return;
+                    }
+                    if (gameMode === 'survival') slot.count -= rec.req.count;
+                    hotbar[selectedSlot] = { item: rec.result, count: rec.count };
+                    updateUI();
+                    alert(`${rec.result.name}を作成しました！`);
+                };
+                craftList.appendChild(btn);
+            });
+        }
+
+        // --- 8. ブロック破壊・配置・TNT爆発 ---
+        const raycaster = new THREE.Raycaster();
+        raycaster.far = 6;
+        let isMouseDown = false, miningProgress = 0;
+
+        document.addEventListener('mousedown', (e) => {
+            if (!isLocked) return;
+            if (e.button === 0) { isMouseDown = true; miningProgress = 0; }
+            else if (e.button === 2) { handleRightClick(); }
+        });
+        document.addEventListener('mouseup', (e) => { if (e.button === 0) { isMouseDown = false; miningProgress = 0; document.getElementById('mining-bar-container').style.display = 'none'; } });
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        function getTargetIntersect() {
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const meshes = Array.from(worldBlocks.values());
+            const intersects = raycaster.intersectObjects(meshes);
+            return intersects.length > 0 ? intersects[0] : null;
+        }
+
+        function handleRightClick() {
+            const slot = hotbar[selectedSlot];
+            if (!slot || slot.count <= 0) return;
+
+            if (slot.item.type === 'food') {
+                if (gameMode === 'survival') { slot.count--; updateUI(); }
+                return;
+            }
+            if (slot.item.type !== 'block') return;
+
+            const hit = getTargetIntersect();
+            if (!hit) return;
+
+            const pos = hit.object.position.clone().add(hit.face.normal);
+            addBlock(Math.round(pos.x), Math.round(pos.y), Math.round(pos.z), slot.item);
+            playSound('place');
+
+            // TNT設置時の爆発連動
+            if (slot.item.isTnt) {
+                const tntPos = pos.clone();
+                setTimeout(() => {
+                    playSound('explosion');
+                    for (let x = -2; x <= 2; x++) {
+                        for (let y = -2; y <= 2; y++) {
+                            for (let z = -2; z <= 2; z++) {
+                                removeBlock(Math.round(tntPos.x + x), Math.round(tntPos.y + y), Math.round(tntPos.z + z));
+                            }
+                        }
+                    }
+                }, 2000);
+            }
+
+            if (gameMode === 'survival') { slot.count--; updateUI(); }
+        }
+
+        // --- 9. メインループ（物理・モブ移動） ---
+        let prevTime = performance.now();
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = performance.now();
+            const delta = Math.min((time - prevTime) / 1000, 0.1);
+            prevTime = time;
+
+            if (isLocked) {
+                const speed = isFlying ? 10.0 : 5.5;
+                const forward = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+                const right = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+
+                velocity.x = 0; velocity.z = 0;
+                if (moveForward) { velocity.x += forward.x * speed; velocity.z += forward.z * speed; }
+                if (moveBackward) { velocity.x -= forward.x * speed; velocity.z -= forward.z * speed; }
+                if (moveRight) { velocity.x += right.x * speed; velocity.z += right.z * speed; }
+                if (moveLeft) { velocity.x -= right.x * speed; velocity.z -= right.z * speed; }
+
+                if (!isFlying) velocity.y -= 20.0 * delta;
+
+                camera.position.x += velocity.x * delta;
+                if (checkCollision(camera.position)) camera.position.x -= velocity.x * delta;
+                camera.position.z += velocity.z * delta;
+                if (checkCollision(camera.position)) camera.position.z -= velocity.z * delta;
+                camera.position.y += velocity.y * delta;
+                if (checkCollision(camera.position)) { if (velocity.y < 0) canJump = true; camera.position.y -= velocity.y * delta; velocity.y = 0; }
+
+                // モブ更新
+                mobs.forEach(mob => mob.update(delta, camera.position));
+
+                // 採掘処理
+                if (isMouseDown) {
+                    const hit = getTargetIntersect();
+                    if (hit) {
+                        const pos = hit.object.userData.pos;
+                        const blockItem = hit.object.userData.item;
+                        if (gameMode === 'creative') {
+                            removeBlock(pos.x, pos.y, pos.z);
+                            isMouseDown = false;
+                        } else {
+                            const reqTime = (blockItem.hardness || 1.0) / (hotbar[selectedSlot].item.miningSpeed || 1.0);
+                            miningProgress += delta;
+                            const barCont = document.getElementById('mining-bar-container');
+                            barCont.style.display = 'block';
+                            document.getElementById('mining-bar').style.width = Math.min((miningProgress / reqTime) * 100, 100) + '%';
+
+                            if (miningProgress >= reqTime) {
+                                removeBlock(pos.x, pos.y, pos.z);
+                                miningProgress = 0;
+                                barCont.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function checkCollision(pos) {
+            const minX = Math.floor(pos.x - 0.3), maxX = Math.floor(pos.x + 0.3);
+            const minY = Math.floor(pos.y - 1.5), maxY = Math.floor(pos.y + 0.2);
+            const minZ = Math.floor(pos.z - 0.3), maxZ = Math.floor(pos.z + 0.3);
+            for (let x = minX; x <= maxX; x++) {
+                for (let y = minY; y <= maxY; y++) {
+                    for (let z = minZ; z <= maxZ; z++) {
+                        if (worldBlocks.has(`${x},${y},${z}`)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.renderer?.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        initModals();
+        updateUI();
+        animate();
+    </script>
 </body>
 </html>

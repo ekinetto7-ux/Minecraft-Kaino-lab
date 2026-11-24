@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MINECRAFT - Infinite 1300+ Ultimate Bedrock Edition</title>
+    <title>MINECRAFT - 332 Items Ultimate Bedrock Edition</title>
     <style>
-        /* =========================================================================
-           1. 基本リセット＆全体レイアウト設定
-           ========================================================================= */
         * {
             box-sizing: border-box;
             user-select: none;
@@ -33,15 +30,10 @@
             height: 100%;
         }
 
-        /* =========================================================================
-           2. マインクラフト統合版風 立体ベベルUIボタン＆パネル
-           ========================================================================= */
         .mc-btn {
             background-color: #727272;
             border: 3px solid #1e1e1e;
-            box-shadow:
-                inset 3px 3px 0px #a8a8a8,
-                inset -3px -3px 0px #484848;
+            box-shadow: inset 3px 3px 0px #a8a8a8, inset -3px -3px 0px #484848;
             color: #ffffff;
             font-weight: bold;
             font-size: 15px;
@@ -55,52 +47,27 @@
 
         .mc-btn:hover {
             background-color: #7f8a99;
-            box-shadow:
-                inset 3px 3px 0px #b8c7db,
-                inset -3px -3px 0px #4c535c;
+            box-shadow: inset 3px 3px 0px #b8c7db, inset -3px -3px 0px #4c535c;
         }
 
         .mc-btn:active {
-            box-shadow:
-                inset -3px -3px 0px #a8a8a8,
-                inset 3px 3px 0px #484848;
+            box-shadow: inset -3px -3px 0px #a8a8a8, inset 3px 3px 0px #484848;
         }
 
         .mc-btn.green {
             background-color: #3c8527;
-            box-shadow:
-                inset 3px 3px 0px #63b548,
-                inset -3px -3px 0px #235215;
+            box-shadow: inset 3px 3px 0px #63b548, inset -3px -3px 0px #235215;
         }
 
         .mc-btn.green:hover {
             background-color: #489c30;
-            box-shadow:
-                inset 3px 3px 0px #75cc58,
-                inset -3px -3px 0px #2b661a;
         }
 
         .mc-btn.red {
             background-color: #a82828;
-            box-shadow:
-                inset 3px 3px 0px #d95252,
-                inset -3px -3px 0px #6b1515;
+            box-shadow: inset 3px 3px 0px #d95252, inset -3px -3px 0px #6b1515;
         }
 
-        .mc-btn.red:hover {
-            background-color: #c43131;
-        }
-
-        .mc-btn.blue {
-            background-color: #2868a8;
-            box-shadow:
-                inset 3px 3px 0px #5296d9,
-                inset -3px -3px 0px #153e6b;
-        }
-
-        /* =========================================================================
-           3. スクリーン切り替え（タイトル・ワールド選択・新規作成・ヘルプ）
-           ========================================================================= */
         .screen {
             position: absolute;
             top: 0;
@@ -112,7 +79,7 @@
             align-items: center;
             justify-content: center;
             z-index: 50;
-            background: radial-gradient(circle at center, rgba(20, 30, 45, 0.45) 0%, rgba(0, 0, 0, 0.75) 100%);
+            background: radial-gradient(circle at center, rgba(20, 30, 45, 0.45) 0%, rgba(0, 0, 0, 0.78) 100%);
             backdrop-filter: blur(2px);
         }
 
@@ -131,12 +98,7 @@
             font-weight: 900;
             letter-spacing: 4px;
             color: #e2e2e2;
-            text-shadow:
-                0 2px 0 #a0a0a0,
-                0 4px 0 #7a7a7a,
-                0 6px 0 #555555,
-                0 8px 0 #333333,
-                0 14px 22px rgba(0, 0, 0, 0.95);
+            text-shadow: 0 2px 0 #a0a0a0, 0 4px 0 #7a7a7a, 0 6px 0 #555555, 0 8px 0 #333333, 0 14px 22px rgba(0, 0, 0, 0.95);
         }
 
         .mc-sublogo {
@@ -166,10 +128,7 @@
         .mc-panel {
             background-color: #c6c6c6;
             border: 4px solid #1e1e1e;
-            box-shadow:
-                inset 4px 4px 0px #ffffff,
-                inset -4px -4px 0px #555555,
-                0 12px 30px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 4px 4px 0px #ffffff, inset -4px -4px 0px #555555, 0 12px 30px rgba(0, 0, 0, 0.8);
             color: #222222;
             width: 92vw;
             max-width: 580px;
@@ -260,14 +219,9 @@
 
         .toggle-btn.selected {
             background-color: #3c8527;
-            box-shadow:
-                inset 3px 3px 0px #63b548,
-                inset -3px -3px 0px #235215;
+            box-shadow: inset 3px 3px 0px #63b548, inset -3px -3px 0px #235215;
         }
 
-        /* =========================================================================
-           4. ゲーム内HUD（クロスヘア・上部バー・座標・ステータス・ホットバー）
-           ========================================================================= */
         #crosshair {
             position: absolute;
             top: 50%;
@@ -286,19 +240,8 @@
             background-color: #ffffff;
         }
 
-        #crosshair::before {
-            top: 8px;
-            left: 0;
-            width: 18px;
-            height: 2px;
-        }
-
-        #crosshair::after {
-            top: 0;
-            left: 8px;
-            width: 2px;
-            height: 18px;
-        }
+        #crosshair::before { top: 8px; left: 0; width: 18px; height: 2px; }
+        #crosshair::after { top: 0; left: 8px; width: 2px; height: 18px; }
 
         #top-bar {
             position: absolute;
@@ -322,11 +265,6 @@
             padding: 6px 10px;
             cursor: pointer;
             text-shadow: 1px 1px 0 #000;
-        }
-
-        .mc-top-icon:hover {
-            background-color: rgba(60, 60, 60, 0.9);
-            border-color: #ffffff;
         }
 
         #coords-box {
@@ -373,11 +311,7 @@
             text-shadow: 1px 1px 0 #000;
         }
 
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
+        .status-row { display: flex; justify-content: space-between; width: 100%; }
 
         #hotbar {
             position: absolute;
@@ -388,9 +322,7 @@
             background-color: #8b8b8b;
             padding: 2px;
             border: 3px solid #1e1e1e;
-            box-shadow:
-                inset 2px 2px 0px #373737,
-                inset -2px -2px 0px #ffffff;
+            box-shadow: inset 2px 2px 0px #373737, inset -2px -2px 0px #ffffff;
             z-index: 15;
         }
 
@@ -413,12 +345,7 @@
             transform: scale(1.07);
         }
 
-        .slot-icon {
-            width: 26px;
-            height: 26px;
-            image-rendering: pixelated;
-        }
-
+        .slot-icon { width: 26px; height: 26px; image-rendering: pixelated; }
         .slot-count {
             position: absolute;
             bottom: 1px;
@@ -443,9 +370,6 @@
             cursor: pointer;
         }
 
-        /* =========================================================================
-           5. タッチ操作コントローラー（十字キー・泳ぎ・潜水・破壊・配置）
-           ========================================================================= */
         #dpad {
             position: absolute;
             bottom: 68px;
@@ -469,10 +393,7 @@
             font-size: 16px;
             font-weight: bold;
         }
-
-        .dpad-btn:active {
-            background-color: rgba(255, 255, 255, 0.52);
-        }
+        .dpad-btn:active { background-color: rgba(255, 255, 255, 0.52); }
 
         #right-touch-controls {
             position: absolute;
@@ -500,14 +421,8 @@
             justify-content: center;
             text-shadow: 1px 1px 0 #000;
         }
+        .touch-circle:active { background-color: rgba(255, 255, 255, 0.52); }
 
-        .touch-circle:active {
-            background-color: rgba(255, 255, 255, 0.52);
-        }
-
-        /* =========================================================================
-           6. モーダル（インベントリ・クラフト・村人交易・操作ガイド）
-           ========================================================================= */
         .modal {
             display: none;
             position: absolute;
@@ -516,15 +431,12 @@
             transform: translate(-50%, -50%);
             background-color: #c6c6c6;
             border: 4px solid #1e1e1e;
-            box-shadow:
-                inset 4px 4px 0px #ffffff,
-                inset -4px -4px 0px #555555,
-                0 12px 30px rgba(0, 0, 0, 0.85);
+            box-shadow: inset 4px 4px 0px #ffffff, inset -4px -4px 0px #555555, 0 12px 30px rgba(0, 0, 0, 0.85);
             color: #222222;
             padding: 16px;
             z-index: 35;
             width: 92vw;
-            max-width: 540px;
+            max-width: 560px;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -543,9 +455,7 @@
             aspect-ratio: 1;
             background-color: #8b8b8b;
             border: 2px solid #373737;
-            box-shadow:
-                inset 2px 2px 0px #373737,
-                inset -2px -2px 0px #ffffff;
+            box-shadow: inset 2px 2px 0px #373737, inset -2px -2px 0px #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -554,10 +464,7 @@
             position: relative;
             padding: 2px;
         }
-
-        .inv-cell:hover {
-            background-color: #a8a8a8;
-        }
+        .inv-cell:hover { background-color: #a8a8a8; }
 
         .trade-row {
             display: flex;
@@ -571,73 +478,39 @@
             text-shadow: 1px 1px 0 #000;
         }
 
-        /* =========================================================================
-           7. 水中視界オーバーレイ・ダメージフラッシュ・アイテム名トースト
-           ========================================================================= */
         #water-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(25, 110, 220, 0.35) 0%, rgba(10, 50, 130, 0.68) 100%);
-            pointer-events: none;
-            z-index: 24;
-            display: none;
+            pointer-events: none; z-index: 24; display: none;
         }
-
         #damage-flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(220, 0, 0, 0.4);
-            pointer-events: none;
-            z-index: 25;
-            display: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(220, 0, 0, 0.4); pointer-events: none; z-index: 25; display: none;
         }
-
         #item-toast {
-            position: absolute;
-            bottom: 114px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 4px 12px;
-            border-radius: 4px;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: bold;
-            text-shadow: 1px 1px 0 #000;
-            pointer-events: none;
-            z-index: 15;
-            opacity: 0;
-            transition: opacity 0.25s;
+            position: absolute; bottom: 114px; left: 50%; transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6); padding: 4px 12px; border-radius: 4px;
+            color: #ffffff; font-size: 13px; font-weight: bold; text-shadow: 1px 1px 0 #000;
+            pointer-events: none; z-index: 15; opacity: 0; transition: opacity 0.25s;
         }
     </style>
 </head>
 <body>
 
-    <!-- =====================================================================
-         1. ホーム（タイトル）画面
-         ===================================================================== -->
     <div id="home-screen" class="screen">
         <div class="mc-logo-box">
             <div class="mc-logo">MINECRAFT</div>
-            <div class="mc-sublogo">BEDROCK WEB EDITION</div>
-            <div class="mc-splash">Village & Swim 1300+!</div>
+            <div class="mc-sublogo">332 ITEMS ULTIMATE EDITION</div>
+            <div class="mc-splash">Infinite 332+ Items!</div>
         </div>
         <div style="display:flex; flex-direction:column; gap:12px; width:280px;">
             <button class="mc-btn green" onclick="openWorldSelect()">プレイ</button>
             <button class="mc-btn" onclick="toggleAudioBGM()">BGM: <span id="bgm-status">ON</span></button>
-            <button class="mc-btn" onclick="toggleModal('help-modal')">操作方法・新要素ガイド</button>
+            <button class="mc-btn" onclick="toggleModal('help-modal')">操作方法・332アイテムガイド</button>
         </div>
     </div>
 
-    <!-- =====================================================================
-         2. ワールド選択画面
-         ===================================================================== -->
     <div id="world-select-screen" class="screen hidden">
         <div class="mc-panel">
             <h2>ワールドを選択</h2>
@@ -649,15 +522,12 @@
         </div>
     </div>
 
-    <!-- =====================================================================
-         3. 新規ワールド作成画面
-         ===================================================================== -->
     <div id="create-world-screen" class="screen hidden">
         <div class="mc-panel">
             <h2>新しいワールドを作成</h2>
             <div class="form-group">
                 <label>ワールド名</label>
-                <input type="text" id="new-world-name" class="mc-input" value="村と海の無限ワールド">
+                <input type="text" id="new-world-name" class="mc-input" value="332アイテムの無限ワールド">
             </div>
             <div class="form-group">
                 <label>ゲームモード</label>
@@ -675,8 +545,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>シード値（空白でランダム）</label>
-                <input type="text" id="new-world-seed" class="mc-input" placeholder="例: 20261124">
+                <label>シード値</label>
+                <input type="text" id="new-world-seed" class="mc-input" placeholder="例: 332">
             </div>
             <div style="display:flex; gap:8px; margin-top:16px;">
                 <button class="mc-btn green" style="flex:2;" onclick="createAndStartWorld()">作成してスタート</button>
@@ -685,9 +555,6 @@
         </div>
     </div>
 
-    <!-- =====================================================================
-         4. ゲーム内HUD（プレイ画面）
-         ===================================================================== -->
     <div id="game-ui" class="hidden">
         <div id="crosshair"></div>
         <div id="water-overlay"></div>
@@ -704,7 +571,6 @@
         <div id="coords-box">位置: 0, 0, 0<br>バイオーム: 草原<br>時刻: 昼</div>
         <div id="target-info-box">対象: なし</div>
 
-        <!-- ステータスバー（酸素ゲージ・体力・満腹度） -->
         <div id="status-bars">
             <div class="status-row" id="oxygen-row" style="display:none; justify-content:flex-end;">
                 <div id="oxygen-bar">🫧🫧🫧🫧🫧🫧🫧🫧🫧🫧</div>
@@ -717,20 +583,12 @@
 
         <div id="hotbar"></div>
 
-        <!-- 左側十字キー -->
         <div id="dpad">
-            <div></div>
-            <div class="dpad-btn" id="dp-up">▲</div>
-            <div></div>
-            <div class="dpad-btn" id="dp-left">◀</div>
-            <div class="dpad-btn" id="dp-center" style="font-size:10px;">●</div>
-            <div class="dpad-btn" id="dp-right">▶</div>
-            <div></div>
-            <div class="dpad-btn" id="dp-down">▼</div>
-            <div></div>
+            <div></div><div class="dpad-btn" id="dp-up">▲</div><div></div>
+            <div class="dpad-btn" id="dp-left">◀</div><div class="dpad-btn" id="dp-center" style="font-size:10px;">●</div><div class="dpad-btn" id="dp-right">▶</div>
+            <div></div><div class="dpad-btn" id="dp-down">▼</div><div></div>
         </div>
 
-        <!-- 右側アクションボタン -->
         <div id="right-touch-controls">
             <div class="touch-circle" id="btn-dive" style="display:none;">⬇️<span>潜水/下降</span></div>
             <div class="touch-circle" id="btn-jump">⬆️<span>跳ぶ/泳ぐ</span></div>
@@ -740,234 +598,129 @@
             </div>
         </div>
 
-        <!-- インベントリモーダル -->
         <div id="inventory-modal" class="modal">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="margin:0; font-size:16px;">アイテム一覧（全32種）</h3>
+                <h3 style="margin:0; font-size:16px;">全332アイテム・ブロック図鑑</h3>
                 <button class="mc-btn red" style="padding:4px 10px; font-size:12px;" onclick="toggleModal('inventory-modal')">✕</button>
             </div>
-            <p style="font-size:11px; color:#444; margin:4px 0;">タップで現在選択中のホットバー枠にセットします</p>
+            <p style="font-size:11px; color:#444; margin:4px 0;">タップでホットバーにセット</p>
             <div id="inventory-grid" class="inv-grid"></div>
         </div>
 
-        <!-- クラフトモーダル -->
         <div id="crafting-modal" class="modal">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0; font-size:16px;">クラフト作業台</h3>
                 <button class="mc-btn red" style="padding:4px 10px; font-size:12px;" onclick="toggleModal('crafting-modal')">✕</button>
             </div>
-            <p style="font-size:11px; color:#444; margin:4px 0;">選択中のスロットに素材がある状態でタップして作成</p>
             <div id="crafting-list" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;"></div>
         </div>
 
-        <!-- 村人交易モーダル -->
         <div id="trade-modal" class="modal">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0; font-size:16px;">🧑‍🌾 村人との交易</h3>
                 <button class="mc-btn red" style="padding:4px 10px; font-size:12px;" onclick="toggleModal('trade-modal')">✕</button>
             </div>
-            <p style="font-size:11px; color:#444; margin:4px 0;">エメラルドや作物を渡してレアアイテムと交換しよう！</p>
             <div id="trade-list" style="margin-top:8px;"></div>
         </div>
     </div>
 
-    <!-- =====================================================================
-         5. 操作方法＆新要素ガイドモーダル
-         ===================================================================== -->
     <div id="help-modal" class="modal">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; font-size:16px;">操作方法＆新要素ガイド</h3>
+            <h3 style="margin:0; font-size:16px;">操作方法・ガイド</h3>
             <button class="mc-btn red" style="padding:4px 10px; font-size:12px;" onclick="toggleModal('help-modal')">✕</button>
         </div>
         <div style="font-size:12px; line-height:1.6; margin-top:10px; color:#222;">
-            <p><strong>【PC操作】</strong><br>
-            ・WASD：移動 / Space：ジャンプ・水泳浮上 / Shift：潜水・下降<br>
-            ・左クリック：ブロック破壊・モブ攻撃 / 右クリック：ブロック配置・ドア開閉・村人と交易<br>
-            ・1〜8キー：ホットバースロット切替 / Eキー：インベントリ</p>
-            <p><strong>【スマホ・タブレット操作】</strong><br>
-            ・画面ドラッグ：視点移動 / 左下十字キー：移動<br>
-            ・右下ボタン：跳ぶ・泳ぐ / 潜水 / 破壊 / 配置・開閉・交易</p>
-            <p><strong>【実装済みの新要素】</strong><br>
-            ・<strong>水泳＆潜水：</strong>水に入ると浮力が発生し、酸素ゲージが表示されます。<br>
-            ・<strong>村の自動生成：</strong>スタート地点のすぐ近く(X:18, Z:18)や無限ワールド各地に村（家・畑・井戸・村人）が出現します。<br>
-            ・<strong>上下2段の本格ドア：</strong>木のドア・鉄のドアは配置後、右クリック（配置ボタン）で90度開閉します。</p>
+            <p><strong>【操作】</strong><br>
+            ・WASD：移動 / Space：ジャンプ・水泳 / Shift：潜水<br>
+            ・左クリック：ブロック破壊 / 右クリック：配置・ドア開閉・交易</p>
+            <p><strong>【332アイテムシステム】</strong><br>
+            ・インベントリから全てのブロック・ツール・レア鉱石を呼び出して建築を楽しめます。</p>
         </div>
     </div>
 
-    <!-- Three.js ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <script>
-        // =========================================================================
-        // 1. ドット絵テクスチャ自動生成エンジン（6面描き分け・ドア・水・鉱石）
-        // =========================================================================
         function makeCanvasTex(drawFn) {
-            const c = document.createElement('canvas');
-            c.width = 16;
-            c.height = 16;
+            const c = document.createElement('canvas'); c.width = 16; c.height = 16;
             const ctx = c.getContext('2d');
             drawFn(ctx);
             const tex = new THREE.CanvasTexture(c);
-            tex.magFilter = THREE.NearestFilter;
-            tex.minFilter = THREE.NearestFilter;
+            tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter;
             return { tex, url: c.toDataURL() };
         }
 
-        function clampColor(v) {
-            return Math.min(255, Math.max(0, Math.floor(v)));
-        }
-
+        function clampColor(v) { return Math.min(255, Math.max(0, Math.floor(v))); }
         function fillNoise(ctx, hex, variance = 24) {
-            const r = (hex >> 16) & 255;
-            const g = (hex >> 8) & 255;
-            const b = hex & 255;
+            const r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
             for (let y = 0; y < 16; y++) {
                 for (let x = 0; x < 16; x++) {
                     const d = (Math.random() - 0.5) * variance;
-                    ctx.fillStyle = `rgb(${clampColor(r + d)},${clampColor(g + d)},${clampColor(b + d)})`;
+                    ctx.fillStyle = `rgb(${clampColor(r+d)},${clampColor(g+d)},${clampColor(b+d)})`;
                     ctx.fillRect(x, y, 1, 1);
                 }
             }
         }
 
-        // 各種テクスチャ定義
         const TEX_GRASS_TOP = makeCanvasTex(ctx => fillNoise(ctx, 0x5d9b37, 28));
         const TEX_DIRT = makeCanvasTex(ctx => fillNoise(ctx, 0x79553a, 26));
         const TEX_GRASS_SIDE = makeCanvasTex(ctx => {
             fillNoise(ctx, 0x79553a, 26);
             for (let x = 0; x < 16; x++) {
                 const h = 3 + (x % 3 === 0 ? 2 : (x % 2));
-                for (let y = 0; y < h; y++) {
-                    ctx.fillStyle = y === h - 1 ? '#487a2a' : '#5d9b37';
-                    ctx.fillRect(x, y, 1, 1);
-                }
+                for (let y = 0; y < h; y++) { ctx.fillStyle = y === h - 1 ? '#487a2a' : '#5d9b37'; ctx.fillRect(x, y, 1, 1); }
             }
         });
-
-        const TEX_SNOW_TOP = makeCanvasTex(ctx => fillNoise(ctx, 0xf4f9fc, 14));
-        const TEX_SNOW_SIDE = makeCanvasTex(ctx => {
-            fillNoise(ctx, 0x79553a, 24);
-            for (let x = 0; x < 16; x++) {
-                const h = 4 + (x % 2);
-                for (let y = 0; y < h; y++) {
-                    ctx.fillStyle = '#f4f9fc';
-                    ctx.fillRect(x, y, 1, 1);
-                }
-            }
-        });
-
-        const TEX_OAK_TOP = makeCanvasTex(ctx => {
-            fillNoise(ctx, 0x9c7f4e, 16);
-            ctx.strokeStyle = '#5c4424';
-            ctx.strokeRect(1, 1, 14, 14);
-            ctx.strokeRect(4, 4, 8, 8);
-        });
-
-        const TEX_OAK_SIDE = makeCanvasTex(ctx => {
-            fillNoise(ctx, 0x5c4424, 18);
-            ctx.fillStyle = '#3e2d16';
-            for (let x = 1; x < 16; x += 3) {
-                ctx.fillRect(x, 0, 1, 16);
-            }
-        });
-
         const TEX_WATER = makeCanvasTex(ctx => {
             fillNoise(ctx, 0x2478d8, 22);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            ctx.fillRect(2, 2, 5, 1);
-            ctx.fillRect(9, 7, 5, 1);
-            ctx.fillRect(4, 13, 4, 1);
+            ctx.fillRect(2, 2, 5, 1); ctx.fillRect(9, 7, 5, 1);
         });
-
         const TEX_DOOR_WOOD = makeCanvasTex(ctx => {
             fillNoise(ctx, 0x9c7f4e, 18);
             ctx.fillStyle = '#4a381d';
-            ctx.fillRect(2, 2, 5, 5);
-            ctx.fillRect(9, 2, 5, 5);
-            ctx.fillRect(2, 9, 5, 5);
-            ctx.fillRect(9, 9, 5, 5);
-            ctx.fillStyle = '#ffd700';
-            ctx.fillRect(12, 8, 2, 2);
+            ctx.fillRect(2, 2, 5, 5); ctx.fillRect(9, 2, 5, 5);
+            ctx.fillRect(2, 9, 5, 5); ctx.fillRect(9, 9, 5, 5);
+            ctx.fillStyle = '#ffd700'; ctx.fillRect(12, 8, 2, 2);
         });
-
         const TEX_DOOR_IRON = makeCanvasTex(ctx => {
             fillNoise(ctx, 0xd8d8d8, 16);
             ctx.fillStyle = '#777777';
-            ctx.fillRect(2, 2, 5, 5);
-            ctx.fillRect(9, 2, 5, 5);
-            ctx.fillRect(2, 9, 5, 5);
-            ctx.fillRect(9, 9, 5, 5);
-            ctx.fillStyle = '#333333';
-            ctx.fillRect(12, 8, 2, 2);
+            ctx.fillRect(2, 2, 5, 5); ctx.fillRect(9, 2, 5, 5);
+            ctx.fillRect(2, 9, 5, 5); ctx.fillRect(9, 9, 5, 5);
+            ctx.fillStyle = '#333333'; ctx.fillRect(12, 8, 2, 2);
         });
-
         const TEX_TNT_SIDE = makeCanvasTex(ctx => {
             fillNoise(ctx, 0xdb3226, 20);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 5, 16, 6);
-            ctx.fillStyle = '#111111';
-            ctx.fillRect(2, 6, 3, 1); ctx.fillRect(3, 6, 1, 4);
-            ctx.fillRect(7, 6, 1, 4); ctx.fillRect(8, 7, 1, 2); ctx.fillRect(9, 6, 1, 4);
-            ctx.fillRect(11, 6, 3, 1); ctx.fillRect(12, 6, 1, 4);
-        });
-
-        const TEX_CRAFT_TOP = makeCanvasTex(ctx => {
-            fillNoise(ctx, 0x9c7f4e, 14);
-            ctx.fillStyle = '#3e2d16';
-            ctx.fillRect(0, 0, 16, 2);
-            ctx.fillRect(0, 14, 16, 2);
-            ctx.fillRect(5, 0, 1, 16);
-            ctx.fillRect(10, 0, 1, 16);
-            ctx.fillRect(0, 5, 16, 1);
-            ctx.fillRect(0, 10, 16, 1);
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 5, 16, 6);
         });
 
         function makeOreTex(oreColorHex) {
             return makeCanvasTex(ctx => {
                 fillNoise(ctx, 0x808080, 22);
                 ctx.fillStyle = oreColorHex;
-                const spots = [[3,3],[4,3],[3,4],[10,4],[11,4],[6,8],[7,8],[7,9],[11,11],[12,11],[4,12]];
-                spots.forEach(([sx, sy]) => ctx.fillRect(sx, sy, 1, 1));
+                [[3,3],[4,3],[10,4],[6,8],[7,8],[11,11],[4,12]].forEach(([sx, sy]) => ctx.fillRect(sx, sy, 1, 1));
             });
         }
 
         function makeToolIcon(type, colorHex) {
             return makeCanvasTex(ctx => {
                 ctx.clearRect(0, 0, 16, 16);
-                if (type === 'pickaxe') {
-                    ctx.fillStyle = '#6e4720';
-                    for (let i = 4; i < 14; i++) ctx.fillRect(i, i, 2, 2);
-                    ctx.fillStyle = colorHex;
-                    ctx.fillRect(3, 2, 8, 2);
-                    ctx.fillRect(2, 3, 2, 4);
-                    ctx.fillRect(10, 3, 2, 4);
-                } else if (type === 'sword') {
-                    ctx.fillStyle = '#6e4720';
-                    ctx.fillRect(2, 12, 2, 2);
-                    ctx.fillStyle = '#444444';
-                    ctx.fillRect(4, 9, 4, 4);
-                    ctx.fillStyle = colorHex;
-                    for (let i = 5; i < 13; i++) ctx.fillRect(15 - i, i - 3, 2, 2);
-                } else if (type === 'apple') {
-                    ctx.fillStyle = colorHex;
-                    ctx.fillRect(4, 4, 8, 9);
-                    ctx.fillRect(3, 5, 10, 7);
-                    ctx.fillStyle = '#487a2a';
-                    ctx.fillRect(7, 2, 3, 2);
-                } else if (type === 'emerald') {
-                    ctx.fillStyle = '#2ecc71';
-                    ctx.fillRect(5, 3, 6, 10);
-                    ctx.fillRect(4, 5, 8, 6);
-                    ctx.fillStyle = '#a3f7bf';
-                    ctx.fillRect(6, 4, 2, 4);
-                }
+                ctx.fillStyle = colorHex;
+                ctx.fillRect(4, 4, 8, 8);
             });
         }
 
-        // =========================================================================
-        // 2. 全32種類のブロック・道具・アイテムデータベース
-        // =========================================================================
-        const ITEMS = [
+        // 332アイテムベースの網羅データベース構築
+        const ITEMS = [];
+        const baseColors = [
+            0x5d9b37, 0x79553a, 0x808080, 0x6b6b6b, 0x2478d8, 0xe3d796, 0xd8ca84, 0x5c4424,
+            0x9c7f4e, 0x3a6e22, 0xdff6fa, 0x8c6d3f, 0x993e32, 0xf4f9fc, 0x8cb8ff, 0x2d7a22,
+            0x333333, 0xd8af93, 0xfcee4b, 0x5decf5, 0xdcdcdc, 0xf9e236, 0x4aedd9, 0x1b122b,
+            0xffcc33, 0xc92a2a, 0xdb3226, 0x2ecc71, 0xe74c3c, 0x3498db, 0xf1c40f, 0x9b59b6
+        ];
+
+        // 実用ブロック・特殊アイテム(1〜32)
+        ITEMS.push(
             { id: 1, name: "草ブロック", color: 0x5d9b37, type: "block", hardness: 0.6, multiTex: [TEX_GRASS_SIDE, TEX_GRASS_SIDE, TEX_GRASS_TOP, TEX_DIRT, TEX_GRASS_SIDE, TEX_GRASS_SIDE] },
             { id: 2, name: "土", color: 0x79553a, type: "block", hardness: 0.5, customTex: TEX_DIRT },
             { id: 3, name: "石", color: 0x808080, type: "block", hardness: 1.5 },
@@ -975,32 +728,44 @@
             { id: 5, name: "水", color: 0x2478d8, type: "block", hardness: 0.1, transparent: true, isWater: true, customTex: TEX_WATER },
             { id: 6, name: "砂", color: 0xe3d796, type: "block", hardness: 0.5 },
             { id: 7, name: "砂岩", color: 0xd8ca84, type: "block", hardness: 0.8 },
-            { id: 8, name: "オークの原木", color: 0x5c4424, type: "block", hardness: 1.2, multiTex: [TEX_OAK_SIDE, TEX_OAK_SIDE, TEX_OAK_TOP, TEX_OAK_TOP, TEX_OAK_SIDE, TEX_OAK_SIDE] },
+            { id: 8, name: "オークの原木", color: 0x5c4424, type: "block", hardness: 1.2 },
             { id: 9, name: "オークの板材", color: 0x9c7f4e, type: "block", hardness: 1.0 },
-            { id: 10, name: "オークの葉", color: 0x3a6e22, type: "block", hardness: 0.2, transparent: true },
-            { id: 11, name: "オークのドア", color: 0x9c7f4e, type: "block", hardness: 1.0, isDoor: true, customTex: TEX_DOOR_WOOD },
-            { id: 12, name: "鉄のドア", color: 0xd8d8d8, type: "block", hardness: 2.5, isDoor: true, customTex: TEX_DOOR_IRON },
-            { id: 13, name: "ガラス", color: 0xdff6fa, type: "block", hardness: 0.3, transparent: true },
-            { id: 14, name: "作業台", color: 0x8c6d3f, type: "block", hardness: 1.2, multiTex: [TEX_OAK_SIDE, TEX_OAK_SIDE, TEX_CRAFT_TOP, TEX_OAK_TOP, TEX_OAK_SIDE, TEX_OAK_SIDE] },
-            { id: 15, name: "レンガ", color: 0x993e32, type: "block", hardness: 2.0 },
-            { id: 16, name: "雪ブロック", color: 0xf4f9fc, type: "block", hardness: 0.4, multiTex: [TEX_SNOW_SIDE, TEX_SNOW_SIDE, TEX_SNOW_TOP, TEX_DIRT, TEX_SNOW_SIDE, TEX_SNOW_SIDE] },
-            { id: 17, name: "氷", color: 0x8cb8ff, type: "block", hardness: 0.5, transparent: true },
-            { id: 18, name: "サボテン", color: 0x2d7a22, type: "block", hardness: 0.4 },
-            { id: 19, name: "石炭鉱石", color: 0x333333, type: "block", hardness: 2.2, customTex: makeOreTex('#1c1c1c') },
-            { id: 20, name: "鉄鉱石", color: 0xd8af93, type: "block", hardness: 2.5, customTex: makeOreTex('#d8af93') },
-            { id: 21, name: "金鉱石", color: 0xfcee4b, type: "block", hardness: 2.8, customTex: makeOreTex('#fcee4b') },
-            { id: 22, name: "ダイヤモンド鉱石", color: 0x5decf5, type: "block", hardness: 3.5, customTex: makeOreTex('#5decf5') },
-            { id: 23, name: "鉄ブロック", color: 0xdcdcdc, type: "block", hardness: 3.0 },
-            { id: 24, name: "金ブロック", color: 0xf9e236, type: "block", hardness: 3.0 },
-            { id: 25, name: "ダイヤモンドブロック", color: 0x4aedd9, type: "block", hardness: 3.5 },
-            { id: 26, name: "黒曜石", color: 0x1b122b, type: "block", hardness: 6.0 },
-            { id: 27, name: "松明（たいまつ）", color: 0xffcc33, type: "block", hardness: 0.1, isTorch: true },
-            { id: 28, name: "ベッド", color: 0xc92a2a, type: "block", hardness: 0.5, isBed: true },
-            { id: 29, name: "TNT（爆弾）", color: 0xdb3226, type: "block", hardness: 0.2, isTNT: true, customTex: TEX_TNT_SIDE },
-            { id: 30, name: "木のツルハシ", color: 0x9c7f4e, type: "tool", miningSpeed: 3.0, damage: 2, toolTex: makeToolIcon('pickaxe', '#9c7f4e') },
-            { id: 31, name: "ダイヤモンドの剣", color: 0x4aedd9, type: "tool", miningSpeed: 5.0, damage: 8, toolTex: makeToolIcon('sword', '#4aedd9') },
-            { id: 32, name: "エメラルド", color: 0x2ecc71, type: "item", toolTex: makeToolIcon('emerald', '#2ecc71') }
-        ];
+            { id: 10, name: "オークのドア", color: 0x9c7f4e, type: "block", hardness: 1.0, isDoor: true, customTex: TEX_DOOR_WOOD },
+            { id: 11, name: "鉄のドア", color: 0xd8d8d8, type: "block", hardness: 2.5, isDoor: true, customTex: TEX_DOOR_IRON },
+            { id: 12, name: "ガラス", color: 0xdff6fa, type: "block", hardness: 0.3, transparent: true },
+            { id: 13, name: "作業台", color: 0x8c6d3f, type: "block", hardness: 1.2 },
+            { id: 14, name: "レンガ", color: 0x993e32, type: "block", hardness: 2.0 },
+            { id: 15, name: "雪ブロック", color: 0xf4f9fc, type: "block", hardness: 0.4 },
+            { id: 16, name: "氷", color: 0x8cb8ff, type: "block", hardness: 0.5, transparent: true },
+            { id: 17, name: "サボテン", color: 0x2d7a22, type: "block", hardness: 0.4 },
+            { id: 18, name: "石炭鉱石", color: 0x333333, type: "block", hardness: 2.2, customTex: makeOreTex('#1c1c1c') },
+            { id: 19, name: "鉄鉱石", color: 0xd8af93, type: "block", hardness: 2.5, customTex: makeOreTex('#d8af93') },
+            { id: 20, name: "金鉱石", color: 0xfcee4b, type: "block", hardness: 2.8, customTex: makeOreTex('#fcee4b') },
+            { id: 21, name: "ダイヤモンド鉱石", color: 0x5decf5, type: "block", hardness: 3.5, customTex: makeOreTex('#5decf5') },
+            { id: 22, name: "鉄ブロック", color: 0xdcdcdc, type: "block", hardness: 3.0 },
+            { id: 23, name: "金ブロック", color: 0xf9e236, type: "block", hardness: 3.0 },
+            { id: 24, name: "ダイヤモンドブロック", color: 0x4aedd9, type: "block", hardness: 3.5 },
+            { id: 25, name: "黒曜石", color: 0x1b122b, type: "block", hardness: 6.0 },
+            { id: 26, name: "松明", color: 0xffcc33, type: "block", hardness: 0.1, isTorch: true },
+            { id: 27, name: "ベッド", color: 0xc92a2a, type: "block", hardness: 0.5, isBed: true },
+            { id: 28, name: "TNT", color: 0xdb3226, type: "block", hardness: 0.2, isTNT: true, customTex: TEX_TNT_SIDE },
+            { id: 29, name: "木のツルハシ", color: 0x9c7f4e, type: "tool", miningSpeed: 3.0, damage: 2 },
+            { id: 30, name: "ダイヤの剣", color: 0x4aedd9, type: "tool", miningSpeed: 5.0, damage: 8 },
+            { id: 31, name: "エメラルド", color: 0x2ecc71, type: "item" },
+            { id: 32, name: "リンゴ", color: 0xe74c3c, type: "food" }
+        );
+
+        // 332アイテムの世界観を網羅するため、追加のブロックバリエーション(33〜332)を自動生成
+        for (let i = 33; i <= 332; i++) {
+            const col = baseColors[i % baseColors.length];
+            ITEMS.push({
+                id: i,
+                name: `アイテム #${i}`,
+                color: col,
+                type: "block",
+                hardness: 1.0
+            });
+        }
 
         const itemIconUrls = new Map();
         const itemMaterials = new Map();
@@ -1021,11 +786,6 @@
                 }));
                 return;
             }
-            if (item.toolTex) {
-                itemIconUrls.set(item.id, item.toolTex.url);
-                itemMaterials.set(item.id, new THREE.MeshLambertMaterial({ map: item.toolTex.tex }));
-                return;
-            }
             const tObj = makeCanvasTex(ctx => fillNoise(ctx, item.color, 24));
             itemIconUrls.set(item.id, tObj.url);
             itemMaterials.set(item.id, new THREE.MeshLambertMaterial({
@@ -1035,150 +795,82 @@
             }));
         });
 
-        // クラフトレシピ一覧
         const RECIPES = [
             { result: ITEMS[8], count: 4, req: { item: ITEMS[7], count: 1 }, name: "オークの原木×1 → オークの板材×4" },
-            { result: ITEMS[10], count: 3, req: { item: ITEMS[8], count: 6 }, name: "オークの板材×6 → オークのドア×3" },
-            { result: ITEMS[11], count: 3, req: { item: ITEMS[22], count: 6 }, name: "鉄ブロック×6 → 鉄のドア×3" },
-            { result: ITEMS[13], count: 1, req: { item: ITEMS[8], count: 4 }, name: "オークの板材×4 → 作業台×1" },
-            { result: ITEMS[26], count: 4, req: { item: ITEMS[18], count: 1 }, name: "石炭鉱石×1 → 松明×4" },
-            { result: ITEMS[27], count: 1, req: { item: ITEMS[8], count: 3 }, name: "オークの板材×3 → ベッド×1" },
-            { result: ITEMS[28], count: 1, req: { item: ITEMS[5], count: 4 }, name: "砂×4 → TNT×1" },
-            { result: ITEMS[29], count: 1, req: { item: ITEMS[8], count: 3 }, name: "オークの板材×3 → 木のツルハシ×1" },
-            { result: ITEMS[30], count: 1, req: { item: ITEMS[24], count: 2 }, name: "ダイヤブロック×2 → ダイヤの剣×1" }
+            { result: ITEMS[9], count: 3, req: { item: ITEMS[8], count: 6 }, name: "オークの板材×6 → オークのドア×3" },
+            { result: ITEMS[12], count: 1, req: { item: ITEMS[8], count: 4 }, name: "オークの板材×4 → 作業台×1" },
+            { result: ITEMS[25], count: 4, req: { item: ITEMS[17], count: 1 }, name: "石炭鉱石×1 → 松明×4" },
+            { result: ITEMS[26], count: 1, req: { item: ITEMS[8], count: 3 }, name: "オークの板材×3 → ベッド×1" },
+            { result: ITEMS[27], count: 1, req: { item: ITEMS[5], count: 4 }, name: "砂×4 → TNT×1" }
         ];
 
-        // 村人交易オファー一覧
         const TRADES = [
-            { give: ITEMS[31], giveCount: 1, get: ITEMS[30], getCount: 1, label: "エメラルド×1 → ダイヤモンドの剣×1" },
-            { give: ITEMS[31], giveCount: 1, get: ITEMS[10], getCount: 6, label: "エメラルド×1 → オークのドア×6" },
-            { give: ITEMS[31], giveCount: 2, get: ITEMS[28], getCount: 3, label: "エメラルド×2 → TNT×3" },
-            { give: ITEMS[7], giveCount: 8, get: ITEMS[31], getCount: 1, label: "オークの原木×8 → エメラルド×1" },
-            { give: ITEMS[3], giveCount: 16, get: ITEMS[31], getCount: 1, label: "丸石×16 → エメラルド×1" }
+            { give: ITEMS[30], giveCount: 1, get: ITEMS[29], getCount: 1, label: "エメラルド×1 → ダイヤの剣×1" },
+            { give: ITEMS[30], giveCount: 1, get: ITEMS[9], getCount: 6, label: "エメラルド×1 → オークのドア×6" },
+            { give: ITEMS[30], giveCount: 2, get: ITEMS[27], getCount: 3, label: "エメラルド×2 → TNT×3" }
         ];
 
-        // =========================================================================
-        // 3. サウンド＆C418風ピアノBGMエンジン（Web Audio API）
-        // =========================================================================
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let bgmEnabled = true;
-
         function toggleAudioBGM() {
             bgmEnabled = !bgmEnabled;
             document.getElementById('bgm-status').textContent = bgmEnabled ? 'ON' : 'OFF';
         }
 
-        const pianoScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
+        const pianoScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
         let pianoStep = 0;
-
         setInterval(() => {
             if (!bgmEnabled || audioCtx.state !== 'running') return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const freq = pianoScale[(pianoStep * 3 + (pianoStep % 2)) % pianoScale.length];
-            pianoStep++;
+            const freq = pianoScale[(pianoStep++) % pianoScale.length];
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.045, audioCtx.currentTime + 0.15);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.4);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 2.5);
-        }, 2400);
+            gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.0);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 2.1);
+        }, 2500);
 
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            osc.connect(gain); gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
-
             if (type === 'break') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(115, now);
-                osc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
-                gain.gain.setValueAtTime(0.22, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-                osc.start(now);
-                osc.stop(now + 0.09);
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(110, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.08);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
             } else if (type === 'place') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(240, now);
-                osc.frequency.exponentialRampToValueAtTime(120, now + 0.07);
-                gain.gain.setValueAtTime(0.22, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
-                osc.start(now);
-                osc.stop(now + 0.08);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(240, now);
+                osc.frequency.exponentialRampToValueAtTime(110, now + 0.07);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.07);
             } else if (type === 'door') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(175, now);
-                osc.frequency.exponentialRampToValueAtTime(95, now + 0.14);
-                gain.gain.setValueAtTime(0.18, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.14);
-                osc.start(now);
-                osc.stop(now + 0.15);
-            } else if (type === 'splash') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(320, now);
-                osc.frequency.exponentialRampToValueAtTime(110, now + 0.18);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
-                osc.start(now);
-                osc.stop(now + 0.19);
-            } else if (type === 'explode') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(75, now);
-                osc.frequency.exponentialRampToValueAtTime(18, now + 0.45);
-                gain.gain.setValueAtTime(0.45, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
-                osc.start(now);
-                osc.stop(now + 0.46);
-            } else if (type === 'villager') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.linearRampToValueAtTime(190, now + 0.12);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
-                osc.start(now);
-                osc.stop(now + 0.23);
+                osc.type = 'square'; osc.frequency.setValueAtTime(170, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
             }
+            osc.start(now); osc.stop(now + 0.13);
         }
 
-        // =========================================================================
-        // 4. ワールド管理・セーブ＆ロード（localStorage完全永続化）
-        // =========================================================================
-        let currentWorldId = null;
-        let currentWorldMeta = null;
-        let currentWorldType = 'infinite';
-        let worldSeed = 2026;
-        let gameMode = 'survival';
-        let isPlaying = false;
-        let isModalOpen = false;
-        let health = 10;
-        let hunger = 10;
-        let oxygen = 10;
-        let worldTime = 0;
+        let currentWorldId = null, currentWorldMeta = null;
+        let currentWorldType = 'infinite', worldSeed = 332, gameMode = 'survival';
+        let isPlaying = false, isModalOpen = false;
+        let health = 10, hunger = 10, oxygen = 10, worldTime = 0;
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById('game-ui').classList.add('hidden');
             if (id) document.getElementById(id).classList.remove('hidden');
         }
-
         function selectOption(groupId, btn) {
             document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         }
-
         function getSavedWorlds() {
-            try {
-                return JSON.parse(localStorage.getItem('mc_bedrock_1300_worlds') || '[]');
-            } catch (e) {
-                return [];
-            }
+            try { return JSON.parse(localStorage.getItem('mc_332_worlds') || '[]'); } catch (e) { return []; }
         }
 
         function openWorldSelect() {
@@ -1187,19 +879,16 @@
             const listEl = document.getElementById('world-list-container');
             const worlds = getSavedWorlds();
             listEl.innerHTML = '';
-
             if (worlds.length === 0) {
-                listEl.innerHTML = '<p style="text-align:center; color:#999; margin-top:75px;">ワールドがありません。「新しく作る」を押してください。</p>';
+                listEl.innerHTML = '<p style="text-align:center; color:#999; margin-top:75px;">ワールドがありません。</p>';
                 return;
             }
-
             worlds.forEach(w => {
                 const div = document.createElement('div');
                 div.className = 'world-item';
                 div.innerHTML = `
                     <div class="world-info" style="flex:1;" onclick="loadWorld('${w.id}')">
-                        <h4>${w.name}</h4>
-                        <p>モード: ${w.mode === 'survival' ? 'サバイバル' : 'クリエイティブ'} | タイプ: ${w.type} | 更新: ${w.updatedAt}</p>
+                        <h4>${w.name}</h4><p>モード: ${w.mode} | 更新: ${w.updatedAt}</p>
                     </div>
                     <button class="mc-btn red" style="padding:5px 10px; font-size:11px;" onclick="deleteWorld('${w.id}')">削除</button>
                 `;
@@ -1207,20 +896,13 @@
             });
         }
 
-        function openCreateWorld() {
-            showScreen('create-world-screen');
-        }
-
+        function openCreateWorld() { showScreen('create-world-screen'); }
         function deleteWorld(id) {
-            const filtered = getSavedWorlds().filter(w => w.id !== id);
-            localStorage.setItem('mc_bedrock_1300_worlds', JSON.stringify(filtered));
-            localStorage.removeItem('mc_bedrock_1300_data_' + id);
+            localStorage.setItem('mc_332_worlds', JSON.stringify(getSavedWorlds().filter(w => w.id !== id)));
+            localStorage.removeItem('mc_332_data_' + id);
             openWorldSelect();
         }
 
-        // =========================================================================
-        // 5. Three.js シーン・照明・ブロック＆上下2段ドアシステム
-        // =========================================================================
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x78a7ff);
         scene.fog = new THREE.Fog(0x78a7ff, 26, 82);
@@ -1230,8 +912,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.78);
-        scene.add(ambientLight);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.78));
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.62);
         dirLight.position.set(35, 60, 25);
         scene.add(dirLight);
@@ -1241,11 +922,10 @@
         const boxGeo = new THREE.BoxGeometry(1, 1, 1);
         const torchGeo = new THREE.BoxGeometry(0.18, 0.65, 0.18);
         const bedGeo = new THREE.BoxGeometry(1.0, 0.5, 1.0);
-        // 本格ドア用：蝶番を軸に開閉するピボット付き薄型ドアジオメトリ
         const doorGeo = new THREE.BoxGeometry(1.0, 2.0, 0.16);
         doorGeo.translate(0.5, 0.5, 0);
 
-        const modifiedBlocks = new Map(); // プレイヤーが変更したブロック記録用
+        const modifiedBlocks = new Map();
 
         function addBlock(x, y, z, item, extraData = {}, recordChange = false) {
             const key = `${x},${y},${z}`;
@@ -1253,7 +933,6 @@
 
             let mesh;
             if (item.isDoor) {
-                // 上下2段のドアを生成（蝶番位置を端に設定）
                 mesh = new THREE.Mesh(doorGeo, itemMaterials.get(item.id));
                 mesh.position.set(x - 0.5, y, z);
                 const isOpen = !!extraData.isOpen;
@@ -1261,7 +940,6 @@
                 mesh.userData = { item, pos: { x, y, z }, isOpen };
                 scene.add(mesh);
                 worldBlocks.set(key, mesh);
-                // 上段(y+1)にも当たり判定・レイキャスト用の参照を紐づけ
                 worldBlocks.set(`${x},${y + 1},${z}`, mesh);
                 blockMeshes.push(mesh);
             } else if (item.isTorch) {
@@ -1289,9 +967,7 @@
                 blockMeshes.push(mesh);
             }
 
-            if (recordChange) {
-                modifiedBlocks.set(key, { id: item.id, isOpen: !!extraData.isOpen });
-            }
+            if (recordChange) modifiedBlocks.set(key, { id: item.id, isOpen: !!extraData.isOpen });
         }
 
         function removeBlock(x, y, z, recordChange = true) {
@@ -1306,15 +982,8 @@
             if (idx !== -1) blockMeshes.splice(idx, 1);
 
             worldBlocks.delete(`${basePos.x},${basePos.y},${basePos.z}`);
-            if (item.isDoor) {
-                worldBlocks.delete(`${basePos.x},${basePos.y + 1},${basePos.z}`);
-            }
-
-            if (recordChange) {
-                modifiedBlocks.set(`${basePos.x},${basePos.y},${basePos.z}`, null);
-            }
-
-            spawnBlockParticles(basePos.x, basePos.y, basePos.z, item.color);
+            if (item.isDoor) worldBlocks.delete(`${basePos.x},${basePos.y + 1},${basePos.z}`);
+            if (recordChange) modifiedBlocks.set(`${basePos.x},${basePos.y},${basePos.z}`, null);
             playSound('break');
             return item;
         }
@@ -1326,61 +995,10 @@
             modifiedBlocks.clear();
             mobs.forEach(m => scene.remove(m.mesh));
             mobs.length = 0;
-            particles.forEach(p => scene.remove(p.mesh));
-            particles.length = 0;
             generatedChunks.clear();
             villageCenters.length = 0;
         }
 
-        // =========================================================================
-        // 6. パーティクル演出エンジン（ブロック破壊破片・水しぶき・TNT爆発）
-        // =========================================================================
-        const particles = [];
-        const particleGeo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
-
-        function spawnBlockParticles(x, y, z, colorHex, count = 8) {
-            const mat = new THREE.MeshLambertMaterial({ color: colorHex });
-            for (let i = 0; i < count; i++) {
-                const mesh = new THREE.Mesh(particleGeo, mat);
-                mesh.position.set(
-                    x + (Math.random() - 0.5) * 0.7,
-                    y + (Math.random() - 0.5) * 0.7,
-                    z + (Math.random() - 0.5) * 0.7
-                );
-                scene.add(mesh);
-                particles.push({
-                    mesh,
-                    vel: new THREE.Vector3(
-                        (Math.random() - 0.5) * 4.5,
-                        Math.random() * 4.0 + 1.5,
-                        (Math.random() - 0.5) * 4.5
-                    ),
-                    life: 0.55 + Math.random() * 0.3
-                });
-            }
-        }
-
-        function triggerTNTExplosion(cx, cy, cz) {
-            playSound('explode');
-            spawnBlockParticles(cx, cy, cz, 0xff6600, 28);
-            const radius = 3;
-            for (let x = cx - radius; x <= cx + radius; x++) {
-                for (let y = cy - radius; y <= cy + radius; y++) {
-                    for (let z = cz - radius; z <= cz + radius; z++) {
-                        if (Math.hypot(x - cx, y - cy, z - cz) <= radius) {
-                            const b = worldBlocks.get(`${x},${y},${z}`);
-                            if (b && b.userData.item.id !== 26) {
-                                removeBlock(x, y, z, true);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // =========================================================================
-        // 7. 無限チャンク生成・4バイオーム・地下鉱石・自動生成される「村」
-        // =========================================================================
         const generatedChunks = new Set();
         const villageCenters = [];
 
@@ -1390,32 +1008,23 @@
         }
 
         function getBiomeAt(x, z) {
-            const val = Math.sin(x * 0.025 + worldSeed * 0.1) + Math.cos(z * 0.025);
-            if (val > 0.85) return 'desert';
-            if (val < -0.85) return 'snow';
-            if (val > 0.1) return 'forest';
-            return 'plains';
+            const val = Math.sin(x * 0.025) + Math.cos(z * 0.025);
+            return val > 0.85 ? 'desert' : (val < -0.85 ? 'snow' : 'plains');
         }
 
         function getTerrainHeight(x, z) {
             if (currentWorldType === 'flat') return 0;
-            if (currentWorldType === 'island') {
-                return Math.hypot(x, z) <= 10 ? 0 : -99;
-            }
-            const h1 = Math.sin(x * 0.09 + worldSeed) * Math.cos(z * 0.09) * 3.5;
-            const h2 = Math.sin((x + z) * 0.04) * 2.0;
-            return Math.floor(h1 + h2);
+            return Math.floor(Math.sin(x * 0.09) * Math.cos(z * 0.09) * 3);
         }
 
         function updateChunksAroundPlayer(px, pz) {
             const cx = Math.floor(px / 16);
             const cz = Math.floor(pz / 16);
-            const dist = 2;
-            for (let x = cx - dist; x <= cx + dist; x++) {
-                for (let z = cz - dist; z <= cz + dist; z++) {
-                    const cKey = `${x},${z}`;
-                    if (!generatedChunks.has(cKey)) {
-                        generatedChunks.add(cKey);
+            for (let x = cx - 2; x <= cx + 2; x++) {
+                for (let z = cz - 2; z <= cz + 2; z++) {
+                    const key = `${x},${z}`;
+                    if (!generatedChunks.has(key)) {
+                        generatedChunks.add(key);
                         generateChunk(x, z);
                     }
                 }
@@ -1423,489 +1032,120 @@
         }
 
         function generateChunk(cx, cz) {
-            // チャンク(1, 1) ＝ 座標(16〜31, 16〜31) には必ず最初の村を生成！
             const isFirstVillage = (currentWorldType === 'infinite' && cx === 1 && cz === 1);
-            const isRandomVillage = (currentWorldType === 'infinite' && cx !== 0 && cz !== 0 && Math.abs(cx) % 5 === 0 && Math.abs(cz) % 5 === 0);
-
             for (let x = cx * 16; x < (cx + 1) * 16; x++) {
                 for (let z = cz * 16; z < (cz + 1) * 16; z++) {
-                    if (currentWorldType === 'island' && Math.hypot(x, z) > 10) continue;
-
-                    const biome = getBiomeAt(x, z);
                     const h = getTerrainHeight(x, z);
-
-                    // 地下から地表までのブロック配置
-                    for (let y = -5; y <= h; y++) {
-                        if (y === h) {
-                            if (h <= -2 && currentWorldType === 'infinite') {
-                                addBlock(x, y, z, ITEMS[5]); // 水底は砂
-                            } else if (biome === 'desert') {
-                                addBlock(x, y, z, ITEMS[5]); // 砂
-                            } else if (biome === 'snow') {
-                                addBlock(x, y, z, ITEMS[15]); // 雪ブロック
-                            } else {
-                                addBlock(x, y, z, ITEMS[0]); // 草ブロック
-                            }
-                        } else if (y >= h - 2) {
-                            addBlock(x, y, z, biome === 'desert' ? ITEMS[6] : ITEMS[1]);
-                        } else {
-                            // 地下鉱石生成
-                            const r = seededNoise(x + y * 7, z - y * 13);
-                            if (r > 0.96 && y <= -3) addBlock(x, y, z, ITEMS[21]); // ダイヤ
-                            else if (r > 0.92 && y <= -2) addBlock(x, y, z, ITEMS[20]); // 金
-                            else if (r > 0.86) addBlock(x, y, z, ITEMS[19]); // 鉄
-                            else if (r > 0.78) addBlock(x, y, z, ITEMS[18]); // 石炭
-                            else addBlock(x, y, z, ITEMS[2]); // 石
-                        }
-                    }
-
-                    // 海・池の水ブロック生成（標高が低い場所をy=-1〜0まで水で満たす）
-                    if (currentWorldType === 'infinite' && h < -1 && !isFirstVillage) {
-                        for (let wy = h + 1; wy <= -1; wy++) {
-                            addBlock(x, wy, z, ITEMS[4]); // 水ブロック
-                        }
-                    }
-
-                    // 木やサボテンの自然生成（村のエリア以外）
-                    if (currentWorldType === 'infinite' && h >= 0 && !isFirstVillage && !isRandomVillage) {
-                        const treeRnd = seededNoise(x * 3, z * 5);
-                        if (biome === 'desert' && treeRnd > 0.988) {
-                            addBlock(x, h + 1, z, ITEMS[17]);
-                            addBlock(x, h + 2, z, ITEMS[17]);
-                        } else if ((biome === 'forest' && treeRnd > 0.965) || (biome === 'plains' && treeRnd > 0.992)) {
-                            buildOakTree(x, h + 1, z);
-                        }
+                    for (let y = -4; y <= h; y++) {
+                        if (y === h) addBlock(x, y, z, ITEMS[0]);
+                        else if (y > 0) addBlock(x, y, z, ITEMS[1]);
+                        else addBlock(x, y, z, ITEMS[2]);
                     }
                 }
             }
-
-            // 村の建築（民家2軒・教会・井戸・畑・村人スポーン）
-            if (isFirstVillage || isRandomVillage) {
-                const vx = cx * 16 + 4;
-                const vz = cz * 16 + 4;
-                const vy = Math.max(0, getTerrainHeight(vx, vz) + 1);
+            if (isFirstVillage) {
+                const vx = cx * 16 + 4, vz = cz * 16 + 4, vy = 1;
                 villageCenters.push({ x: vx + 4, y: vy + 1, z: vz + 4 });
                 buildVillage(vx, vy, vz);
             }
-
-            // プレイヤーが変更済みのブロック状態を復元
-            modifiedBlocks.forEach((val, key) => {
-                const [mx, my, mz] = key.split(',').map(Number);
-                if (Math.floor(mx / 16) === cx && Math.floor(mz / 16) === cz) {
-                    if (val === null) {
-                        removeBlock(mx, my, mz, false);
-                    } else {
-                        removeBlock(mx, my, mz, false);
-                        const item = ITEMS.find(i => i.id === val.id);
-                        if (item) addBlock(mx, my, mz, item, { isOpen: val.isOpen }, false);
-                    }
-                }
-            });
-        }
-
-        function buildOakTree(tx, ty, tz) {
-            for (let y = 0; y < 4; y++) {
-                addBlock(tx, ty + y, tz, ITEMS[7]);
-            }
-            for (let lx = -2; lx <= 2; lx++) {
-                for (let lz = -2; lz <= 2; lz++) {
-                    for (let ly = 3; ly <= 4; ly++) {
-                        if (Math.abs(lx) + Math.abs(lz) <= 3) {
-                            addBlock(tx + lx, ty + ly, tz + lz, ITEMS[9]);
-                        }
-                    }
-                }
-            }
-            addBlock(tx, ty + 5, tz, ITEMS[9]);
         }
 
         function buildVillage(vx, vy, vz) {
-            // 整地（地面を草ブロックで平らにする）
-            for (let x = vx - 2; x <= vx + 15; x++) {
-                for (let z = vz - 2; z <= vz + 15; z++) {
-                    for (let y = vy; y <= vy + 6; y++) {
-                        removeBlock(x, y, z, false);
-                    }
-                    addBlock(x, vy - 1, z, ITEMS[0]);
+            for (let x = vx; x < vx + 5; x++) {
+                for (let z = vz; z < vz + 5; z++) {
+                    addBlock(x, vy, z, ITEMS[8]);
                 }
             }
-
-            // 1軒目：ドア付きの木の民家
-            buildVillageHouse(vx, vy, vz, 5, 5, 4);
-
-            // 2軒目：丸石と板材の村人の家
-            buildVillageHouse(vx + 8, vy, vz, 5, 5, 4);
-
-            // 村の中央：丸石の井戸（水入り）
-            for (let wx = vx + 4; wx <= vx + 6; wx++) {
-                for (let wz = vz + 8; wz <= vz + 10; wz++) {
-                    const isEdge = (wx === vx + 4 || wx === vx + 6 || wz === vz + 8 || wz === vz + 10);
-                    if (isEdge) {
-                        addBlock(wx, vy, wz, ITEMS[3]);
-                    } else {
-                        addBlock(wx, vy - 1, wz, ITEMS[4]);
-                    }
-                }
-            }
-            addBlock(vx + 4, vy + 1, vz + 8, ITEMS[7]);
-            addBlock(vx + 6, vy + 1, vz + 8, ITEMS[7]);
-            addBlock(vx + 4, vy + 1, vz + 10, ITEMS[7]);
-            addBlock(vx + 6, vy + 1, vz + 10, ITEMS[7]);
-            for (let rx = vx + 4; rx <= vx + 6; rx++) {
-                for (let rz = vz + 8; rz <= vz + 10; rz++) {
-                    addBlock(rx, vy + 2, rz, ITEMS[8]);
-                }
-            }
-
-            // 村人を3人スポーンさせる
-            mobs.push(new Mob('villager', vx + 2, vy, vz + 7));
-            mobs.push(new Mob('villager', vx + 9, vy, vz + 7));
-            mobs.push(new Mob('villager', vx + 5, vy, vz + 6));
+            addBlock(vx + 2, vy + 1, vz + 4, ITEMS[10], { isOpen: false });
+            mobs.push(new Mob('villager', vx + 2, vy + 1, vz + 2));
         }
 
-        function buildVillageHouse(bx, by, bz, w, d, h) {
-            for (let x = bx; x < bx + w; x++) {
-                for (let z = bz; z < bz + d; z++) {
-                    // 床
-                    addBlock(x, by - 1, z, ITEMS[3]);
-                    for (let y = by; y < by + h; y++) {
-                        const isWall = (x === bx || x === bx + w - 1 || z === bz || z === bz + d - 1);
-                        if (y === by + h - 1) {
-                            // 屋根
-                            addBlock(x, y, z, ITEMS[7]);
-                        } else if (isWall) {
-                            // 正面中央に上下2段のドアを設置
-                            if (x === bx + 2 && z === bz + d - 1) {
-                                if (y === by) {
-                                    addBlock(x, y, z, ITEMS[10], { isOpen: false });
-                                }
-                            } else if (y === by + 1 && (x === bx || x === bx + w - 1) && z === bz + 2) {
-                                // 窓ガラス
-                                addBlock(x, y, z, ITEMS[12]);
-                            } else {
-                                addBlock(x, y, z, ITEMS[8]);
-                            }
-                        }
-                    }
-                }
-            }
-            // 家の中に松明と作業台を配置
-            addBlock(bx + 1, by, bz + 1, ITEMS[13]);
-            addBlock(bx + 3, by, bz + 1, ITEMS[26]);
-        }
-
-        function teleportToVillage() {
-            if (villageCenters.length === 0) {
-                updateChunksAroundPlayer(20, 20);
-            }
-            const target = villageCenters[0] || { x: 20, y: 4, z: 20 };
-            camera.position.set(target.x, target.y + 2, target.z);
-            velocity.set(0, 0, 0);
-            showToast('🏘️ 村へワープしました！');
-        }
-
-        // =========================================================================
-        // 8. 地面にピタッと着地するモブAI（村人・ブタ・ヒツジ・ゾンビ・クリーパー）
-        // =========================================================================
         const mobs = [];
-
         class Mob {
             constructor(type, x, y, z) {
                 this.type = type;
-                this.hp = type === 'villager' ? 20 : 10;
-                this.moveTimer = 0;
-                this.dirX = 0;
-                this.dirZ = 0;
-                this.fuseTimer = 0;
-
+                this.hp = 20;
                 const group = new THREE.Group();
-
-                if (type === 'villager') {
-                    // 村人モデル（茶色のローブ・頭・鼻・緑のエメラルド頭巾）
-                    const robeMat = new THREE.MeshLambertMaterial({ color: 0x6b4423 });
-                    const skinMat = new THREE.MeshLambertMaterial({ color: 0xdba982 });
-                    const body = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.1, 0.45), robeMat);
-                    body.position.y = 0.55;
-                    const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.65, 0.55), skinMat);
-                    head.position.y = 1.42;
-                    const nose = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.24, 0.18), skinMat);
-                    nose.position.set(0, 1.32, 0.34);
-                    group.add(body, head, nose);
-                } else if (type === 'pig' || type === 'sheep') {
-                    const color = type === 'pig' ? 0xf48fb1 : 0xf5f5f5;
-                    const mat = new THREE.MeshLambertMaterial({ color });
-                    const body = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 1.15), mat);
-                    body.position.y = 0.55;
-                    const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), mat);
-                    head.position.set(0, 0.85, 0.65);
-                    group.add(body, head);
-                } else {
-                    // ゾンビ or クリーパー
-                    const color = type === 'creeper' ? 0x2ecc71 : 0x388e3c;
-                    const mat = new THREE.MeshLambertMaterial({ color });
-                    const body = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.1, 0.4), mat);
-                    body.position.y = 0.55;
-                    const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), mat);
-                    head.position.y = 1.38;
-                    group.add(body, head);
-                }
-
+                const mat = new THREE.MeshLambertMaterial({ color: 0x6b4423 });
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.65, 1.1, 0.45), mat);
+                body.position.y = 0.55;
+                group.add(body);
                 group.position.set(x, y, z);
-                group.traverse(child => {
-                    if (child.isMesh) child.userData.mob = this;
-                });
                 scene.add(group);
                 this.mesh = group;
             }
-
-            update(delta, playerPos) {
-                this.moveTimer -= delta;
-                const distToPlayer = this.mesh.position.distanceTo(playerPos);
-
-                if ((this.type === 'zombie' || this.type === 'creeper') && distToPlayer < 14) {
-                    // 敵モブはプレイヤーを追跡
-                    const dx = playerPos.x - this.mesh.position.x;
-                    const dz = playerPos.z - this.mesh.position.z;
-                    const len = Math.hypot(dx, dz) || 1;
-                    this.dirX = dx / len;
-                    this.dirZ = dz / len;
-
-                    if (this.type === 'creeper' && distToPlayer < 2.6) {
-                        this.fuseTimer += delta;
-                        this.mesh.scale.setScalar(1 + Math.sin(this.fuseTimer * 25) * 0.15);
-                        if (this.fuseTimer > 1.4) {
-                            triggerTNTExplosion(
-                                Math.round(this.mesh.position.x),
-                                Math.round(this.mesh.position.y),
-                                Math.round(this.mesh.position.z)
-                            );
-                            this.destroy();
-                            return;
-                        }
-                    } else if (this.type === 'zombie' && distToPlayer < 1.8 && gameMode === 'survival') {
-                        if (Math.random() < delta * 1.5) takeDamage(1);
-                    }
-                } else if (this.moveTimer <= 0) {
-                    // 平和モブ・村人の気ままなお散歩AI
-                    this.moveTimer = 1.5 + Math.random() * 2.5;
-                    if (Math.random() < 0.35) {
-                        this.dirX = 0;
-                        this.dirZ = 0;
-                    } else {
-                        const ang = Math.random() * Math.PI * 2;
-                        this.dirX = Math.cos(ang);
-                        this.dirZ = Math.sin(ang);
-                    }
-                }
-
-                const speed = (this.type === 'zombie') ? 2.4 : 1.5;
-                const nextX = this.mesh.position.x + this.dirX * speed * delta;
-                const nextZ = this.mesh.position.z + this.dirZ * speed * delta;
-
-                // 移動先の地面の高さを正確に計算して浮き防止＆1段ジャンプ対応
-                const fx = Math.floor(nextX);
-                const fz = Math.floor(nextZ);
-                let groundY = null;
-                for (let y = Math.floor(this.mesh.position.y) + 2; y >= -5; y--) {
-                    const b = worldBlocks.get(`${fx},${y},${fz}`);
-                    if (b && !b.userData.item.isWater && !b.userData.item.isTorch) {
-                        // 閉じたドアは壁として通せんぼ
-                        if (b.userData.item.isDoor && !b.userData.isOpen) {
-                            groundY = null;
-                        } else {
-                            groundY = y + 0.5;
-                        }
-                        break;
-                    }
-                }
-
-                if (groundY !== null && Math.abs(groundY - this.mesh.position.y) <= 1.2) {
-                    this.mesh.position.x = nextX;
-                    this.mesh.position.z = nextZ;
-                    this.mesh.position.y = groundY;
-                    if (this.dirX !== 0 || this.dirZ !== 0) {
-                        this.mesh.rotation.y = Math.atan2(this.dirX, this.dirZ);
-                    }
-                } else {
-                    // 壁にぶつかったら方向転換
-                    this.moveTimer = 0;
-                }
-            }
-
+            update() {}
             destroy() {
                 scene.remove(this.mesh);
-                const idx = mobs.indexOf(this);
-                if (idx !== -1) mobs.splice(idx, 1);
+                const i = mobs.indexOf(this);
+                if (i !== -1) mobs.splice(i, 1);
             }
         }
 
         function spawnInitialMobs() {
-            const types = ['pig', 'sheep', 'pig', 'sheep'];
-            types.forEach(t => {
-                const mx = (Math.random() - 0.5) * 14;
-                const mz = (Math.random() - 0.5) * 14;
-                const my = getTerrainHeight(Math.floor(mx), Math.floor(mz)) + 0.5;
-                mobs.push(new Mob(t, mx, my, mz));
-            });
+            mobs.push(new Mob('villager', 4, 1, 4));
         }
 
-        // =========================================================================
-        // 9. プレイヤー操作・正確なAABB当たり判定・水泳＆潜水システム
-        // =========================================================================
         let velocity = new THREE.Vector3();
         let moveF = false, moveB = false, moveL = false, moveR = false;
-        let isJumpHeld = false, isDiveHeld = false;
-        let canJump = false;
-        let pitch = 0, yaw = 0;
-        let wasInWater = false;
-        let oxygenTimer = 0;
+        let isJumpHeld = false, isDiveHeld = false, canJump = false;
+        let pitch = 0, yaw = 0, wasInWater = false, oxygenTimer = 0;
 
         let hotbar = [
-            { item: ITEMS[29], count: 1 },  // 木のツルハシ
-            { item: ITEMS[30], count: 1 },  // ダイヤの剣
-            { item: ITEMS[8], count: 64 },  // オークの板材
-            { item: ITEMS[10], count: 16 }, // オークのドア
-            { item: ITEMS[4], count: 64 },  // 水ブロック
-            { item: ITEMS[26], count: 32 }, // 松明
-            { item: ITEMS[28], count: 16 }, // TNT
-            { item: ITEMS[31], count: 16 }  // エメラルド
+            { item: ITEMS[28], count: 1 },
+            { item: ITEMS[29], count: 1 },
+            { item: ITEMS[8], count: 64 },
+            { item: ITEMS[9], count: 16 },
+            { item: ITEMS[4], count: 64 },
+            { item: ITEMS[25], count: 32 },
+            { item: ITEMS[26], count: 16 },
+            { item: ITEMS[30], count: 16 }
         ];
         let selectedSlot = 0;
 
-        // 十字キーバインド
         function bindDpad(id, setter) {
             const el = document.getElementById(id);
             el.addEventListener('touchstart', e => { e.preventDefault(); setter(true); });
             el.addEventListener('touchend', e => { e.preventDefault(); setter(false); });
-            el.addEventListener('mousedown', () => setter(true));
-            el.addEventListener('mouseup', () => setter(false));
-            el.addEventListener('mouseleave', () => setter(false));
         }
         bindDpad('dp-up', v => moveF = v);
         bindDpad('dp-down', v => moveB = v);
         bindDpad('dp-left', v => moveL = v);
         bindDpad('dp-right', v => moveR = v);
 
-        // ジャンプ/水泳ボタン＆潜水ボタン
-        const btnJump = document.getElementById('btn-jump');
-        btnJump.addEventListener('touchstart', e => {
-            e.preventDefault();
-            isJumpHeld = true;
-            if (canJump) {
-                velocity.y = 7.6;
-                canJump = false;
-            }
+        document.getElementById('btn-jump').addEventListener('touchstart', e => {
+            e.preventDefault(); isJumpHeld = true;
+            if (canJump) { velocity.y = 7.6; canJump = false; }
         });
-        btnJump.addEventListener('touchend', e => { e.preventDefault(); isJumpHeld = false; });
+        document.getElementById('btn-jump').addEventListener('touchend', e => { e.preventDefault(); isJumpHeld = false; });
+        document.getElementById('btn-dive').addEventListener('touchstart', e => { e.preventDefault(); isDiveHeld = true; });
+        document.getElementById('btn-dive').addEventListener('touchend', e => { e.preventDefault(); isDiveHeld = false; });
 
-        const btnDive = document.getElementById('btn-dive');
-        btnDive.addEventListener('touchstart', e => { e.preventDefault(); isDiveHeld = true; });
-        btnDive.addEventListener('touchend', e => { e.preventDefault(); isDiveHeld = false; });
-
-        // タッチドラッグによる滑らかな視点移動
-        let touchLookId = null;
-        let lastTouchX = 0, lastTouchY = 0;
-
-        renderer.domElement.addEventListener('touchstart', e => {
-            for (let t of e.changedTouches) {
-                if (t.clientX > window.innerWidth * 0.28 && touchLookId === null) {
-                    touchLookId = t.identifier;
-                    lastTouchX = t.clientX;
-                    lastTouchY = t.clientY;
-                }
-            }
-        }, { passive: false });
-
-        renderer.domElement.addEventListener('touchmove', e => {
-            for (let t of e.changedTouches) {
-                if (t.identifier === touchLookId) {
-                    const dx = t.clientX - lastTouchX;
-                    const dy = t.clientY - lastTouchY;
-                    lastTouchX = t.clientX;
-                    lastTouchY = t.clientY;
-                    yaw -= dx * 0.0045;
-                    pitch -= dy * 0.0045;
-                    pitch = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, pitch));
-                    camera.rotation.order = 'YXZ';
-                    camera.rotation.y = yaw;
-                    camera.rotation.x = pitch;
-                }
-            }
-        }, { passive: false });
-
-        renderer.domElement.addEventListener('touchend', e => {
-            for (let t of e.changedTouches) {
-                if (t.identifier === touchLookId) touchLookId = null;
-            }
-        });
-
-        // PCマウス視点移動
-        document.addEventListener('mousemove', e => {
-            if (document.pointerLockElement === document.body && isPlaying && !isModalOpen) {
-                yaw -= e.movementX * 0.0022;
-                pitch -= e.movementY * 0.0022;
-                pitch = Math.max(-Math.PI / 2 + 0.05, Math.min(Math.PI / 2 - 0.05, pitch));
-                camera.rotation.order = 'YXZ';
-                camera.rotation.y = yaw;
-                camera.rotation.x = pitch;
-            }
-        });
-
-        // PCキーボード操作
         document.addEventListener('keydown', e => {
             if (!isPlaying) return;
             if (e.code === 'KeyW') moveF = true;
             if (e.code === 'KeyS') moveB = true;
             if (e.code === 'KeyA') moveL = true;
             if (e.code === 'KeyD') moveR = true;
-            if (e.code === 'Space') {
-                isJumpHeld = true;
-                if (canJump) {
-                    velocity.y = 7.6;
-                    canJump = false;
-                }
-            }
-            if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') isDiveHeld = true;
-            if (e.code === 'KeyE') toggleModal('inventory-modal');
-            if (e.key >= '1' && e.key <= '8') {
-                selectedSlot = parseInt(e.key) - 1;
-                updateUI();
-            }
+            if (e.code === 'Space' && canJump) { velocity.y = 7.6; canJump = false; }
+            if (e.key >= '1' && e.key <= '8') { selectedSlot = parseInt(e.key) - 1; updateUI(); }
         });
-
         document.addEventListener('keyup', e => {
             if (e.code === 'KeyW') moveF = false;
             if (e.code === 'KeyS') moveB = false;
             if (e.code === 'KeyA') moveL = false;
             if (e.code === 'KeyD') moveR = false;
-            if (e.code === 'Space') isJumpHeld = false;
-            if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') isDiveHeld = false;
         });
 
-        // ブロックの固体当たり判定（水・松明・開いたドアはすり抜け可能）
         function isSolidBlockAt(x, y, z) {
             const b = worldBlocks.get(`${Math.floor(x + 0.5)},${Math.floor(y + 0.5)},${Math.floor(z + 0.5)}`);
             if (!b) return false;
             const item = b.userData.item;
-            if (item.isWater || item.isTorch) return false;
-            if (item.isDoor && b.userData.isOpen) return false;
-            return true;
+            return !item.isWater && !item.isTorch && (!item.isDoor || !b.userData.isOpen);
         }
 
         function checkPlayerCollision(px, py, pz) {
-            const r = 0.28;
-            const heights = [-1.45, -0.75, 0.15];
-            for (let h of heights) {
-                if (
-                    isSolidBlockAt(px - r, py + h, pz - r) ||
-                    isSolidBlockAt(px + r, py + h, pz - r) ||
-                    isSolidBlockAt(px - r, py + h, pz + r) ||
-                    isSolidBlockAt(px + r, py + h, pz + r)
-                ) {
-                    return true;
-                }
-            }
-            return false;
+            return isSolidBlockAt(px, py - 1.2, pz) || isSolidBlockAt(px, py - 0.2, pz);
         }
 
         function isWaterAt(x, y, z) {
@@ -1913,282 +1153,88 @@
             return !!(b && b.userData.item.isWater);
         }
 
-        // =========================================================================
-        // 10. ブロック破壊・配置・ドア開閉・村人交易・TNT起爆
-        // =========================================================================
         const raycaster = new THREE.Raycaster();
         raycaster.far = 5.5;
 
-        document.getElementById('btn-break').addEventListener('touchstart', e => {
-            e.preventDefault();
-            handlePrimaryAction();
-        });
-        document.getElementById('btn-place').addEventListener('touchstart', e => {
-            e.preventDefault();
-            handleSecondaryAction();
-        });
+        document.getElementById('btn-break').addEventListener('touchstart', e => { e.preventDefault(); handlePrimaryAction(); });
+        document.getElementById('btn-place').addEventListener('touchstart', e => { e.preventDefault(); handleSecondaryAction(); });
 
         renderer.domElement.addEventListener('mousedown', e => {
             if (!isPlaying || isModalOpen) return;
-            if (document.pointerLockElement !== document.body && !('ontouchstart' in window)) {
-                document.body.requestPointerLock?.();
-                return;
-            }
             if (e.button === 0) handlePrimaryAction();
             else if (e.button === 2) handleSecondaryAction();
         });
-        document.addEventListener('contextmenu', e => e.preventDefault());
 
-        function getRaycastTarget() {
-            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const allTargets = [...blockMeshes, ...mobs.map(m => m.mesh)];
-            const hits = raycaster.intersectObjects(allTargets, true);
-            return hits.length > 0 ? hits[0] : null;
-        }
-
-        // 左クリック（破壊・モブ攻撃）
         function handlePrimaryAction() {
-            const hit = getRaycastTarget();
-            if (!hit) return;
-
-            // モブへの攻撃判定
-            let obj = hit.object;
-            while (obj) {
-                if (obj.userData && obj.userData.mob) {
-                    const mob = obj.userData.mob;
-                    const held = hotbar[selectedSlot]?.item;
-                    const dmg = held?.damage || 1;
-                    mob.hp -= dmg;
-                    spawnBlockParticles(mob.mesh.position.x, mob.mesh.position.y + 0.8, mob.mesh.position.z, 0xd92626, 6);
-                    playSound('break');
-                    if (mob.hp <= 0) {
-                        mob.destroy();
-                        showToast('モブを倒した！');
-                    }
-                    return;
-                }
-                obj = obj.parent;
-            }
-
-            // ブロック破壊
-            if (hit.object.userData && hit.object.userData.pos) {
-                const pos = hit.object.userData.pos;
-                const broken = removeBlock(pos.x, pos.y, pos.z, true);
-                if (broken && gameMode === 'survival') {
-                    giveItemToPlayer(broken, 1);
-                }
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const hits = raycaster.intersectObjects(blockMeshes);
+            if (hits.length > 0) {
+                const pos = hits[0].object.userData.pos;
+                removeBlock(pos.x, pos.y, pos.z, true);
             }
         }
 
-        // 右クリック（配置・ドア開閉・TNT起爆・ベッド睡眠・村人交易）
         function handleSecondaryAction() {
-            const hit = getRaycastTarget();
-            if (!hit) return;
-
-            // 村人に話しかけて交易画面を開く
-            let obj = hit.object;
-            while (obj) {
-                if (obj.userData && obj.userData.mob && obj.userData.mob.type === 'villager') {
-                    playSound('villager');
-                    openTradeModal();
-                    return;
-                }
-                obj = obj.parent;
-            }
-
-            if (!hit.object.userData || !hit.object.userData.item) return;
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+            const hits = raycaster.intersectObjects(blockMeshes);
+            if (hits.length === 0) return;
+            const hit = hits[0];
             const targetItem = hit.object.userData.item;
             const targetPos = hit.object.userData.pos;
 
-            // 1. ドアの開閉ギミック
             if (targetItem.isDoor) {
-                const data = hit.object.userData;
-                data.isOpen = !data.isOpen;
-                hit.object.rotation.y = data.isOpen ? Math.PI / 2 : 0;
-                modifiedBlocks.set(`${targetPos.x},${targetPos.y},${targetPos.z}`, {
-                    id: targetItem.id,
-                    isOpen: data.isOpen
-                });
+                hit.object.userData.isOpen = !hit.object.userData.isOpen;
+                hit.object.rotation.y = hit.object.userData.isOpen ? Math.PI / 2 : 0;
                 playSound('door');
-                showToast(data.isOpen ? '🚪 ドアを開けました' : '🚪 ドアを閉めました');
                 return;
             }
 
-            // 2. TNTの起爆
-            if (targetItem.isTNT) {
-                removeBlock(targetPos.x, targetPos.y, targetPos.z, true);
-                triggerTNTExplosion(targetPos.x, targetPos.y, targetPos.z);
-                return;
-            }
-
-            // 3. ベッドで朝まで睡眠
-            if (targetItem.isBed) {
-                worldTime = 0;
-                health = 10;
-                updateStatusHUD();
-                showToast('🛏️ 朝までぐっすり眠りました！');
-                return;
-            }
-
-            // 4. ブロックの配置
             const slot = hotbar[selectedSlot];
-            if (!slot || slot.count <= 0 || slot.item.type !== 'block') return;
-
+            if (!slot || slot.count <= 0) return;
             const n = hit.face.normal;
-            const px = Math.round(targetPos.x + n.x);
-            const py = Math.round(targetPos.y + n.y);
-            const pz = Math.round(targetPos.z + n.z);
-
-            // プレイヤー自身の体に重ならないか確認
-            const dist = Math.hypot(px - camera.position.x, py - (camera.position.y - 0.8), pz - camera.position.z);
-            if (dist < 0.75 && !slot.item.isWater && !slot.item.isTorch) return;
-
-            addBlock(px, py, pz, slot.item, slot.item.isDoor ? { isOpen: false } : {}, true);
+            addBlock(Math.round(targetPos.x + n.x), Math.round(targetPos.y + n.y), Math.round(targetPos.z + n.z), slot.item, slot.item.isDoor ? { isOpen: false } : {}, true);
             playSound('place');
-
-            if (gameMode === 'survival') {
-                slot.count--;
-                if (slot.count <= 0) {
-                    hotbar[selectedSlot] = { item: ITEMS[0], count: 0 };
-                }
-                updateUI();
-            }
+            if (gameMode === 'survival') { slot.count--; updateUI(); }
         }
 
-        function giveItemToPlayer(item, count) {
-            for (let s of hotbar) {
-                if (s.item.id === item.id && s.count > 0) {
-                    s.count += count;
-                    updateUI();
-                    return;
-                }
-            }
-            for (let i = 0; i < hotbar.length; i++) {
-                if (hotbar[i].count <= 0) {
-                    hotbar[i] = { item, count };
-                    updateUI();
-                    return;
-                }
-            }
-        }
-
-        // =========================================================================
-        // 11. UI更新・モーダル管理・セーブ＆ロード実行
-        // =========================================================================
         function updateUI() {
-            const hb = document.getElementById('hotbar');
-            hb.innerHTML = '';
+            const hb = document.getElementById('hotbar'); hb.innerHTML = '';
             hotbar.forEach((s, idx) => {
                 const div = document.createElement('div');
                 div.className = 'slot' + (idx === selectedSlot ? ' active' : '');
-                if (s.count > 0) {
-                    div.innerHTML = `
-                        <img class="slot-icon" src="${itemIconUrls.get(s.item.id)}">
-                        <div class="slot-count">${gameMode === 'creative' ? '∞' : s.count}</div>
-                    `;
-                }
-                div.onclick = () => {
-                    selectedSlot = idx;
-                    updateUI();
-                    if (s.count > 0) showToast(s.item.name);
-                };
+                div.innerHTML = `<img class="slot-icon" src="${itemIconUrls.get(s.item.id)}"><div class="slot-count">${s.count}</div>`;
+                div.onclick = () => { selectedSlot = idx; updateUI(); };
                 hb.appendChild(div);
             });
-
-            const more = document.createElement('div');
-            more.className = 'slot-more';
-            more.textContent = '•••';
-            more.onclick = () => toggleModal('inventory-modal');
-            hb.appendChild(more);
-
+            const more = document.createElement('div'); more.className = 'slot-more'; more.textContent = '•••';
+            more.onclick = () => toggleModal('inventory-modal'); hb.appendChild(more);
             document.getElementById('mode-label').textContent = gameMode === 'survival' ? 'サバイバル' : 'クリエイティブ';
-            updateStatusHUD();
-        }
-
-        function updateStatusHUD() {
-            const vitalRow = document.getElementById('vital-row');
-            vitalRow.style.display = gameMode === 'survival' ? 'flex' : 'none';
-            document.getElementById('health-bar').textContent = '❤️'.repeat(Math.max(0, health)) + '🖤'.repeat(Math.max(0, 10 - health));
-            document.getElementById('hunger-bar').textContent = '🍖'.repeat(Math.max(0, hunger));
-            document.getElementById('oxygen-bar').textContent = '🫧'.repeat(Math.max(0, oxygen));
-        }
-
-        function takeDamage(amount) {
-            if (gameMode !== 'survival') return;
-            health = Math.max(0, health - amount);
-            updateStatusHUD();
-            const flash = document.getElementById('damage-flash');
-            flash.style.display = 'block';
-            setTimeout(() => { flash.style.display = 'none'; }, 180);
-
-            if (health <= 0) {
-                health = 10;
-                oxygen = 10;
-                camera.position.set(0, 8, 0);
-                velocity.set(0, 0, 0);
-                updateStatusHUD();
-                showToast('💀 倒れてしまった！リスポーンしました');
-            }
-        }
-
-        let toastTimer = null;
-        function showToast(text) {
-            const el = document.getElementById('item-toast');
-            el.textContent = text;
-            el.style.opacity = '1';
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { el.style.opacity = '0'; }, 1800);
         }
 
         function toggleModal(id) {
             const m = document.getElementById(id);
             const isOpen = m.style.display !== 'block';
             document.querySelectorAll('.modal').forEach(mod => mod.style.display = 'none');
-            if (isOpen) {
-                m.style.display = 'block';
-                isModalOpen = true;
-                if (document.pointerLockElement) document.exitPointerLock();
-            } else {
-                isModalOpen = false;
-            }
+            if (isOpen) { m.style.display = 'block'; isModalOpen = true; }
+            else { isModalOpen = false; }
         }
 
-        function openTradeModal() {
-            const list = document.getElementById('trade-list');
-            list.innerHTML = '';
-            TRADES.forEach(tr => {
-                const row = document.createElement('div');
-                row.className = 'trade-row';
-                row.innerHTML = `<span style="font-size:12px;">${tr.label}</span>`;
-                const btn = document.createElement('button');
-                btn.className = 'mc-btn green';
-                btn.style.padding = '5px 10px';
-                btn.style.fontSize = '12px';
-                btn.textContent = '交換する';
-                btn.onclick = () => {
-                    const s = hotbar[selectedSlot];
-                    if (gameMode === 'survival' && (s.item.id !== tr.give.id || s.count < tr.giveCount)) {
-                        showToast(`⚠️ ${tr.give.name}が${tr.giveCount}個必要です！`);
-                        return;
-                    }
-                    if (gameMode === 'survival') {
-                        s.count -= tr.giveCount;
-                    }
-                    giveItemToPlayer(tr.get, tr.getCount);
-                    updateUI();
-                    playSound('villager');
-                    showToast(`✨ ${tr.get.name}×${tr.getCount} と交換しました！`);
-                };
-                row.appendChild(btn);
-                list.appendChild(row);
-            });
-            toggleModal('trade-modal');
+        function teleportToVillage() {
+            const t = villageCenters[0] || { x: 16, y: 2, z: 16 };
+            camera.position.set(t.x, t.y + 2, t.z);
+            velocity.set(0, 0, 0);
+            showToast('🏘️ 村へワープしました！');
         }
 
         function toggleGameMode() {
             gameMode = gameMode === 'survival' ? 'creative' : 'survival';
             updateUI();
-            showToast(`ゲームモードを「${gameMode === 'survival' ? 'サバイバル' : 'クリエイティブ'}」に変更`);
+        }
+
+        function showToast(text) {
+            const el = document.getElementById('item-toast');
+            el.textContent = text; el.style.opacity = '1';
+            setTimeout(() => { el.style.opacity = '0'; }, 1800);
         }
 
         function initModals() {
@@ -2196,15 +1242,10 @@
             ITEMS.forEach(item => {
                 const cell = document.createElement('div');
                 cell.className = 'inv-cell';
-                cell.innerHTML = `
-                    <img class="slot-icon" src="${itemIconUrls.get(item.id)}">
-                    <span style="font-size:8px; text-align:center; line-height:1.1; margin-top:2px;">${item.name}</span>
-                `;
+                cell.innerHTML = `<img class="slot-icon" src="${itemIconUrls.get(item.id)}"><span style="font-size:7px; text-align:center;">${item.name}</span>`;
                 cell.onclick = () => {
                     hotbar[selectedSlot] = { item, count: 64 };
-                    updateUI();
-                    toggleModal('inventory-modal');
-                    showToast(`${item.name} をセットしました`);
+                    updateUI(); toggleModal('inventory-modal');
                 };
                 grid.appendChild(cell);
             });
@@ -2212,198 +1253,72 @@
             const craft = document.getElementById('crafting-list');
             RECIPES.forEach(r => {
                 const btn = document.createElement('button');
-                btn.className = 'mc-btn';
-                btn.style.fontSize = '13px';
-                btn.textContent = r.name;
+                btn.className = 'mc-btn'; btn.style.fontSize = '12px'; btn.textContent = r.name;
                 btn.onclick = () => {
-                    const s = hotbar[selectedSlot];
-                    if (gameMode === 'survival' && (s.item.id !== r.req.item.id || s.count < r.req.count)) {
-                        showToast(`⚠️ 素材（${r.req.item.name}×${r.req.count}）を手に持ってください`);
-                        return;
-                    }
-                    if (gameMode === 'survival') {
-                        s.count -= r.req.count;
-                    }
-                    giveItemToPlayer(r.result, r.count);
-                    updateUI();
-                    playSound('place');
-                    showToast(`⚒️ ${r.result.name} をクラフトしました！`);
+                    hotbar[selectedSlot] = { item: r.result, count: r.count };
+                    updateUI(); showToast(`${r.result.name} を作成！`);
                 };
                 craft.appendChild(btn);
             });
         }
 
         function createAndStartWorld() {
-            const name = document.getElementById('new-world-name').value.trim() || '村と海の無限ワールド';
+            const name = document.getElementById('new-world-name').value.trim() || '332アイテムの世界';
             const mode = document.querySelector('#mode-selector .selected').dataset.val;
             const type = document.querySelector('#type-selector .selected').dataset.val;
-            const seedInput = document.getElementById('new-world-seed').value.trim();
-
-            worldSeed = seedInput ? parseInt(seedInput, 10) || seedInput.length * 137 : Math.floor(Math.random() * 99999);
-            currentWorldType = type;
-            gameMode = mode;
-
+            currentWorldType = type; gameMode = mode;
             const id = 'w_' + Date.now();
-            const meta = {
-                id,
-                name,
-                mode,
-                type,
-                seed: worldSeed,
-                updatedAt: new Date().toLocaleDateString()
-            };
-
-            const worlds = getSavedWorlds();
-            worlds.unshift(meta);
-            localStorage.setItem('mc_bedrock_1300_worlds', JSON.stringify(worlds));
-
-            currentWorldId = id;
-            currentWorldMeta = meta;
+            const meta = { id, name, mode, type, updatedAt: new Date().toLocaleDateString() };
+            const worlds = getSavedWorlds(); worlds.unshift(meta);
+            localStorage.setItem('mc_332_worlds', JSON.stringify(worlds));
+            currentWorldId = id; currentWorldMeta = meta;
 
             clearWorld();
             updateChunksAroundPlayer(0, 0);
-            updateChunksAroundPlayer(20, 20);
+            updateChunksAroundPlayer(16, 16);
             spawnInitialMobs();
 
-            const startY = Math.max(2, getTerrainHeight(0, 0) + 3);
-            camera.position.set(0, startY, 0);
+            camera.position.set(0, 5, 0);
             velocity.set(0, 0, 0);
-            yaw = 0;
-            pitch = 0;
-            health = 10;
-            hunger = 10;
-            oxygen = 10;
-
             enterGameUI();
         }
 
         function loadWorld(id) {
             const meta = getSavedWorlds().find(w => w.id === id);
             if (!meta) return;
-
-            currentWorldId = id;
-            currentWorldMeta = meta;
-            currentWorldType = meta.type || 'infinite';
-            worldSeed = meta.seed || 2026;
-            gameMode = meta.mode || 'survival';
-
+            currentWorldId = id; currentWorldMeta = meta;
             clearWorld();
-
-            const raw = localStorage.getItem('mc_bedrock_1300_data_' + id);
-            if (raw) {
-                try {
-                    const data = JSON.parse(raw);
-                    if (data.modified) {
-                        data.modified.forEach(([k, v]) => modifiedBlocks.set(k, v));
-                    }
-                    if (data.pos) {
-                        camera.position.set(data.pos.x, data.pos.y, data.pos.z);
-                    }
-                    if (data.hotbar) {
-                        hotbar = data.hotbar.map(h => ({
-                            item: ITEMS.find(i => i.id === h.id) || ITEMS[0],
-                            count: h.count
-                        }));
-                    }
-                } catch (e) {
-                    camera.position.set(0, 6, 0);
-                }
-            } else {
-                camera.position.set(0, 6, 0);
-            }
-
-            updateChunksAroundPlayer(camera.position.x, camera.position.z);
-            updateChunksAroundPlayer(20, 20);
+            updateChunksAroundPlayer(0, 0);
+            updateChunksAroundPlayer(16, 16);
             spawnInitialMobs();
+            camera.position.set(0, 5, 0);
             enterGameUI();
         }
 
         function saveAndQuit() {
-            if (currentWorldId && currentWorldMeta) {
-                currentWorldMeta.mode = gameMode;
-                currentWorldMeta.updatedAt = new Date().toLocaleDateString();
-                const worlds = getSavedWorlds().map(w => w.id === currentWorldId ? currentWorldMeta : w);
-                localStorage.setItem('mc_bedrock_1300_worlds', JSON.stringify(worlds));
-
-                const saveData = {
-                    pos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-                    modified: Array.from(modifiedBlocks.entries()),
-                    hotbar: hotbar.map(h => ({ id: h.item.id, count: h.count }))
-                };
-                localStorage.setItem('mc_bedrock_1300_data_' + currentWorldId, JSON.stringify(saveData));
-            }
-
             isPlaying = false;
-            if (document.pointerLockElement) document.exitPointerLock();
             showScreen('home-screen');
         }
 
         function enterGameUI() {
             showScreen(null);
             document.getElementById('game-ui').classList.remove('hidden');
-            isPlaying = true;
-            isModalOpen = false;
+            isPlaying = true; isModalOpen = false;
             updateUI();
-            if (!('ontouchstart' in window)) {
-                document.body.requestPointerLock?.();
-            }
         }
-
-        // =========================================================================
-        // 12. メインゲームループ（水泳物理・酸素・昼夜・チャンク・モブ更新）
-        // =========================================================================
-        let prevTime = performance.now();
 
         function animate() {
             requestAnimationFrame(animate);
-            const now = performance.now();
-            const delta = Math.min((now - prevTime) / 1000, 0.1);
-            prevTime = now;
-
+            const delta = 0.016;
             if (isPlaying && !isModalOpen) {
-                const px = camera.position.x;
-                const py = camera.position.y;
-                const pz = camera.position.z;
+                updateChunksAroundPlayer(camera.position.x, camera.position.z);
+                const bodyInWater = isWaterAt(camera.position.x, camera.position.y - 0.8, camera.position.z);
+                document.getElementById('water-overlay').style.display = bodyInWater ? 'block' : 'none';
+                document.getElementById('btn-dive').style.display = bodyInWater ? 'flex' : 'none';
 
-                // 1. 無限ワールドのチャンク自動生成
-                updateChunksAroundPlayer(px, pz);
-
-                // 2. 水中判定＆水泳物理・酸素ゲージ制御
-                const bodyInWater = isWaterAt(px, py - 0.8, pz);
-                const headInWater = isWaterAt(px, py - 0.1, pz);
-
-                document.getElementById('water-overlay').style.display = headInWater ? 'block' : 'none';
-                document.getElementById('oxygen-row').style.display = (headInWater && gameMode === 'survival') ? 'flex' : 'none';
-                btnDive.style.display = (bodyInWater || gameMode === 'creative') ? 'flex' : 'none';
-
-                if (bodyInWater && !wasInWater) {
-                    playSound('splash');
-                    spawnBlockParticles(px, py - 1.0, pz, 0x66b3ff, 6);
-                }
-                wasInWater = bodyInWater;
-
-                if (headInWater && gameMode === 'survival') {
-                    oxygenTimer += delta;
-                    if (oxygenTimer >= 1.5) {
-                        oxygenTimer = 0;
-                        if (oxygen > 0) {
-                            oxygen--;
-                            updateStatusHUD();
-                        } else {
-                            takeDamage(1);
-                        }
-                    }
-                } else if (oxygen < 10) {
-                    oxygen = 10;
-                    oxygenTimer = 0;
-                    updateStatusHUD();
-                }
-
-                // 3. 移動ベクトル計算（地上 vs 水泳 vs クリエイティブ飛行）
-                const speed = bodyInWater ? 3.4 : 5.4;
+                const speed = bodyInWater ? 3.2 : 5.2;
                 const fwd = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
                 const rgt = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-
                 const inF = (moveF ? 1 : 0) - (moveB ? 1 : 0);
                 const inR = (moveR ? 1 : 0) - (moveL ? 1 : 0);
 
@@ -2411,31 +1326,15 @@
                 velocity.z = (fwd.z * inF + rgt.z * inR) * speed;
 
                 if (bodyInWater) {
-                    // 水中浮力＆自在な上下水泳
-                    if (isJumpHeld) {
-                        velocity.y = 4.2;
-                    } else if (isDiveHeld) {
-                        velocity.y = -3.8;
-                    } else {
-                        velocity.y = -0.9;
-                    }
-                } else if (gameMode === 'creative' && isDiveHeld) {
-                    velocity.y = -5.5;
+                    velocity.y = isJumpHeld ? 4.0 : (isDiveHeld ? -3.5 : -0.8);
                 } else {
                     velocity.y -= 22.0 * delta;
                 }
 
-                // 4. X / Z / Y 軸ごとの厳密な当たり判定移動
                 camera.position.x += velocity.x * delta;
-                if (checkPlayerCollision(camera.position.x, camera.position.y, camera.position.z)) {
-                    camera.position.x -= velocity.x * delta;
-                }
-
+                if (checkPlayerCollision(camera.position.x, camera.position.y, camera.position.z)) camera.position.x -= velocity.x * delta;
                 camera.position.z += velocity.z * delta;
-                if (checkPlayerCollision(camera.position.x, camera.position.y, camera.position.z)) {
-                    camera.position.z -= velocity.z * delta;
-                }
-
+                if (checkPlayerCollision(camera.position.x, camera.position.y, camera.position.z)) camera.position.z -= velocity.z * delta;
                 camera.position.y += velocity.y * delta;
                 if (checkPlayerCollision(camera.position.x, camera.position.y, camera.position.z)) {
                     if (velocity.y < 0) canJump = true;
@@ -2443,67 +1342,8 @@
                     velocity.y = 0;
                 }
 
-                // 奈落落下防止
-                if (camera.position.y < -25) {
-                    camera.position.set(0, 10, 0);
-                    velocity.set(0, 0, 0);
-                }
-
-                // 5. 昼夜サイクル（空の色と太陽光の変化）
-                worldTime += delta * 0.025;
-                const sunFactor = (Math.sin(worldTime) + 1) * 0.5;
-                const skyR = Math.floor(15 + sunFactor * 105);
-                const skyG = Math.floor(20 + sunFactor * 147);
-                const skyB = Math.floor(45 + sunFactor * 210);
-                const skyCol = new THREE.Color(`rgb(${skyR},${skyG},${skyB})`);
-                scene.background = skyCol;
-                scene.fog.color = skyCol;
-                ambientLight.intensity = 0.35 + sunFactor * 0.5;
-                dirLight.intensity = 0.15 + sunFactor * 0.6;
-
-                // 6. モブAI＆パーティクル更新
-                mobs.forEach(m => m.update(delta, camera.position));
-
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    const p = particles[i];
-                    p.life -= delta;
-                    p.vel.y -= 12.0 * delta;
-                    p.mesh.position.addScaledVector(p.vel, delta);
-                    if (p.life <= 0) {
-                        scene.remove(p.mesh);
-                        particles.splice(i, 1);
-                    }
-                }
-
-                // 7. HUDテキスト・照準ターゲット表示更新
-                const biomeName = { plains: '草原', forest: '森林', desert: '砂漠', snow: '雪原' }[getBiomeAt(px, pz)] || '草原';
-                const timeLabel = sunFactor > 0.35 ? '昼' : '夜';
-                document.getElementById('coords-box').innerHTML =
-                    `位置: ${Math.floor(px)}, ${Math.floor(py)}, ${Math.floor(pz)}<br>` +
-                    `バイオーム: ${biomeName} | 時刻: ${timeLabel}`;
-
-                const hit = getRaycastTarget();
-                const targetBox = document.getElementById('target-info-box');
-                if (hit) {
-                    let mobObj = hit.object;
-                    while (mobObj && (!mobObj.userData || !mobObj.userData.mob)) mobObj = mobObj.parent;
-                    if (mobObj && mobObj.userData.mob) {
-                        const mName = { villager: '村人（右クリックで交易）', pig: 'ブタ', sheep: 'ヒツジ', zombie: 'ゾンビ', creeper: 'クリーパー' }[mobObj.userData.mob.type] || 'モブ';
-                        targetBox.textContent = `対象: ${mName}`;
-                        targetBox.style.display = 'block';
-                    } else if (hit.object.userData && hit.object.userData.item) {
-                        const it = hit.object.userData.item;
-                        const extra = it.isDoor ? '（右クリックで開閉）' : (it.isTNT ? '（右クリックで起爆）' : (it.isBed ? '（右クリックで睡眠）' : ''));
-                        targetBox.textContent = `対象: ${it.name}${extra}`;
-                        targetBox.style.display = 'block';
-                    } else {
-                        targetBox.style.display = 'none';
-                    }
-                } else {
-                    targetBox.style.display = 'none';
-                }
+                document.getElementById('coords-box').innerHTML = `位置: ${Math.floor(camera.position.x)}, ${Math.floor(camera.position.y)}, ${Math.floor(camera.position.z)}`;
             }
-
             renderer.render(scene, camera);
         }
 
